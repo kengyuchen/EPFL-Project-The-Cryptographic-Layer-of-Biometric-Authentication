@@ -1,0 +1,493 @@
+%%%%%%%%%%%%%%%%%%%%
+
+% Semester Project for EPFL
+% Author: Keng-Yu Chen
+
+%%%%%%%%%%%%%%%%%%%%
+
+\input{header.tex}
+
+
+\begin{document}
+
+%% Title
+\maketitle
+
+%-------------------
+
+%% Header and Foot
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Semester Project}
+\fancyhead[C]{Biometric Authentication}
+\fancyhead[R]{Keng-Yu Chen}
+\fancyfoot[C]{\thepage}
+
+%-------------------
+
+This report formalizes the biometric authentication scheme, including its structure, usage, and security analysis with a security game model.
+
+%-------------------
+
+\section*{Preliminaries}
+\label{sec:preliminaries}
+
+In this report, we assume
+
+\begin{itemize}
+	
+	\item $\lambda$ is the security parameter.
+
+	\item $[m]$ denotes the set of integers $\{1, 2, \cdots, m\}$.
+
+	\item $\Z_q$ is the finite field modulo a prime number $q$.
+
+	\item A function $f(n)$ is called \emph{negligible} iff for any integer $c$, $f(n) < \frac{1}{n^c}$ for all sufficiently large $n$. We write it as $f(n) = \negl$, and we may also use $\negl$ to represent an arbitrary negligible function.
+	
+	\item $\poly$ is the class of polynomial funcions. We may also use $\poly$ to represent an arbitrary polynomial function.
+	
+	\item We write sampling a value $r$ from a distribution $\mathcal{D}$ as $r \getsdollar \mathcal{D}$. If $S$ is a finite set, then $r \getsdollar S$ means sampling $r$ uniformly from $S$.
+
+	\item The distribution $\mathcal{D}^t$ denotes $t$ identical and independent distributions of $\mathcal{D}$.
+
+	\item A PPT algorithm denotes a probabilistic polynomial time algorithm. Unless otherwise specified, all algorithms run in PPT.
+
+\end{itemize}
+
+
+\begin{definition}[Functional Hiding Inner Product Functional Encryption]
+\label{def:fh-IPFE}
+	A \emph{functional hiding inner product functional encryption} (fh-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms ${\sf FE.Setup}$, ${\sf FE.KeyGen}$, ${\sf FE.Enc}$, and ${\sf FE.Dec}$:
+
+\begin{itemize}
+
+	\item ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$: It outputs the public parameter ${\sf pp}$ and the master secret key ${\sf msk}$.
+
+	\item ${\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$: It generates the functional decryption key $f_\mathbf{x}$ for an input vector $\mathbf{x} \in \mathbb{F}^k$. 
+
+	\item ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
+
+	\item ${\sf FE.Dec}({\sf pp}, f_\mathbf{x}, \mathbf{c_y}) \to z \in \mathbb{F}$: It outputs a value $z$.
+
+\end{itemize}
+
+\noindent Correctness: The fh-IPFE scheme {\sf FE} is \emph{correct} if $\forall {\sf msk}, {\sf pp} \gets {\sf FE.Setup}$, $\forall \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\[
+		{\sf FE.Dec}( {\sf pp}, {\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}), {\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) ) = \langle \mathbf{x} , \mathbf{y} \rangle \in \mathbb{F}.
+	\]
+
+\end{definition}
+
+%-------------------
+
+\section*{Formalization}
+\label{sec:formalization}
+
+
+In general, an authentication shceme $\Pi$ is composed of the following algorithms.
+
+\begin{itemize}
+
+	\item ${\sf SSetup}(1^\lambda) \to {\sf csk}, {\sf pp_s}$: It outputs the comparison secret key ${\sf csk}$ and public parameter ${\sf pp_s}$.
+
+	\item ${\sf USetup}(1^\lambda, {\sf pp_s}) \to {\sf esk}, {\sf psk}, {\sf pp_u}$: It takes public parameter ${\sf pp_s}$ from ${\sf SSetup}$ and outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, and public parameter ${\sf pp_u}$. From now on we let ${\sf pp} := ({\sf pp_s}, {\sf pp_u})$.
+
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}({\mathbf{b}}) \to \mathbf{x}$: It is a deterministic algorithm that encodes a biometric template $\mathbf{b}$ as $\mathbf{x}$, the input format for enrollment. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for some additional biometric information. 
+
+	\item ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}) \to \mathbf{c_x}$: It outputs the enrollment message $\mathbf{c_x}$ from $\mathbf{x}$.
+
+	\item ${\sf encodeProbe}^{\mathcal{O}_{\sf aux}}({\mathbf{b'}}) \to \mathbf{y}$: It is a deterministic algorithm that encodes a biometric template $\mathbf{b'}$ as $\mathbf{y}$, the input format for probe. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for some additional biometric information. 
+
+	\item ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$: It outputs the probe message $\mathbf{c_y}$ from $\mathbf{y}$.
+
+	\item ${\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
+
+	\item ${\sf Verify}(s) \to r \in \{0,1\}$: It is a deterministic algorithm that reads the comparison score $s$ and determines whether this is a successful authentication ($r = 1$) or not ($r = 0$).
+
+\end{itemize}
+
+
+The usage model we consider is described in Figure \ref{table:model}.
+
+
+\begin{figure}[]
+	\begin{center}
+		\begin{tabular}{l c r c}
+			{\bf User} &	& {\bf Server} \\
+
+			\hline
+
+			\\
+
+			&	& ${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+
+			&	$\xleftarrow{\quad {\sf pp_s} \quad}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
+
+			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+
+			& $\xrightarrow{\quad {\sf pp}, \mathbf{c_x} \quad}$ \\
+
+			$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\sf aux}}(\mathbf{b'})$ \\
+
+			$\mathbf{c_y} \gets {\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$ \\
+
+			& $\xrightarrow{\quad \mathbf{c_y} \quad}$ \\
+			
+			&  & $s \gets {\sf Compare} ({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y})$ \\
+
+			& & $r \gets {\sf Verify}(s) $ \\
+		\end{tabular}
+	\end{center}
+	\caption{Authentication Model with User and Server}
+	\label{table:model}
+\end{figure}
+
+
+For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using ${\sf FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b'}$ be sampled from some distribution $\mathcal{B} \subseteq \{0,1,\cdots, m\}^k$, and let the associated field of ${\sf FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
+
+\begin{itemize}
+
+	\item ${\sf SSetup}(1^\lambda):$ The outputs ${\sf csk, pp_s}$ are set to empty strings.
+	
+	\item ${\sf USetup}(1^\lambda, {\sf pp_s})$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}, {\sf pp_u}) \gets ({\sf msk}, {\sf msk}, {\sf pp})$.
+
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}({\mathbf{b}}) \to \mathbf{x}$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. The auxiliary oracle is empty.
+
+	\item ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$: It calls ${\sf FE.KeyGen}({\sf esk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
+
+	\item ${\sf encodeProbe}^{\mathcal{O}_{\sf aux}}({\mathbf{b'}})$: For a template vector $\mathbf{b'} = (b_1', b_2', \cdots, b_k')$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1', -2b_2', \cdots, -2b_k', \|\mathbf{b'}\|^2, 1)$. The auxiliary oracle is empty.
+
+	\item ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf psk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+
+	\item ${\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs a value $s$.
+
+	\item ${\sf Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
+
+\end{itemize}
+
+By the correctness of the functional encryption scheme $\sf FE$, we have
+\[
+	s = {\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) = \langle \mathbf{x}, \mathbf{y} \rangle = \sum_{i=1}^k -2b_ib_i' + \|\mathbf{b}\|^2 + \|\mathbf{b'}\|^2 = \| \mathbf{b} - \mathbf{b'} \|^2.
+\]
+
+which is the square of the Euclidean distance between two templates $\mathbf{b}$ and $\mathbf{b}'$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}'$ are close enough such that $\|\mathbf{b} - \mathbf{b'}\| < \tau$, the scheme results in $r = 1$, a successful authentication.
+
+
+%-------------------
+
+\section*{Security Games}
+
+
+\subsection*{Forgery Game}
+\label{sec:forgery_game}
+
+In the forgery game, we model the ability of an adversary who tries to forge the user. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracle $\mathcal{O}$ and tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game is defined in Figure \ref{fig:forgery_game}.
+
+\begin{figure}[h]
+\centerline{
+
+\minipage{0.45\textwidth}
+	\begin{tabular}{l c}
+		${\sf Forg}_{\Pi, \mathcal{B}}(\mathcal{A}^\mathcal{O})$\\
+
+			\hline
+
+			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
+
+			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+
+			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}} ( {\sf pp}, \mathbf{c_x} )$ \\
+
+			$s \gets {\sf Compare}( {\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
+
+			\textbf{return} ${\sf Verify}(s)$
+			
+	\end{tabular}
+	\caption{The Forgery Game}
+	\label{fig:forgery_game}
+\endminipage
+\minipage{0.45\textwidth}
+	\begin{tabular}{l c}
+		${\sf Forg'}_{\Pi, \mathcal{B}}(\mathcal{A}')$\\
+
+			\hline
+
+			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
+
+			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+
+			${\mathbf{\tilde{z}}} \gets \mathcal{A}'({\sf pp})$ \\
+
+			$s \gets {\sf Compare}( {\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
+
+			\textbf{return} ${\sf Verify}(s)$
+			
+		\end{tabular}
+	\caption{The Plain Forgery Game}
+	\label{fig:plain_forgery_game}
+\endminipage
+}
+\end{figure}
+
+
+The given oracle $\mathcal{O}$ can be any or more of the following three oracles:
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+
+	\item $\mathcal{O}_{\sf Compare}({\sf csk}, {\sf pp}, \cdot, \cdot)$: On input $\mathbf{c_x}$ and $\mathbf{c_y}$, it outputs the comparison result ${\sf Compare}( {\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y} )$.
+
+\end{itemize}
+
+Note that if the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, or the comparison secret key ${\sf csk}$ is an empty string in the scheme, then the corresponding oracles are naturally and implicitly given since the adversary can compute them herself. 
+
+To consider potential false positives of biometrics match, we consider the plain forgery game in Figure \ref{fig:plain_forgery_game}, in which the adversary does not have any knowledge about the template. 
+
+We define the advantage of an adversary $\mathcal{A}$ in the forgery game of the scheme $\Pi$ and the template distribution $\mathcal{B}$ as
+\[
+	\Adv^{\sf Forg}_{\Pi, \mathcal{B}, \mathcal{A}^\mathcal{O}} := \Pr[{\sf Forg}_{\Pi, \mathcal{B}}(\mathcal{A}^\mathcal{O}) \to 1] -
+	\max_{\text{PPT } \mathcal{A}'} \Pr[{\sf Forg'}_{\Pi, \mathcal{B}}(\mathcal{A}') \to 1].
+\]
+
+The authentication scheme $\Pi$ is called \emph{forgery secure} if for any PPT adversary $\mathcal{A}$ and distribution $\mathcal{B}$,
+\[
+	\Adv^{\sf Forg}_{\Pi, \mathcal{B}, \mathcal{A^\mathcal{O}}} = \negl.
+\]
+
+%-------------------
+
+\subsection*{Simulation Game}
+\label{sec:simulation_game}
+
+In the simulation game, we model the ability of the server who tries to learn something more than the comparison result of the enrollment and probe messages. The adversary $\mathcal{A}$ is given an enrollment message and a list of $t$ probe messages, and she needs to guess whether these are real messages or simulation results of a simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ based on the $\sf Compare$ function. Intuitively, the simulator receives a list of $\sf Compare$ results of real enrollment and probe messages, and it returns some manual enrollment or probe messages that look similar to real ones. The whole game is defined in Figure \ref{fig:sim_game}.
+
+\begin{figure}[h]
+	\begin{center}
+
+		\begin{subfigure}[t]{0.49\textwidth}
+		\begin{tabular}{l c}
+			${\sf SIM-Real}_{\Pi, \mathcal{B}}(\mathcal{A}^\mathcal{O})$\\
+
+			\hline
+
+			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
+
+			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+			
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+
+			$\{ \mathbf{b}^{(i)} \}_{i=1}^t \getsdollar \mathcal{B}^t$ \\ 
+
+			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\sf aux}}(\mathbf{b}^{(i)})\}_{i=1}^t $ \\
+			
+			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, {\sf pp}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
+
+			$b \gets \mathcal{A}^{\mathcal{O}} ({\sf csk}, {\sf pp}, \mathbf{c_x}, \{\mathbf{c_y}^{(i)}\}_{i=1}^t )$ \\
+
+			\textbf{return} $b$
+			
+		\end{tabular}
+		\end{subfigure}
+		\begin{subfigure}[t]{0.49\textwidth}
+		\begin{tabular}{l c}
+			${\sf SIM-Ideal}_{\Pi, \mathcal{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe}))$\\
+
+			\hline
+
+			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
+
+			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+			
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+
+			$\{ \mathbf{b}^{(i)} \}_{i=1}^t \getsdollar \mathcal{B}^t$ \\ 
+
+			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\sf aux}}(\mathbf{b}^{(i)})\}_{i=1}^t $ \\
+			
+			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, {\sf pp}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
+
+			${\sf C} \gets \{ {\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y}^{(i)}) \}_{i=1}^t$ \\
+
+			$\mathbf{c_x}', \{\mathbf{c_y}^{(i)'}\}_{i=1}^t \gets \mathcal{S}_0( {\sf csk}, {\sf C} )$ \\
+
+			$b \gets \mathcal{A}^{\tilde{\mathcal{O}}} ({\sf csk}, {\sf pp}, \mathbf{c_x}', \{ \mathbf{c_y}^{(i)'} \}_{i=1}^t )$ \\
+
+			\textbf{return} $b$
+			
+		\end{tabular}
+		\end{subfigure}
+	\end{center}
+	\caption{The Simulation Game}
+	\label{fig:sim_game}
+\end{figure}
+
+The oracle $\mathcal{O}$ can be any or more of the following oracles:
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+
+\end{itemize}
+
+The oracle $\tilde{\mathcal{O}}$ is stateful and memorizes all the previous queries. It includes two simulators $\mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe}$ and is given by any or more of the following oracles:
+
+\begin{itemize}
+
+	\item $\tilde{\mathcal{O}}_{\sf Enroll} ({\sf csk} ,{\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous probe messages $\mathbf{c_y}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Enroll}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
+
+	\item $\tilde{\mathcal{O}}_{\sf Probe} ({\sf csk}, {\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous enrollment messages $\mathbf{c_x}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Probe}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
+
+\end{itemize}
+
+The details of these oracles are given in Figure \ref{fig:sim_game_oracle}.
+
+\begin{figure}[h]
+	\begin{center}
+
+		\begin{subfigure}[t]{0.49\textwidth}
+		\begin{tabular}{l c}
+			$\tilde{\mathcal{O}}_{\sf Enroll}({\sf csk}, {\sf esk}, {\sf pp}, \mathbf{x}^{(j)})$\\
+
+			\hline
+
+			$\mathbf{c_x}^{(j)} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}^{(j)})$ \\
+
+			${\sf C} \gets {\sf C} \cup \{ {\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}^{(j)}, \mathbf{c_y}^{(i)}) \}_{i}$ \\
+
+			$\mathbf{c_x}' \gets \mathcal{S}_{\sf Enroll}({\sf csk}, {\sf C} )$ \\
+			
+			\textbf{return} $\mathbf{c_x}'$
+			
+		\end{tabular}
+		\end{subfigure}
+		\begin{subfigure}[t]{0.49\textwidth}
+		\begin{tabular}{l c}
+			$\tilde{\mathcal{O}}_{\sf Probe}({\sf csk}, {\sf psk}, {\sf pp}, \mathbf{y}^{(j)})$\\
+
+			\hline
+
+			$\mathbf{c_y}^{(j)} \gets {\sf Probe}( {\sf psk}, {\sf pp}, \mathbf{y}^{(j)} ) $ \\
+
+			${\sf C} \gets {\sf C} \cup \{ {\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}^{(i)}, \mathbf{c_y}^{(j)}) \}_{i}$ \\
+
+			$\mathbf{c_y}' \gets \mathcal{S}_{\sf Probe}({\sf csk}, {\sf C} )$ \\
+
+			\textbf{return} $\mathbf{c_y}'$
+			
+		\end{tabular}
+		\end{subfigure}
+	\end{center}
+	\caption{Choice of the Oracle $\tilde{\mathcal{O}}$}
+	\label{fig:sim_game_oracle}
+\end{figure}
+
+
+We define the advantage of an adversary $\mathcal{A}$ in the simulation game of the scheme $\Pi$ and the template distribution $\mathcal{B}$ with simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ as
+\[
+	\Adv^{\sf SIM}_{\Pi, \mathcal{B}, \mathcal{A}^{\mathcal{O}, \tilde{\mathcal{O}}}, \mathcal{S}} := |\Pr[{\sf SIM-Real}_{\Pi, \mathcal{B}}(\mathcal{A}^\mathcal{O}) \to 1] - \Pr[{\sf SIM-Ideal}_{\Pi, \mathcal{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S}) \to 1]|.
+\]
+
+The authentication scheme $\Pi$ is called \emph{simulation secure} if for any PPT adversary $\mathcal{A}$ and distribution $\mathcal{B}$, there exists a PPT simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ such that
+\[
+	\Adv^{\sf SIM}_{\Pi, \mathcal{B}, \mathcal{A}^{\mathcal{O}, \tilde{\mathcal{O}}}, \mathcal{S}} = \negl.
+\]
+
+%-------------------
+
+\subsection*{Identification Game}
+\label{sec:id_game}
+
+In the identification game, we model the ability of an adversary who has access to the server's database of registered enrollments and tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}^{(b)}$ and two distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$ that can be efficiently sampled. She tries to guess from which $\mathbf{c_x}^{(b)}$ is generated. The whole game is defined in Figure \ref{fig:id_game}.
+
+\begin{figure}[h]
+	\begin{center}
+	\begin{tabular}{l c}
+		${\sf Id}_{\Pi, \mathbb{B}^{(0)} = (\mathcal{B}^{(0)}, \mathcal{O}_{\sf aux}^{(0)}) , \mathbb{B}^{(1)} = (\mathcal{B}^{(1)}, \mathcal{O}_{\sf aux}^{(1)} )}(\mathcal{A}^\mathcal{O})$\\
+
+			\hline
+
+			$b \getsdollar \{0, 1\}$ \\
+
+			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
+
+			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+
+			$ \mathbf{b}^{(b)} \getsdollar \mathcal{B}^{(b)}, \mathbf{x}^{(b)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}^{(b)}}(\mathbf{b}^{(b)})$ \\
+
+			$\mathbf{c_x}^{(b)} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}^{(b)})$ \\
+
+			$\tilde{b} \gets \mathcal{A}^{\mathcal{O}} ( {\sf pp}, \mathbf{c_x}^{(b)}, \mathbb{B}^{(0)}, \mathbb{B}^{(1)} )$ \\
+
+			\textbf{return} $1_{\tilde{b} = b}$
+			
+	\end{tabular}
+	\end{center}
+	\caption{The Identification Game}
+	\label{fig:id_game}
+\end{figure}
+
+
+The given oracle $\mathcal{O}$ can be any or more of the following three oracles:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+
+\end{itemize}
+
+We define the advantage of an adversary $\mathcal{A}$ in the identification game of the scheme $\Pi$ and the template distributions $\mathbb{B}^{(0)} = (\mathcal{B}^{(0)}, \mathcal{O}_{\sf aux}^{(0)}), \mathbb{B}^{(1)} = (\mathcal{B}^{(1)}, \mathcal{O}_{\sf aux}^{(1)})$ with their corresponding auxiliary oracles as
+\[
+	\Adv^{\sf Id}_{\Pi, \mathbb{B}^{(0)}, \mathbb{B}^{(1)}, \mathcal{A}^\mathcal{O}} := |\Pr[{\sf Id}_{\Pi}(\mathcal{A}^\mathcal{O}) \to 1] - \frac{1}{2}|.
+\]
+
+The authentication scheme $\Pi$ is called \emph{identification secure} under distributions $\mathbb{B}^{(0)}, \mathbb{B}^{(1)}$ if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\sf Id}_{\Pi, \mathbb{B}^{(0)}, \mathbb{B}^{(1)}, \mathcal{A^\mathcal{O}}} = \negl.
+\]
+
+%-------------------
+%% Backup File
+
+% \input{backup.tex}
+
+%-------------------
+%% Reference List
+\nocite{*}
+\printbibliography
+
+
+\end{document}

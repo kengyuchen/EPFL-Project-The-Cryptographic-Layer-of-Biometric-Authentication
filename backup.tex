@@ -1,0 +1,94 @@
+\section*{Backup}
+\subsection*{Privacy Game}
+
+In the privacy game, we model the ability of the server who tries to learn the biometric template of a user. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$, $t$ probe messages $\{ \mathbf{c_y}_i\}_{i=1}^t$ for some integer $t$, and oracle $\mathcal{O}$ and tries to find the template $\mathbf{b}$. The whole game is defined in Figure \ref{fig:privacy_game}.
+
+
+\begin{figure}[h]
+	\begin{center}
+		\begin{tabular}{l c}
+			${\sf Priv}_{\Pi}(\mathcal{A})$\\
+
+			\hline
+
+			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
+
+			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+
+			$\{ \mathbf{b}_i \}_{i=1}^t \getsdollar \mathcal{B}^t$ \\ 
+
+			$\{ \mathbf{c_y}_i \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, {\sf pp}, {\sf encodeProbe}^{\mathcal{O}_{\sf aux}}(\mathbf{b}_i) ) \right \}_{i=1}^t$ \\
+
+			${\mathbf{\tilde{b}}} \gets \mathcal{A}^{\mathcal{O}} ( \sf{pp}, \mathbf{c_x}, \{ \mathbf{c_y}_i \}_{i=1}^t )$ \\
+
+			\textbf{return} $1_{\mathbf{\tilde{b}} = \mathbf{b}}$
+			
+		\end{tabular}
+	\end{center}
+	\caption{The Privacy Game}
+	\label{fig:privacy_game}
+\end{figure}
+
+
+The given oracle $\mathcal{O}$ can be any or more of the following three oracles:
+
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+
+	\item $\mathcal{O}_{\sf Compare}({\sf csk}, {\sf pp}, \cdot, \cdot)$: On input $\mathbf{c_x}$ and $\mathbf{c_y}$, it outputs the comparison result ${\sf Compare}( {\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y} )$.
+
+\end{itemize}
+
+Note that if the enrollment secret key ${\sf esk}$, the probe secret key ${\sf psk}$, or the comparison secret key ${\sf csk}$ is an empty string in the scheme, then the corresponding oracles are naturally and implicitly given since the adversary can compute them herself.
+
+We define the success probability of an adversary $\mathcal{A}$ in the privacy game of the scheme $\Pi$ as
+\[
+	\Adv^{\sf Priv}_{\Pi, \mathcal{A}^\mathcal{O}} := \Pr[{\sf Priv}_{\Pi}(\mathcal{A}^\mathcal{O}) \to 1].
+\]
+
+The authentication scheme $\Pi$ is called \emph{privacy} secure if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\sf Priv}_{\Pi, \mathcal{A}^\mathcal{O}} = \negl.
+\]
+
+%-------------------
+
+\subsection*{IND Game}
+For empty comparison key ${\sf csk}$, to avoid trivial attacks, we need to restrict the adversary's queries.
+
+\begin{definition}[Admissible Adversary]
+\label{def:admissible}
+	For an adversary $\mathcal{A}^\mathcal{O}$ in an IND game of a scheme $\Pi$ with empty comparison secret key, let $(\mathbf{x}_0^1, \mathbf{x}_1^1), (\mathbf{x}_0^2, \mathbf{x}_1^2), \cdots, (\mathbf{x}_0^{Q_{\sf Enroll}}, \mathbf{x}_1^{Q_{\sf Enroll}})$ be the queries to $\mathcal{O}_{\sf Enroll}^{\sf IND}$, and let $(\mathbf{y}_0^1, \mathbf{y}_1^1), (\mathbf{y}_0^2, \mathbf{y}_1^2),$ $\cdots, (\mathbf{y}_0^{Q_{\sf Probe}}, \mathbf{y}_1^{Q_{\sf Probe}})$ be the queries to $\mathcal{O}_{\sf Probe}^{\sf IND}$. We say the adversary $\mathcal{A}$ is \emph{admissible} if
+	\[
+		\begin{aligned}
+			& {\sf Compare}( {\sf pp}, {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}_0^i), {\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y}_0^j) ) \\
+			= \; & {\sf Compare}( {\sf pp}, {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}_1^i), {\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y}_1^j) )
+		\end{aligned}
+		\quad \forall i \in [Q_{\sf Enroll}], \forall j \in [Q_{\sf Probe}]
+	\]
+	
+
+\end{definition}
+
+This prevents the adversary's win from simply querying unmatched enrollment and probe message pairs and finding the difference from the public $\sf Compare$ function.
+
+We define the success probability of an adversary $\mathcal{A}$ in the IND game of the scheme $\Pi$ as
+\[
+	\Adv^{\sf IND}_{\Pi, \mathcal{A}^\mathcal{O}} := \Pr[{\sf IND}_{\Pi}(\mathcal{A}^\mathcal{O}) \to 1].
+\]
+
+The authentication scheme $\Pi$ is called \emph{IND} secure if for all PPT adversaries $\mathcal{A}$ when $\Pi$ has a non-trivial comparison secret key, or for all admissible PPT adversaries $\mathcal{A}$ when $\Pi$ does not have a non-trivial comparison secret key,
+\[
+	\Adv^{\sf IND}_{\Pi, \mathcal{A^\mathcal{O}}} = \negl.
+\]
+
