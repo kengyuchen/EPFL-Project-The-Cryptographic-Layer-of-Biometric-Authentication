@@ -84,17 +84,17 @@ In this report, we assume
 \label{sec:formalization}
 
 
-In general, an authentication shceme $\Pi$ is composed of the following algorithms.
+In general, an authentication shceme $\Pi$ associated with a family of biometric distributions $\mathbb{B}$ is composed of the following algorithms.
 
 \begin{itemize}
 
 	\item ${\sf USetup}(1^\lambda) \to {\sf esk}, {\sf psk}, {\sf csk}, {\sf pp}$: It outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, compare secret key $\sf csk$, and public parameter ${\sf pp}$.
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}({\mathbf{b}}) \to \mathbf{x}$: It is a deterministic algorithm that encodes a biometric template $\mathbf{b}$ as $\mathbf{x}$, the input format for enrollment. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for some additional biometric information. 
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}({\mathbf{b}}) \to \mathbf{x}$: Given a biometric template $\mathbf{b}$ sampled from some distribution $\mathcal{B} \in \mathbb{B}$, it encodes $\mathbf{b}$ as $\mathbf{x}$, the input format for enrollment. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for additional biometric information of $\mathcal{B}$. 
 
 	\item ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}) \to \mathbf{c_x}$: It outputs the enrollment message $\mathbf{c_x}$ from $\mathbf{x}$.
 
-	\item ${\sf encodeProbe}^{\mathcal{O}_{\sf aux}}({\mathbf{b'}}) \to \mathbf{y}$: It is a deterministic algorithm that encodes a biometric template $\mathbf{b'}$ as $\mathbf{y}$, the input format for probe. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for some additional biometric information. 
+	\item ${\sf encodeProbe}^{\mathcal{O}_{\sf aux}}({\mathbf{b'}}) \to \mathbf{y}$: Given a biometric template $\mathbf{b}'$ sampled from some distribution $\mathcal{B} \in \mathbb{B}$, it encodes $\mathbf{b}'$ as $\mathbf{y}$, the input format for probe. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for additional biometric information of $\mathcal{B}$. 
 
 	\item ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$: It outputs the probe message $\mathbf{c_y}$ from $\mathbf{y}$.
 
@@ -105,8 +105,7 @@ In general, an authentication shceme $\Pi$ is composed of the following algorith
 \end{itemize}
 
 
-The usage model we consider is described in Figure \ref{table:model}. We denote the user's biometric distribution as $\mathcal{B}$.
-
+The usage model we consider is described in Figure \ref{table:model}. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$.
 
 \begin{figure}[]
 	\begin{center}
@@ -143,7 +142,7 @@ The usage model we consider is described in Figure \ref{table:model}. We denote 
 \end{figure}
 
 
-For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using ${\sf FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b'}$ be sampled from some distribution $\mathcal{B} \subseteq \{0,1,\cdots, m\}^k$, and let the associated field of ${\sf FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
+For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using ${\sf FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b'}$ be sampled from some distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of ${\sf FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
 
 \begin{itemize}
 
@@ -179,16 +178,18 @@ which is the square of the Euclidean distance between two templates $\mathbf{b}$
 \subsection*{Forgery Game}
 \label{sec:forgery_game}
 
-In the forgery game, we model the ability of an adversary who tries to forge the user. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracle $\mathcal{O}$ and tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game is defined in Figure \ref{fig:forgery_game}.
+In the forgery game, we model the ability of an adversary who has access to the server's database of registered enrollments and tries to forge the user. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracle $\mathcal{O}$ and tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game is defined in Figure \ref{fig:forgery_game}.
 
 \begin{figure}[h]
 \centerline{
 
 \minipage{0.45\textwidth}
 	\begin{tabular}{l c}
-		${\sf Forg}_{\Pi, \mathcal{B}}(\mathcal{A}^\mathcal{O})$\\
+		${\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O})$\\
 
 			\hline
+
+			$\mathcal{B} \getsdollar \mathbb{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
@@ -208,9 +209,11 @@ In the forgery game, we model the ability of an adversary who tries to forge the
 \endminipage
 \minipage{0.45\textwidth}
 	\begin{tabular}{l c}
-		${\sf Forg'}_{\Pi, \mathcal{B}}(\mathcal{A}')$\\
+		${\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A}')$\\
 
 			\hline
+
+			$\mathcal{B} \getsdollar \mathbb{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
@@ -248,15 +251,15 @@ Note that if the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$
 
 To consider potential false positives of biometrics match, we consider the plain forgery game in Figure \ref{fig:plain_forgery_game}, in which the adversary does not have any knowledge about the template. 
 
-We define the advantage of an adversary $\mathcal{A}$ in the forgery game of the scheme $\Pi$ and the template distribution $\mathcal{B}$ as
+We define the advantage of an adversary $\mathcal{A}$ in the forgery game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
-	\Adv^{\sf Forg}_{\Pi, \mathcal{B}, \mathcal{A}^\mathcal{O}} := \Pr[{\sf Forg}_{\Pi, \mathcal{B}}(\mathcal{A}^\mathcal{O}) \to 1] -
-	\max_{\text{PPT } \mathcal{A}'} \Pr[{\sf Forg'}_{\Pi, \mathcal{B}}(\mathcal{A}') \to 1].
+	\Adv^{\sf Forg}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} := \Pr[{\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O}) \to 1] -
+	\max_{\text{PPT } \mathcal{A}'} \Pr[{\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A}') \to 1].
 \]
 
-The authentication scheme $\Pi$ is called \emph{forgery secure} if for any PPT adversary $\mathcal{A}$ and distribution $\mathcal{B}$,
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{forgery secure} if for any PPT adversary $\mathcal{A}$,
 \[
-	\Adv^{\sf Forg}_{\Pi, \mathcal{B}, \mathcal{A^\mathcal{O}}} = \negl.
+	\Adv^{\sf Forg}_{\Pi, \mathbb{B}, \mathcal{A^\mathcal{O}}} = \negl.
 \]
 
 %-------------------
@@ -271,9 +274,11 @@ In the simulation game, we model the ability of the server who tries to learn so
 
 		\begin{subfigure}[t]{0.49\textwidth}
 		\begin{tabular}{l c}
-			${\sf SIM-Real}_{\Pi, \mathcal{B}}(\mathcal{A}^\mathcal{O})$\\
+			${\sf SIM-Real}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O})$\\
 
 			\hline
+
+			$\mathcal{B} \getsdollar \mathbb{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
@@ -295,9 +300,11 @@ In the simulation game, we model the ability of the server who tries to learn so
 		\end{subfigure}
 		\begin{subfigure}[t]{0.49\textwidth}
 		\begin{tabular}{l c}
-			${\sf SIM-Ideal}_{\Pi, \mathcal{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe}))$\\
+			${\sf SIM-Ideal}_{\Pi, \mathbb{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe}))$\\
 
 			\hline
+
+			$\mathcal{B} \getsdollar \mathbb{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
@@ -389,14 +396,14 @@ The details of these oracles are given in Figure \ref{fig:sim_game_oracle}.
 \end{figure}
 
 
-We define the advantage of an adversary $\mathcal{A}$ in the simulation game of the scheme $\Pi$ and the template distribution $\mathcal{B}$ with simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ as
+We define the advantage of an adversary $\mathcal{A}$ and a simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ in the simulation game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
-	\Adv^{\sf SIM}_{\Pi, \mathcal{B}, \mathcal{A}^{\mathcal{O}, \tilde{\mathcal{O}}}, \mathcal{S}} := |\Pr[{\sf SIM-Real}_{\Pi, \mathcal{B}}(\mathcal{A}^\mathcal{O}) \to 1] - \Pr[{\sf SIM-Ideal}_{\Pi, \mathcal{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S}) \to 1]|.
+	\Adv^{\sf SIM}_{\Pi, \mathbb{B}, \mathcal{A}^{\mathcal{O}, \tilde{\mathcal{O}}}, \mathcal{S}} := |\Pr[{\sf SIM-Real}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O}) \to 1] - \Pr[{\sf SIM-Ideal}_{\Pi, \mathbb{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S}) \to 1]|.
 \]
 
-The authentication scheme $\Pi$ is called \emph{simulation secure} if for any PPT adversary $\mathcal{A}$ and distribution $\mathcal{B}$, there exists a PPT simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ such that
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{simulation secure} if for any PPT adversary $\mathcal{A}$, there exists a PPT simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ such that
 \[
-	\Adv^{\sf SIM}_{\Pi, \mathcal{B}, \mathcal{A}^{\mathcal{O}, \tilde{\mathcal{O}}}, \mathcal{S}} = \negl.
+	\Adv^{\sf SIM}_{\Pi, \mathbb{B}, \mathcal{A}^{\mathcal{O}, \tilde{\mathcal{O}}}, \mathcal{S}} = \negl.
 \]
 
 %-------------------
@@ -404,16 +411,18 @@ The authentication scheme $\Pi$ is called \emph{simulation secure} if for any PP
 \subsection*{Identification Game}
 \label{sec:id_game}
 
-In the identification game, we model the ability of an adversary who has access to the server's database of registered enrollments and tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}^{(b)}$ and two distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$ that can be efficiently sampled. She tries to guess from which $\mathbf{c_x}^{(b)}$ is generated. The whole game is defined in Figure \ref{fig:id_game}.
+In the identification game, we model the ability of an adversary who has access to the server's database of registered enrollments and tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}^{(b)}$ and two distinct distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$ that can be efficiently sampled. She tries to guess from which $\mathbf{c_x}^{(b)}$ is generated. The whole game is defined in Figure \ref{fig:id_game}.
 
 \begin{figure}[h]
 	\begin{center}
 	\begin{tabular}{l c}
-		${\sf Id}_{\Pi, \mathbb{B}^{(0)} = (\mathcal{B}^{(0)}, \mathcal{O}_{\sf aux}^{(0)}) , \mathbb{B}^{(1)} = (\mathcal{B}^{(1)}, \mathcal{O}_{\sf aux}^{(1)} )}(\mathcal{A}^\mathcal{O})$\\
+		${\sf Id}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O})$\\
 
 			\hline
 
 			$b \getsdollar \{0, 1\}$ \\
+
+			$\mathcal{B}^{(0)}, \mathcal{B}^{(1)} \getsdollar \mathbb{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
@@ -421,7 +430,7 @@ In the identification game, we model the ability of an adversary who has access 
 
 			$\mathbf{c_x}^{(b)} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}^{(b)})$ \\
 
-			$\tilde{b} \gets \mathcal{A}^{\mathcal{O}} ( {\sf pp}, \mathbf{c_x}^{(b)}, \mathbb{B}^{(0)}, \mathbb{B}^{(1)} )$ \\
+			$\tilde{b} \gets \mathcal{A}^{\mathcal{O}} ( {\sf pp}, \mathbf{c_x}^{(b)}, \mathcal{B}^{(0)}, \mathcal{B}^{(1)} )$ \\
 
 			\textbf{return} $1_{\tilde{b} = b}$
 			
@@ -441,14 +450,14 @@ The given oracle $\mathcal{O}$ can be any or more of the following three oracles
 
 \end{itemize}
 
-We define the advantage of an adversary $\mathcal{A}$ in the identification game of the scheme $\Pi$ and the template distributions $\mathbb{B}^{(0)} = (\mathcal{B}^{(0)}, \mathcal{O}_{\sf aux}^{(0)}), \mathbb{B}^{(1)} = (\mathcal{B}^{(1)}, \mathcal{O}_{\sf aux}^{(1)})$ with their corresponding auxiliary oracles as
+We define the advantage of an adversary $\mathcal{A}$ in the identification game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
-	\Adv^{\sf Id}_{\Pi, \mathbb{B}^{(0)}, \mathbb{B}^{(1)}, \mathcal{A}^\mathcal{O}} := |\Pr[{\sf Id}_{\Pi}(\mathcal{A}^\mathcal{O}) \to 1] - \frac{1}{2}|.
+	\Adv^{\sf Id}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} := |\Pr[{\sf Id}_{\Pi}(\mathcal{A}^\mathcal{O}) \to 1] - \frac{1}{2}|.
 \]
 
-The authentication scheme $\Pi$ is called \emph{identification secure} under distributions $\mathbb{B}^{(0)}, \mathbb{B}^{(1)}$ if for any PPT adversary $\mathcal{A}$,
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{identification secure} if for any PPT adversary $\mathcal{A}$,
 \[
-	\Adv^{\sf Id}_{\Pi, \mathbb{B}^{(0)}, \mathbb{B}^{(1)}, \mathcal{A^\mathcal{O}}} = \negl.
+	\Adv^{\sf Id}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} = \negl.
 \]
 
 %-------------------
