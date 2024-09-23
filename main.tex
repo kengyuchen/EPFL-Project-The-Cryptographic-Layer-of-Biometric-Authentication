@@ -88,9 +88,7 @@ In general, an authentication shceme $\Pi$ is composed of the following algorith
 
 \begin{itemize}
 
-	\item ${\sf SSetup}(1^\lambda) \to {\sf csk}, {\sf pp_s}$: It outputs the comparison secret key ${\sf csk}$ and public parameter ${\sf pp_s}$.
-
-	\item ${\sf USetup}(1^\lambda, {\sf pp_s}) \to {\sf esk}, {\sf psk}, {\sf pp_u}$: It takes public parameter ${\sf pp_s}$ from ${\sf SSetup}$ and outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, and public parameter ${\sf pp_u}$. From now on we let ${\sf pp} := ({\sf pp_s}, {\sf pp_u})$.
+	\item ${\sf USetup}(1^\lambda) \to {\sf esk}, {\sf psk}, {\sf csk}, {\sf pp}$: It outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, compare secret key $\sf csk$, and public parameter ${\sf pp}$.
 
 	\item ${\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}({\mathbf{b}}) \to \mathbf{x}$: It is a deterministic algorithm that encodes a biometric template $\mathbf{b}$ as $\mathbf{x}$, the input format for enrollment. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for some additional biometric information. 
 
@@ -107,7 +105,7 @@ In general, an authentication shceme $\Pi$ is composed of the following algorith
 \end{itemize}
 
 
-The usage model we consider is described in Figure \ref{table:model}.
+The usage model we consider is described in Figure \ref{table:model}. We denote the user's biometric distribution as $\mathcal{B}$.
 
 
 \begin{figure}[]
@@ -119,19 +117,13 @@ The usage model we consider is described in Figure \ref{table:model}.
 
 			\\
 
-			&	& ${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
-
-			&	$\xleftarrow{\quad {\sf pp_s} \quad}$ \\
-
-			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
-
-			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
 			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
 
-			& $\xrightarrow{\quad {\sf pp}, \mathbf{c_x} \quad}$ \\
+			& $\xrightarrow{\quad {\sf csk}, {\sf pp}, \mathbf{c_x} \quad}$ \\
 
 			$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\sf aux}}(\mathbf{b'})$ \\
 
@@ -142,6 +134,8 @@ The usage model we consider is described in Figure \ref{table:model}.
 			&  & $s \gets {\sf Compare} ({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y})$ \\
 
 			& & $r \gets {\sf Verify}(s) $ \\
+
+			& $\xleftarrow{\quad r \quad}$ & 
 		\end{tabular}
 	\end{center}
 	\caption{Authentication Model with User and Server}
@@ -153,9 +147,7 @@ For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\s
 
 \begin{itemize}
 
-	\item ${\sf SSetup}(1^\lambda):$ The outputs ${\sf csk, pp_s}$ are set to empty strings.
-	
-	\item ${\sf USetup}(1^\lambda, {\sf pp_s})$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}, {\sf pp_u}) \gets ({\sf msk}, {\sf msk}, {\sf pp})$.
+	\item ${\sf USetup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}, {\sf pp}) \gets ({\sf msk}, {\sf msk}, {\sf pp})$ and ${\sf csk}$ an empty string.
 
 	\item ${\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}({\mathbf{b}}) \to \mathbf{x}$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. The auxiliary oracle is empty.
 
@@ -165,7 +157,7 @@ For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\s
 
 	\item ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf psk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
 
-	\item ${\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs a value $s$.
+	\item ${\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
 
 	\item ${\sf Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
 
@@ -198,11 +190,7 @@ In the forgery game, we model the ability of an adversary who tries to forge the
 
 			\hline
 
-			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
-
-			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
-
-			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
 			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
 
@@ -224,11 +212,7 @@ In the forgery game, we model the ability of an adversary who tries to forge the
 
 			\hline
 
-			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
-
-			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
-
-			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
 			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
 
@@ -291,12 +275,8 @@ In the simulation game, we model the ability of the server who tries to learn so
 
 			\hline
 
-			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
-			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
-
-			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
-			
 			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
@@ -319,12 +299,8 @@ In the simulation game, we model the ability of the server who tries to learn so
 
 			\hline
 
-			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
-			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
-
-			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
-			
 			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
@@ -439,11 +415,7 @@ In the identification game, we model the ability of an adversary who has access 
 
 			$b \getsdollar \{0, 1\}$ \\
 
-			${\sf csk}, {\sf pp_s} \gets {\sf SSetup(1^\lambda)}$ \\
-
-			${\sf esk}, {\sf psk}, {\sf pp_u} \gets {\sf USetup}(1^\lambda, {\sf pp_s})$ \\
-
-			${\sf pp}:= ({\sf pp_s}, {\sf pp_u})$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
 
 			$ \mathbf{b}^{(b)} \getsdollar \mathcal{B}^{(b)}, \mathbf{x}^{(b)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}^{(b)}}(\mathbf{b}^{(b)})$ \\
 
