@@ -88,17 +88,17 @@ In general, an authentication shceme $\Pi$ associated with a family of biometric
 
 \begin{itemize}
 
-	\item ${\sf USetup}(1^\lambda) \to {\sf esk}, {\sf psk}, {\sf csk}, {\sf pp}$: It outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, compare secret key $\sf csk$, and public parameter ${\sf pp}$.
+	\item ${\sf USetup}(1^\lambda) \to {\sf esk}, {\sf psk}, {\sf csk}$: It outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, and compare secret key $\sf csk$.
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}({\mathbf{b}}) \to \mathbf{x}$: Given a biometric template $\mathbf{b}$ sampled from some distribution $\mathcal{B} \in \mathbb{B}$, it encodes $\mathbf{b}$ as $\mathbf{x}$, the input format for enrollment. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for additional biometric information of $\mathcal{B}$. 
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{x}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{x}$, the input format for enrollment. 
 
-	\item ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}) \to \mathbf{c_x}$: It outputs the enrollment message $\mathbf{c_x}$ from $\mathbf{x}$.
+	\item ${\sf Enroll}({\sf esk}, \mathbf{x}) \to \mathbf{c_x}$: It outputs the enrollment message $\mathbf{c_x}$ from $\mathbf{x}$.
 
-	\item ${\sf encodeProbe}^{\mathcal{O}_{\sf aux}}({\mathbf{b'}}) \to \mathbf{y}$: Given a biometric template $\mathbf{b}'$ sampled from some distribution $\mathcal{B} \in \mathbb{B}$, it encodes $\mathbf{b}'$ as $\mathbf{y}$, the input format for probe. It can query an auxiliary oracle $\mathcal{O}_{\sf aux}$ to ask for additional biometric information of $\mathcal{B}$. 
+	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}() \to \mathbf{y}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{y}$, the input format for probe. 
 
-	\item ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$: It outputs the probe message $\mathbf{c_y}$ from $\mathbf{y}$.
+	\item ${\sf Probe}({\sf psk}, \mathbf{y}) \to \mathbf{c_y}$: It outputs the probe message $\mathbf{c_y}$ from $\mathbf{y}$.
 
-	\item ${\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
+	\item ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
 
 	\item ${\sf Verify}(s) \to r \in \{0,1\}$: It is a deterministic algorithm that reads the comparison score $s$ and determines whether this is a successful authentication ($r = 1$) or not ($r = 0$).
 
@@ -110,27 +110,27 @@ The usage model we consider is described in Figure \ref{table:model}. We assume 
 \begin{figure}[]
 	\begin{center}
 		\begin{tabular}{l c r c}
-			{\bf User} &	& {\bf Server} \\
+			{\bf User} & 	& {\bf Server} \\
 
 			\hline
 
 			\\
 
-			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
 
-			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			& $\xrightarrow{\quad {\sf csk}, {\sf pp}, \mathbf{c_x} \quad}$ \\
+			& $\xrightarrow{\quad {\sf csk}, \mathbf{c_x} \quad}$ \\
 
-			$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\sf aux}}(\mathbf{b'})$ \\
+			$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}()$ \\
 
-			$\mathbf{c_y} \gets {\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$ \\
+			$\mathbf{c_y} \gets {\sf Probe}({\sf psk}, \mathbf{y})$ \\
 
 			& $\xrightarrow{\quad \mathbf{c_y} \quad}$ \\
 			
-			&  & $s \gets {\sf Compare} ({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y})$ \\
+			&  & $s \gets {\sf Compare} ({\sf csk}, \mathbf{c_x}, \mathbf{c_y})$ \\
 
 			& & $r \gets {\sf Verify}(s) $ \\
 
@@ -146,17 +146,17 @@ For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\s
 
 \begin{itemize}
 
-	\item ${\sf USetup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}, {\sf pp}) \gets ({\sf msk}, {\sf msk}, {\sf pp})$ and ${\sf csk}$ an empty string.
+	\item ${\sf USetup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}) \gets (({\sf msk}, {\sf pp}), ({\sf msk}, {\sf pp}))$ and ${\sf csk} \gets {\sf pp}$.
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}({\mathbf{b}}) \to \mathbf{x}$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. The auxiliary oracle is empty.
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}() \to \mathbf{x}$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. The auxiliary oracle is empty.
 
-	\item ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$: It calls ${\sf FE.KeyGen}({\sf esk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
+	\item ${\sf Enroll}({\sf esk}, \mathbf{x})$: It calls ${\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
 
-	\item ${\sf encodeProbe}^{\mathcal{O}_{\sf aux}}({\mathbf{b'}})$: For a template vector $\mathbf{b'} = (b_1', b_2', \cdots, b_k')$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1', -2b_2', \cdots, -2b_k', \|\mathbf{b'}\|^2, 1)$. The auxiliary oracle is empty.
+	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}()$: For a template vector $\mathbf{b'} = (b_1', b_2', \cdots, b_k')$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1', -2b_2', \cdots, -2b_k', \|\mathbf{b'}\|^2, 1)$. The auxiliary oracle is empty.
 
-	\item ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf psk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+	\item ${\sf Probe}({\sf psk}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
 
-	\item ${\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+	\item ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
 
 	\item ${\sf Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
 
@@ -191,15 +191,15 @@ In the forgery game, we model the ability of an adversary who has access to the 
 
 			$\mathcal{B} \getsdollar \mathbb{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
 
-			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}} ( {\sf pp}, \mathbf{c_x} )$ \\
+			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}} ( \mathbf{c_x} )$ \\
 
-			$s \gets {\sf Compare}( {\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
+			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
 
 			\textbf{return} ${\sf Verify}(s)$
 			
@@ -215,15 +215,15 @@ In the forgery game, we model the ability of an adversary who has access to the 
 
 			$\mathcal{B} \getsdollar \mathbb{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
 
-			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			${\mathbf{\tilde{z}}} \gets \mathcal{A}'({\sf pp})$ \\
+			${\mathbf{\tilde{z}}} \gets \mathcal{A}'()$ \\
 
-			$s \gets {\sf Compare}( {\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
+			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
 
 			\textbf{return} ${\sf Verify}(s)$
 			
@@ -239,11 +239,11 @@ The given oracle $\mathcal{O}$ can be any or more of the following three oracles
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x})$.
 
-	\item $\mathcal{O}_{\sf Probe}({\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y})$.
 
-	\item $\mathcal{O}_{\sf Compare}({\sf csk}, {\sf pp}, \cdot, \cdot)$: On input $\mathbf{c_x}$ and $\mathbf{c_y}$, it outputs the comparison result ${\sf Compare}( {\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y} )$.
+	\item $\mathcal{O}_{\sf Compare}({\sf csk}, \cdot, \cdot)$: On input $\mathbf{c_x}$ and $\mathbf{c_y}$, it outputs the comparison result ${\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{c_y} )$.
 
 \end{itemize}
 
@@ -280,19 +280,17 @@ In the simulation game, we model the ability of the server who tries to learn so
 
 			$\mathcal{B} \getsdollar \mathbb{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
 
-			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			$\{ \mathbf{b}^{(i)} \}_{i=1}^t \getsdollar \mathcal{B}^t$ \\ 
-
-			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\sf aux}}(\mathbf{b}^{(i)})\}_{i=1}^t $ \\
+			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}() \}_{i=1}^t $ \\
 			
-			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, {\sf pp}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
+			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
 
-			$b \gets \mathcal{A}^{\mathcal{O}} ({\sf csk}, {\sf pp}, \mathbf{c_x}, \{\mathbf{c_y}^{(i)}\}_{i=1}^t )$ \\
+			$b \gets \mathcal{A}^{\mathcal{O}} ({\sf csk}, \mathbf{c_x}, \{\mathbf{c_y}^{(i)}\}_{i=1}^t )$ \\
 
 			\textbf{return} $b$
 			
@@ -306,23 +304,23 @@ In the simulation game, we model the ability of the server who tries to learn so
 
 			$\mathcal{B} \getsdollar \mathbb{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}}(\mathbf{b})$ \\
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
 
-			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$ \\
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
 			$\{ \mathbf{b}^{(i)} \}_{i=1}^t \getsdollar \mathcal{B}^t$ \\ 
 
-			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\sf aux}}(\mathbf{b}^{(i)})\}_{i=1}^t $ \\
+			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}()\}_{i=1}^t $ \\
 			
-			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, {\sf pp}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
+			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
 
-			${\sf C} \gets \{ {\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}, \mathbf{c_y}^{(i)}) \}_{i=1}^t$ \\
+			${\sf C} \gets \{ {\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y}^{(i)}) \}_{i=1}^t$ \\
 
 			$\mathbf{c_x}', \{\mathbf{c_y}^{(i)'}\}_{i=1}^t \gets \mathcal{S}_0( {\sf csk}, {\sf C} )$ \\
 
-			$b \gets \mathcal{A}^{\tilde{\mathcal{O}}} ({\sf csk}, {\sf pp}, \mathbf{c_x}', \{ \mathbf{c_y}^{(i)'} \}_{i=1}^t )$ \\
+			$b \gets \mathcal{A}^{\tilde{\mathcal{O}}} ({\sf csk}, \mathbf{c_x}', \{ \mathbf{c_y}^{(i)'} \}_{i=1}^t )$ \\
 
 			\textbf{return} $b$
 			
@@ -337,9 +335,9 @@ The oracle $\mathcal{O}$ can be any or more of the following oracles:
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x})$.
 
-	\item $\mathcal{O}_{\sf Probe}({\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y})$.
 
 \end{itemize}
 
@@ -347,9 +345,9 @@ The oracle $\tilde{\mathcal{O}}$ is stateful and memorizes all the previous quer
 
 \begin{itemize}
 
-	\item $\tilde{\mathcal{O}}_{\sf Enroll} ({\sf csk} ,{\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous probe messages $\mathbf{c_y}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Enroll}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
+	\item $\tilde{\mathcal{O}}_{\sf Enroll} ({\sf csk} ,{\sf esk}, \cdot)$: On input $\mathbf{x}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous probe messages $\mathbf{c_y}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Enroll}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
 
-	\item $\tilde{\mathcal{O}}_{\sf Probe} ({\sf csk}, {\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous enrollment messages $\mathbf{c_x}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Probe}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
+	\item $\tilde{\mathcal{O}}_{\sf Probe} ({\sf csk}, {\sf psk}, \cdot)$: On input $\mathbf{y}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous enrollment messages $\mathbf{c_x}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Probe}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
 
 \end{itemize}
 
@@ -360,13 +358,13 @@ The details of these oracles are given in Figure \ref{fig:sim_game_oracle}.
 
 		\begin{subfigure}[t]{0.49\textwidth}
 		\begin{tabular}{l c}
-			$\tilde{\mathcal{O}}_{\sf Enroll}({\sf csk}, {\sf esk}, {\sf pp}, \mathbf{x}^{(j)})$\\
+			$\tilde{\mathcal{O}}_{\sf Enroll}({\sf csk}, {\sf esk}, \mathbf{x}^{(j)})$\\
 
 			\hline
 
-			$\mathbf{c_x}^{(j)} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}^{(j)})$ \\
+			$\mathbf{c_x}^{(j)} \gets {\sf Enroll}({\sf esk}, \mathbf{x}^{(j)})$ \\
 
-			${\sf C} \gets {\sf C} \cup \{ {\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}^{(j)}, \mathbf{c_y}^{(i)}) \}_{i}$ \\
+			${\sf C} \gets {\sf C} \cup \{ {\sf Compare}({\sf csk}, \mathbf{c_x}^{(j)}, \mathbf{c_y}^{(i)}) \}_{i}$ \\
 
 			$\mathbf{c_x}' \gets \mathcal{S}_{\sf Enroll}({\sf csk}, {\sf C} )$ \\
 			
@@ -376,13 +374,13 @@ The details of these oracles are given in Figure \ref{fig:sim_game_oracle}.
 		\end{subfigure}
 		\begin{subfigure}[t]{0.49\textwidth}
 		\begin{tabular}{l c}
-			$\tilde{\mathcal{O}}_{\sf Probe}({\sf csk}, {\sf psk}, {\sf pp}, \mathbf{y}^{(j)})$\\
+			$\tilde{\mathcal{O}}_{\sf Probe}({\sf csk}, {\sf psk}, \mathbf{y}^{(j)})$\\
 
 			\hline
 
-			$\mathbf{c_y}^{(j)} \gets {\sf Probe}( {\sf psk}, {\sf pp}, \mathbf{y}^{(j)} ) $ \\
+			$\mathbf{c_y}^{(j)} \gets {\sf Probe}( {\sf psk}, \mathbf{y}^{(j)} ) $ \\
 
-			${\sf C} \gets {\sf C} \cup \{ {\sf Compare}({\sf csk}, {\sf pp}, \mathbf{c_x}^{(i)}, \mathbf{c_y}^{(j)}) \}_{i}$ \\
+			${\sf C} \gets {\sf C} \cup \{ {\sf Compare}({\sf csk}, \mathbf{c_x}^{(i)}, \mathbf{c_y}^{(j)}) \}_{i}$ \\
 
 			$\mathbf{c_y}' \gets \mathcal{S}_{\sf Probe}({\sf csk}, {\sf C} )$ \\
 
@@ -424,13 +422,13 @@ In the identification game, we model the ability of an adversary who has access 
 
 			$\mathcal{B}^{(0)}, \mathcal{B}^{(1)} \getsdollar \mathbb{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk}, {\sf pp} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b}^{(b)} \getsdollar \mathcal{B}^{(b)}, \mathbf{x}^{(b)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\sf aux}^{(b)}}(\mathbf{b}^{(b)})$ \\
+			$ \mathbf{b}^{(b)} \getsdollar \mathcal{B}^{(b)}, \mathbf{x}^{(b)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}^{(b)}}}()$ \\
 
-			$\mathbf{c_x}^{(b)} \gets {\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x}^{(b)})$ \\
+			$\mathbf{c_x}^{(b)} \gets {\sf Enroll}({\sf esk}, \mathbf{x}^{(b)})$ \\
 
-			$\tilde{b} \gets \mathcal{A}^{\mathcal{O}} ( {\sf pp}, \mathbf{c_x}^{(b)}, \mathcal{B}^{(0)}, \mathcal{B}^{(1)} )$ \\
+			$\tilde{b} \gets \mathcal{A}^{\mathcal{O}} ( \mathbf{c_x}^{(b)}, \mathcal{B}^{(0)}, \mathcal{B}^{(1)} )$ \\
 
 			\textbf{return} $1_{\tilde{b} = b}$
 			
@@ -444,9 +442,9 @@ In the identification game, we model the ability of an adversary who has access 
 The given oracle $\mathcal{O}$ can be any or more of the following three oracles:
 
 \begin{itemize}
-	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, {\sf pp}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x})$.
 
-	\item $\mathcal{O}_{\sf Probe}({\sf psk}, {\sf pp}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y})$.
 
 \end{itemize}
 
@@ -459,6 +457,29 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 \[
 	\Adv^{\sf Id}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} = \negl.
 \]
+
+
+%-------------------
+
+% Section for Attacks and Reduction
+%1. If one can know whether x_1 is 0 or 1, it can break the fh-IPFE based scheme in the simuation game.
+	%a. Show that distributions of <x,y> and <x,y> | x_1 = 0 are very close
+	%b. Show that the simulator must follow the inner product rule
+
+%2. If one can break the forgery game without E_probe, it can break the identification game with E_enroll and E_compare
+	%a. First E_enroll(b^0)
+	%b. Let the adversary for the forgery game finds a c_y
+	%c. Check whether c_y is close to c_x^b or not
+	%d. Need to specify that Compare(c_x^0, c_y^1) and Compare(c_x^1, c_y^0) are high
+
+%3 For uniform distributed biometrics, if one can break the privacy game, one can break the simulation game.
+	%a. Let the adversary for the privacy game on c_x return x1
+	%b. x2 = x1 + r, r is uniformly generated
+	%c. O_enroll(x2) returns cx2
+	%d. Let the adversary for the privacy game on cx2 return x2'
+	%e. Check whether x2' = x2
+	%f. Show that in the real setting, x2' = x2 with high probability
+	%g. Show that in the ideal setting, there are too many possibilities that cx2 can match the Compare results, so not likely a simulator who only knows the Compare results can return exactly x2'.
 
 %-------------------
 %% Backup File
