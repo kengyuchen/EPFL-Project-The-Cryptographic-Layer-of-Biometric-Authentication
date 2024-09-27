@@ -94,7 +94,7 @@ In general, an authentication shceme $\Pi$ associated with a family of biometric
 
 	\item ${\sf Enroll}({\sf esk}, \mathbf{x}) \to \mathbf{c_x}$: It outputs the enrollment message $\mathbf{c_x}$ from $\mathbf{x}$.
 
-	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}() \to \mathbf{y}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{y}$, the input format for probe. 
+	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{y}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{y}$, the input format for probe.
 
 	\item ${\sf Probe}({\sf psk}, \mathbf{y}) \to \mathbf{c_y}$: It outputs the probe message $\mathbf{c_y}$ from $\mathbf{y}$.
 
@@ -118,13 +118,13 @@ The usage model we consider is described in Figure \ref{table:model}. We assume 
 
 			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
 			& $\xrightarrow{\quad {\sf csk}, \mathbf{c_x} \quad}$ \\
 
-			$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}()$ \\
+			$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
 			$\mathbf{c_y} \gets {\sf Probe}({\sf psk}, \mathbf{y})$ \\
 
@@ -148,11 +148,11 @@ For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\s
 
 	\item ${\sf USetup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}) \gets (({\sf msk}, {\sf pp}), ({\sf msk}, {\sf pp}))$ and ${\sf csk} \gets {\sf pp}$.
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}() \to \mathbf{x}$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. The auxiliary oracle is empty.
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{x}$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. The auxiliary oracle is empty.
 
 	\item ${\sf Enroll}({\sf esk}, \mathbf{x})$: It calls ${\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
 
-	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}()$: For a template vector $\mathbf{b'} = (b_1', b_2', \cdots, b_k')$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1', -2b_2', \cdots, -2b_k', \|\mathbf{b'}\|^2, 1)$. The auxiliary oracle is empty.
+	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b'} = (b_1', b_2', \cdots, b_k')$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1', -2b_2', \cdots, -2b_k', \|\mathbf{b'}\|^2, 1)$. The auxiliary oracle is empty.
 
 	\item ${\sf Probe}({\sf psk}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
 
@@ -174,6 +174,7 @@ which is the square of the Euclidean distance between two templates $\mathbf{b}$
 
 \section*{Security Games}
 
+From now on, we consider a family of biometric distributions $\mathbb{B} = \{ \mathcal{B}_1, \mathcal{B}_2, \cdots, \mathcal{B}_N \}$, representing $N$ people. Removing a person $\mathcal{B}$ from $\mathbb{B}$ is written as $\mathbb{B} \setminus \mathcal{B}$.
 
 \subsection*{Forgery Game}
 \label{sec:forgery_game}
@@ -189,11 +190,11 @@ In the forgery game, we model the ability of an adversary who has access to the 
 
 			\hline
 
-			$\mathcal{B} \getsdollar \mathbb{B}$ \\
+			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
+			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
@@ -209,19 +210,19 @@ In the forgery game, we model the ability of an adversary who has access to the 
 \endminipage
 \minipage{0.45\textwidth}
 	\begin{tabular}{l c}
-		${\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A}')$\\
+		${\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A'}^{\mathcal{O}})$\\
 
 			\hline
 
-			$\mathcal{B} \getsdollar \mathbb{B}$ \\
+			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
+			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			${\mathbf{\tilde{z}}} \gets \mathcal{A}'()$ \\
+			${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}}()$ \\
 
 			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
 
@@ -239,15 +240,17 @@ The given oracle $\mathcal{O}$ can be any or more of the following three oracles
 
 \begin{itemize}
 
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$, it outputs a biometric sample $\mathbf{b}$ sampled from the distribution $\mathcal{B}_i \in \mathbb{B}$.
+
 	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x})$.
 
 	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y})$.
 
-	\item $\mathcal{O}_{\sf Compare}({\sf csk}, \cdot, \cdot)$: On input $\mathbf{c_x}$ and $\mathbf{c_y}$, it outputs the comparison result ${\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{c_y} )$.
+	\item $\mathcal{O}_{\sf Compare}({\sf csk}, \cdot, \cdot)$: On input $\mathbf{c_x}$ and $\mathbf{c_y}$, it outputs the comparison ${\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{c_y} )$.
 
 \end{itemize}
 
-Note that if the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, or the comparison secret key ${\sf csk}$ is an empty string in the scheme, then the corresponding oracles are naturally and implicitly given since the adversary can compute them herself. 
+Note that if the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, or the comparison secret key ${\sf csk}$ is an empty or public string in the scheme, then the corresponding oracles are naturally and implicitly given since the adversary can compute them herself. 
 
 To consider potential false positives of biometrics match, we consider the plain forgery game in Figure \ref{fig:plain_forgery_game}, in which the adversary does not have any knowledge about the template. 
 
@@ -278,15 +281,15 @@ In the simulation game, we model the ability of the server who tries to learn so
 
 			\hline
 
-			$\mathcal{B} \getsdollar \mathbb{B}$ \\
+			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}() \}_{i=1}^t $ \\
+			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}() \}_{i=1}^t $ \\
 			
 			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
 
@@ -302,17 +305,17 @@ In the simulation game, we model the ability of the server who tries to learn so
 
 			\hline
 
-			$\mathcal{B} \getsdollar \mathbb{B}$ \\
+			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}}}()$ \\
+			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
 			$\{ \mathbf{b}^{(i)} \}_{i=1}^t \getsdollar \mathcal{B}^t$ \\ 
 
-			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathbf{B}}}()\}_{i=1}^t $ \\
+			$\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()\}_{i=1}^t $ \\
 			
 			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
 
@@ -335,6 +338,8 @@ The oracle $\mathcal{O}$ can be any or more of the following oracles:
 
 \begin{itemize}
 
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$, it outputs a biometric sample $\mathbf{b}$ sampled from the distribution $\mathcal{B}_i \in \mathbb{B}$.
+
 	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x})$.
 
 	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y})$.
@@ -345,6 +350,8 @@ The oracle $\tilde{\mathcal{O}}$ is stateful and memorizes all the previous quer
 
 \begin{itemize}
 
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$, it outputs a biometric sample $\mathbf{b}$ sampled from the distribution $\mathcal{B}_i \in \mathbb{B}$.
+	
 	\item $\tilde{\mathcal{O}}_{\sf Enroll} ({\sf csk} ,{\sf esk}, \cdot)$: On input $\mathbf{x}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous probe messages $\mathbf{c_y}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Enroll}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
 
 	\item $\tilde{\mathcal{O}}_{\sf Probe} ({\sf csk}, {\sf psk}, \cdot)$: On input $\mathbf{y}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous enrollment messages $\mathbf{c_x}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Probe}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
@@ -409,7 +416,7 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 \subsection*{Identification Game}
 \label{sec:id_game}
 
-In the identification game, we model the ability of an adversary who has access to the server's database of registered enrollments and tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}^{(b)}$ and two distinct distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$ that can be efficiently sampled. She tries to guess from which $\mathbf{c_x}^{(b)}$ is generated. The whole game is defined in Figure \ref{fig:id_game}.
+In the identification game, we model the ability of the server who tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}^{(b)}$ and two distinct distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$ that can be efficiently sampled. She tries to guess from which $\mathbf{c_x}^{(b)}$ is generated. The whole game is defined in Figure \ref{fig:id_game}.
 
 \begin{figure}[h]
 	\begin{center}
@@ -420,7 +427,7 @@ In the identification game, we model the ability of an adversary who has access 
 
 			$b \getsdollar \{0, 1\}$ \\
 
-			$\mathcal{B}^{(0)}, \mathcal{B}^{(1)} \getsdollar \mathbb{B}$ \\
+			$\mathcal{B}^{(0)}, \mathcal{B}^{(1)} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \{ \mathcal{B}^{(0)}, \mathcal{B}^{(1)} \}$ \\
 
 			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf USetup}(1^\lambda)$ \\
 
@@ -428,7 +435,7 @@ In the identification game, we model the ability of an adversary who has access 
 
 			$\mathbf{c_x}^{(b)} \gets {\sf Enroll}({\sf esk}, \mathbf{x}^{(b)})$ \\
 
-			$\tilde{b} \gets \mathcal{A}^{\mathcal{O}} ( \mathbf{c_x}^{(b)}, \mathcal{B}^{(0)}, \mathcal{B}^{(1)} )$ \\
+			$\tilde{b} \gets \mathcal{A}^{\mathcal{O}} ( {\sf csk}, \mathbf{c_x}^{(b)}, \mathcal{B}^{(0)}, \mathcal{B}^{(1)} )$ \\
 
 			\textbf{return} $1_{\tilde{b} = b}$
 			
@@ -442,9 +449,9 @@ In the identification game, we model the ability of an adversary who has access 
 The given oracle $\mathcal{O}$ can be any or more of the following three oracles:
 
 \begin{itemize}
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$, it outputs a biometric sample $\mathbf{b}$ sampled from the distribution $\mathcal{B}_i \in \mathbb{B}$.
+	
 	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x})$.
-
-	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y})$.
 
 \end{itemize}
 
