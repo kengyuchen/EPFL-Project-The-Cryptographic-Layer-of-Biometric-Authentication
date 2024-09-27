@@ -29,7 +29,7 @@ This report formalizes the biometric authentication scheme, including its struct
 
 %-------------------
 
-\section*{Preliminaries}
+\section{Preliminaries}
 \label{sec:preliminaries}
 
 In this report, we assume
@@ -80,7 +80,7 @@ In this report, we assume
 
 %-------------------
 
-\section*{Formalization}
+\section{Formalization}
 \label{sec:formalization}
 
 
@@ -172,11 +172,11 @@ which is the square of the Euclidean distance between two templates $\mathbf{b}$
 
 %-------------------
 
-\section*{Security Games}
+\section{Security Games}
 
 From now on, we consider a family of biometric distributions $\mathbb{B} = \{ \mathcal{B}_1, \mathcal{B}_2, \cdots, \mathcal{B}_N \}$, representing $N$ people. Removing a person $\mathcal{B}$ from $\mathbb{B}$ is written as $\mathbb{B} \setminus \mathcal{B}$.
 
-\subsection*{Forgery Game}
+\subsection{Forgery Game}
 \label{sec:forgery_game}
 
 In the forgery game, we model the ability of an adversary who has access to the server's database of registered enrollments and tries to forge the user. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracle $\mathcal{O}$ and tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game is defined in Figure \ref{fig:forgery_game}.
@@ -267,7 +267,7 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 
 %-------------------
 
-\subsection*{Simulation Game}
+\subsection{Simulation Game}
 \label{sec:simulation_game}
 
 In the simulation game, we model the ability of the server who tries to learn something more than the comparison result of the enrollment and probe messages. The adversary $\mathcal{A}$ is given an enrollment message and a list of $t$ probe messages, and she needs to guess whether these are real messages or simulation results of a simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ based on the $\sf Compare$ function. Intuitively, the simulator receives a list of $\sf Compare$ results of real enrollment and probe messages, and it returns some manual enrollment or probe messages that look similar to real ones. The whole game is defined in Figure \ref{fig:sim_game}.
@@ -413,7 +413,7 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 
 %-------------------
 
-\subsection*{Identification Game}
+\subsection{Identification Game}
 \label{sec:id_game}
 
 In the identification game, we model the ability of the server who tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}^{(b)}$ and two distinct distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$ that can be efficiently sampled. She tries to guess from which $\mathbf{c_x}^{(b)}$ is generated. The whole game is defined in Figure \ref{fig:id_game}.
@@ -464,6 +464,79 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 \[
 	\Adv^{\sf Id}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} = \negl.
 \]
+
+%-------------------
+
+\subsection{Reusability Game}
+\label{sec:reuse_game}
+
+In the reusability game, we model the ability of a malicious application who tries to forge the user in another application. The adversay $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracle $\mathcal{O}$ and tries to find a valid probe message $\tilde{z}$. The whole game is defined in Figure \ref{fig:reuse_game}.
+
+\begin{figure}[h]
+\centerline{
+
+\minipage{0.45\textwidth}
+	\begin{tabular}{l c}
+		${\sf Reuse}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O})$\\
+
+			\hline
+
+			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
+
+			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
+
+			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}} ( \mathbf{c_x} )$ \\
+
+			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
+
+			\textbf{return} ${\sf Verify}(s)$
+			
+	\end{tabular}
+	\caption{The Reusability Game}
+	\label{fig:reuse_game}
+\endminipage
+\minipage{0.48\textwidth}
+	\begin{tabular}{l c}
+		${\sf Reuse'}_{\Pi, \mathbb{B}}(\mathcal{A'}^{\mathcal{O}})$\\
+
+			\hline
+
+			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
+
+			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
+
+			${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}}()$ \\
+
+			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
+
+			\textbf{return} ${\sf Verify}(s)$
+			
+		\end{tabular}
+	\caption{The Plain Reusability Game}
+	\label{fig:plain_reuse_game}
+\endminipage
+}
+\end{figure}
+
+The given oracle $\mathcal{O}$ can be any or more of the following three oracles:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\sf Enroll}^{ {\sf Re}} (\cdot, \cdot)$: On input ${\sf esk}$ and ${\sf pp}$, it first samples $\mathbf{x} \getsdollar {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+	
+	\item $\mathcal{O}_{\sf Probe}^{ {\sf Re}} (\cdot, \cdot)$: On input ${\sf psk}$ and ${\sf pp}$, it first samples $\mathbf{y} \getsdollar {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+
+\end{itemize}
+
+Note that the resuability game is defined in a similar way as the forgery game in Section \ref{sec:forgery_game}. The difference is their use cases and oracles. In the forgery game, the targeted adversary is an eavesdropper who has access to the server's database and the user's device to execute $\mathcal{O}_{\sf Enroll}$ and $\mathcal{O}_{\sf Probe}$. If the comparison secret key ${\sf csk}$ is public, or the comparison function is not restricted, he can also execute $\mathcal{O}_{\sf compare}$. In contrast, the reusability game targets a malicious application, who can ask the user to enroll and probe with crafted secret keys. We assume the malicious application cannot access other functions in other applications.
+
 
 
 %-------------------
