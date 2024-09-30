@@ -59,19 +59,19 @@ In this report, we assume
 \label{def:fh-IPFE}
 	A \emph{functional hiding inner product functional encryption} (fh-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms ${\sf FE.Setup}$, ${\sf FE.KeyGen}$, ${\sf FE.Enc}$, and ${\sf FE.Dec}$:
 
-\begin{itemize}
-
-	\item ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$: It outputs the public parameter ${\sf pp}$ and the master secret key ${\sf msk}$.
-
-	\item ${\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$: It generates the functional decryption key $f_\mathbf{x}$ for an input vector $\mathbf{x} \in \mathbb{F}^k$. 
-
-	\item ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
-
-	\item ${\sf FE.Dec}({\sf pp}, f_\mathbf{x}, \mathbf{c_y}) \to z \in \mathbb{F}$: It outputs a value $z$.
-
-\end{itemize}
-
-\noindent Correctness: The fh-IPFE scheme {\sf FE} is \emph{correct} if $\forall {\sf msk}, {\sf pp} \gets {\sf FE.Setup}$, $\forall \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\begin{itemize}
+	
+		\item ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$: It outputs the public parameter ${\sf pp}$ and the master secret key ${\sf msk}$.
+	
+		\item ${\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$: It generates the functional decryption key $f_\mathbf{x}$ for an input vector $\mathbf{x} \in \mathbb{F}^k$. 
+	
+		\item ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
+	
+		\item ${\sf FE.Dec}({\sf pp}, f_\mathbf{x}, \mathbf{c_y}) \to z \in \mathbb{F}$: It outputs a value $z$.
+	
+	\end{itemize}
+	
+	\noindent Correctness: The fh-IPFE scheme {\sf FE} is \emph{correct} if $\forall {\sf msk}, {\sf pp} \gets {\sf FE.Setup}$, $\forall \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 	\[
 		{\sf FE.Dec}( {\sf pp}, {\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}), {\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) ) = \langle \mathbf{x} , \mathbf{y} \rangle \in \mathbb{F}.
 	\]
@@ -270,7 +270,7 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 \subsection{Simulation Game}
 \label{sec:simulation_game}
 
-In the simulation game, we model the ability of the server who tries to learn something more than the comparison result of the enrollment and probe messages. The adversary $\mathcal{A}$ is given an enrollment message and a list of $t$ probe messages, and she needs to guess whether these are real messages or simulation results of a simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ based on the $\sf Compare$ function. Intuitively, the simulator receives a list of $\sf Compare$ results of real enrollment and probe messages, and it returns some manual enrollment or probe messages that look similar to real ones. The whole game is defined in Figure \ref{fig:sim_game}.
+In the simulation game, we model the ability of the server who tries to learn something more than the comparison result of the enrollment and probe messages. The adversary $\mathcal{A}$ is given an enrollment message and a list of $t$ probe messages, and it needs to guess whether these are real messages or simulation results of a simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ based on the $\sf Compare$ function. Intuitively, the simulator receives a list of $\sf Compare$ results of real enrollment and probe messages, and it returns some manual enrollment or probe messages that look similar to real ones. The whole game is defined in Figure \ref{fig:sim_game}.
 
 \begin{figure}[h]
 	\begin{center}
@@ -431,7 +431,7 @@ In the identification game, we model the ability of the server who tries to iden
 
 			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b}^{(b)} \getsdollar \mathcal{B}^{(b)}, \mathbf{x}^{(b)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}^{(b)}}}()$ \\
+			$\mathbf{x}^{(b)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}^{(b)}}}()$ \\
 
 			$\mathbf{c_x}^{(b)} \gets {\sf Enroll}({\sf esk}, \mathbf{x}^{(b)})$ \\
 
@@ -529,14 +529,134 @@ In the reusability game, we model the ability of a malicious application who tri
 The given oracle $\mathcal{O}$ can be any or more of the following three oracles:
 
 \begin{itemize}
-	\item $\mathcal{O}_{\sf Enroll}^{ {\sf Re}} (\cdot, \cdot)$: On input ${\sf esk}$ and ${\sf pp}$, it first samples $\mathbf{x} \getsdollar {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Enroll}({\sf esk}, {\sf pp}, \mathbf{x})$.
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$, it outputs a biometric sample $\mathbf{b}$ sampled from the distribution $\mathcal{B}_i \in \mathbb{B}$.
+
+	\item $\mathcal{O}_{\sf Enroll}^{ {\sf Re}} (\cdot, \cdot)$: On input ${\sf esk}$, it first samples $\mathbf{x} \getsdollar {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Enroll}({\sf esk}, \mathbf{x})$.
 	
-	\item $\mathcal{O}_{\sf Probe}^{ {\sf Re}} (\cdot, \cdot)$: On input ${\sf psk}$ and ${\sf pp}$, it first samples $\mathbf{y} \getsdollar {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Probe}({\sf psk}, {\sf pp}, \mathbf{y})$.
+	\item $\mathcal{O}_{\sf Probe}^{ {\sf Re}} (\cdot, \cdot)$: On input ${\sf psk}$, it first samples $\mathbf{y} \getsdollar {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Probe}({\sf psk}, \mathbf{y})$.
 
 \end{itemize}
 
-Note that the resuability game is defined in a similar way as the forgery game in Section \ref{sec:forgery_game}. The difference is their use cases and oracles. In the forgery game, the targeted adversary is an eavesdropper who has access to the server's database and the user's device to execute $\mathcal{O}_{\sf Enroll}$ and $\mathcal{O}_{\sf Probe}$. If the comparison secret key ${\sf csk}$ is public, or the comparison function is not restricted, he can also execute $\mathcal{O}_{\sf compare}$. In contrast, the reusability game targets a malicious application, who can ask the user to enroll and probe with crafted secret keys. We assume the malicious application cannot access other functions in other applications.
+Note that the resuability game is defined in a similar way as the forgery game in Section \ref{sec:forgery_game}. The difference is their use cases and oracles. In the forgery game, the targeted adversary is an eavesdropper who has access to the server's database and the user's device to execute $\mathcal{O}_{\sf Enroll}$ and $\mathcal{O}_{\sf Probe}$. If the comparison secret key ${\sf csk}$ is public, or the comparison function is not restricted, it can also execute $\mathcal{O}_{\sf compare}$. In contrast, the reusability game targets a malicious application, who can ask the user to enroll and probe with crafted secret keys. We assume the malicious application cannot access other functions in other applications.
 
+We define the advantage of an adversary $\mathcal{A}$ in the reusability game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\sf Reuse}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} := \Pr[{\sf Reuse}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O}) \to 1] -
+	\max_{\text{PPT } \mathcal{A}'} \Pr[{\sf Reuse'}_{\Pi, \mathbb{B}}(\mathcal{A}') \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{reusability secure} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\sf Reuse}_{\Pi, \mathbb{B}, \mathcal{A^\mathcal{O}}} = \negl.
+\]
+
+
+
+\section{Analysis of Games}
+
+\subsection{Id Games $\leq$ Forgery Games}
+
+We provide a reduction to show that, given the following assumption, if an adversary $\mathcal{A}_{\sf Forg}$ can break the forgery game with oracles $\mathcal{O}_{\sf samp}$, $\mathcal{O}_{\sf Enroll}$ and $\mathcal{O}_{\sf Compare}$, then there exists an adversary $\mathcal{A}_{\sf Id}$ who can break the identification game if it is given the oracle $\mathcal{O}_{\sf samp}$ and $\mathcal{O}_{\sf Enroll}$.
+
+\begin{assumption}
+	\label{assump:id_lt_forg}
+	Let ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$, $\mathbf{x}^{(0)}, \mathbf{x}^{(1)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$, $\mathbf{c_x}^{(0)} \gets {\sf Enroll}({\sf esk}, \mathbf{x}^{(0)})$, $ \mathbf{c_x}^{(1)} \gets {\sf Enroll}({\sf esk}, \mathbf{x}^{(1)})$. Then there exists a constant $\tau$ such that for all $\mathbf{z}$ where
+	\[
+		{\sf Verify}( {\sf Compare}({\sf csk}, \mathbf{c_x}^{(0)}, \mathbf{z}) ) = 1
+	\]
+	we have
+	\[
+		\Pr[{\sf Verify}( {\sf Compare}({\sf csk}, \mathbf{c_x}^{(1)}, \mathbf{z}) ) = 1 ] \geq \tau.
+	\]	
+
+\end{assumption}
+
+\begin{theorem}
+
+	Given Assumption \ref{assump:id_lt_forg} with a constant $\tau$. Let $\mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg}}$ be an adversary in the Forgery game with oracles $\mathcal{O}_{\sf Forg} = (\mathcal{O'}_{\sf samp}, \mathcal{O'}_{\sf Enroll}, \mathcal{O'}_{\sf Compare})$. Then there exists an adversary $\mathcal{A}_{\sf Id}$ in the identification game with oracles $\mathcal{O}_{\sf Id} = (\mathcal{O}_{\sf samp}, \mathcal{O}_{\sf Enroll})$ such that
+	\[
+		\Adv_{\Pi, \mathbb{B}, \mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}}} \geq \frac{1}{4} [ \Adv_{\Pi, \mathbb{B}, \mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg}}}  - (1-\tau) ].
+	\]
+
+\end{theorem}
+
+\begin{proof}
+
+	Consider the following algorithm and an algorithm $\mathcal{A}_{\sf Forg}$ who can break the forgery game with 
+
+\begin{figure}[h]
+	\begin{center}
+	\begin{tabular}{l c}
+		$\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}}({\sf csk}, \mathbf{c_x}^{(b)}, \mathcal{B}^{(0)}, \mathcal{B}^{(1)})$\\
+
+			\hline
+
+			$\mathbf{x'} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$ \\
+
+			\qquad When $\mathcal{O}_{\mathcal{B}^{(0)}}$ is called, sample $\mathbf{b} \gets \mathcal{B}^{(0)}$ and return $\mathbf{b}$. \\
+
+			$\mathbf{c_x'} \gets \mathcal{O}_{\sf Enroll}(\mathbf{x'})$ \\
+
+			$\mathbf{\tilde{z}} \gets \mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg}} ( \mathbf{c_x'} )$ \\
+			\qquad When $\mathcal{O'}_{\sf samp}(i)$ is called, return $\mathcal{O}_{\sf samp}(i)$ \\
+			\qquad When $\mathcal{O'}_{\sf Enroll}(\mathbf{x})$ is called, return $\mathcal{O}_{\sf Enroll}(\mathbf{x})$. \\
+			\qquad When $\mathcal{O'}_{\sf Compare}(\mathbf{c_x}, \mathbf{c_y})$ is called, return ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y})$. \\
+
+			$s \gets {\sf Compare}({\sf csk}, \mathbf{c_x}^{(b)}, \mathbf{\tilde{z}})$ \\
+
+			If ${\sf Verify}(s) = 1$ \\
+				\qquad \textbf{return} $0$ \\
+
+			Else \\
+				\qquad \textbf{return} a random bit $b' \getsdollar \{0, 1\}$
+			
+	\end{tabular}
+	\end{center}
+	\caption{The Identification Game Adversary}
+	\label{fig:id_game_ad}
+\end{figure}
+
+Note that $\mathbf{c_x}'$ and $\mathcal{O'}_{\sf Enroll}, \mathcal{O'}_{\sf Compare}$ are simulated perfectly as the real forgery game with disbribution $\mathcal{B}^{(0)}$, so
+\[
+	\Pr[{\sf Verify}( {\sf Compare}({\sf csk}, \mathbf{c_x}', \mathbf{\tilde{z}}) ) \to 1] = \Pr[{\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg} }) \to 1 ].
+\]
+Therefore,
+\[
+	\Pr[{\sf Verify}( {\sf Compare}({\sf csk}, \mathbf{c_x}^{(0)}, \mathbf{\tilde{z}}) ) \to 1] \geq \Pr[{\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg}}) \to 1 ] \cdot \tau.
+\]
+
+Let the challenge bit be $b$. If $b = 0$, the probability that $\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Enroll}}$ returns $b$ is
+	\[
+	\begin{aligned}
+		&\Pr[{\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}^{(0)}, \mathbf{\tilde{z}})) \to 1 ] + (1 - \Pr[{\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}^{(0)}, \mathbf{\tilde{z}})) \to 1 ]) \cdot \frac{1}{2} \\
+		= & \frac{1}{2} + \frac{1}{2}\Pr[{\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}^{(0)}, \mathbf{\tilde{z}})) \to 1 ] \geq \frac{1}{2} + \frac{\tau}{2} \Pr[{\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg} }) \to 1 ].
+	\end{aligned}
+	\]
+
+If $b = 1$, the probability that $\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Enroll}}$ returns $b$ is
+	\[
+	\begin{aligned}
+		&\Pr[{\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}^{(1)}, \mathbf{\tilde{z}})) \to 0 ] \cdot \frac{1}{2} \\
+		= & (1 - \Pr[{\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}^{(1)}, \mathbf{\tilde{z}})) \to 1 ] ) \cdot \frac{1}{2} \\
+		\end{aligned}
+	\]
+	Note that $\mathcal{A}_{\sf Forg}$ is not given any knowledge about $\mathcal{B}^{(1)}$. The distribution of $\mathbf{c_x'}$ is identical to $\mathbf{c_x'} \gets \mathcal{O'}_{\sf Enroll}( {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B'}}}() ) $ where $\mathcal{B}' \getsdollar \mathbb{B} $, which it can sample itself in the plain forgery game. Therefore,
+	\[
+		\Pr[{\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}^{(1)}, \mathbf{\tilde{z}})) \to 1 ] \leq \max_{\text{PPT }\mathcal{A'}} \Pr[ {\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A'}_{\sf Forg}^{\mathcal{O}_{\sf Forg}}) \to 1 ].
+	\]
+
+In summary,
+\begin{equation*}
+	\begin{aligned}
+		\Pr[{\sf Id}_{\Pi}(\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}} \to 1] 
+		&= \frac{1}{2} \Pr[\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}} \to 0 \mid b = 0] + \frac{1}{2} \Pr[\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}} \to 1 \mid b = 1] \\
+		&\geq \frac{1}{4} + \frac{\tau}{4} \Pr[{\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg} }) \to 1 ] + \frac{1}{4} - \frac{1}{4}\max_{\text{PPT } \mathcal{A}'} \Pr[{\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A'}_{\sf Forg}^{\mathcal{O}_{\sf Forg} }) \to 1 ] \\
+		&= \frac{1}{2} + \frac{1}{4}\Adv_{\Pi, \mathbb{B}, \mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg}}}  - \frac{1-\tau}{4}\Pr[{\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg} }) \to 1 ] \\
+		&\geq \frac{1}{2} + \frac{1}{4}\Adv_{\Pi, \mathbb{B}, \mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg}}}  - \frac{1-\tau}{4}
+	\end{aligned}
+\end{equation*}
+
+\end{proof}
 
 
 %-------------------
