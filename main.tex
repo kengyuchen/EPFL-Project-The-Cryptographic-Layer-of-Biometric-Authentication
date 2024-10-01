@@ -71,7 +71,7 @@ In this report, we assume
 	
 	\end{itemize}
 	
-	\noindent Correctness: The fh-IPFE scheme {\sf FE} is \emph{correct} if $\forall {\sf msk}, {\sf pp} \gets {\sf FE.Setup}$, $\forall \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\noindent Correctness: The fh-IPFE scheme {\sf FE} is \emph{correct} if $\forall ({\sf msk}, {\sf pp}) \gets {\sf FE.Setup}$, $\forall \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 	\[
 		{\sf FE.Dec}( {\sf pp}, {\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}), {\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) ) = \langle \mathbf{x} , \mathbf{y} \rangle \in \mathbb{F}.
 	\]
@@ -582,9 +582,9 @@ We provide a reduction to show that, given the following assumption, if an adver
 
 \begin{proof}
 
-	Consider the following algorithm and an algorithm $\mathcal{A}_{\sf Forg}$ who can break the forgery game with 
+	Consider the adversary $\mathcal{A}_{\sf Id}$ in Figure \ref{fig:id_game_ad} with oracles $\mathcal{O}_{\sf Id} = (\mathcal{O}_{\sf samp}, \mathcal{O}_{\sf Enroll})$.
 
-\begin{figure}[h]
+\begin{figure}[htp]
 	\begin{center}
 	\begin{tabular}{l c}
 		$\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}}({\sf csk}, \mathbf{c_x}^{(b)}, \mathcal{B}^{(0)}, \mathcal{B}^{(1)})$\\
@@ -640,7 +640,7 @@ If $b = 1$, the probability that $\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Enroll}
 		= & (1 - \Pr[{\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}^{(1)}, \mathbf{\tilde{z}})) \to 1 ] ) \cdot \frac{1}{2} \\
 		\end{aligned}
 	\]
-	Note that $\mathcal{A}_{\sf Forg}$ is not given any knowledge about $\mathcal{B}^{(1)}$. The distribution of $\mathbf{c_x'}$ is identical to $\mathbf{c_x'} \gets \mathcal{O'}_{\sf Enroll}( {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B'}}}() ) $ where $\mathcal{B}' \getsdollar \mathbb{B} $, which it can sample itself in the plain forgery game. Therefore,
+	Note that $\mathcal{A}_{\sf Forg}$ is not given any knowledge about $\mathcal{B}^{(1)}$. The distribution of $\mathbf{c_x'}$ is identical to $\mathbf{c_x'} \gets \mathcal{O'}_{\sf Enroll}( {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B'}}}() ) $ where $\mathcal{B}' \getsdollar \mathbb{B} $, which it can sample itself in the plain forgery game with oracles $\mathcal{O}_{\sf samp}$ and $\mathcal{O}_{\sf Enroll}$. Therefore,
 	\[
 		\Pr[{\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}^{(1)}, \mathbf{\tilde{z}})) \to 1 ] \leq \max_{\text{PPT }\mathcal{A'}} \Pr[ {\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A'}_{\sf Forg}^{\mathcal{O}_{\sf Forg}}) \to 1 ].
 	\]
@@ -648,7 +648,7 @@ If $b = 1$, the probability that $\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Enroll}
 In summary,
 \begin{equation*}
 	\begin{aligned}
-		\Pr[{\sf Id}_{\Pi}(\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}} \to 1] 
+		\Pr[{\sf Id}_{\Pi}(\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}}) \to 1] 
 		&= \frac{1}{2} \Pr[\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}} \to 0 \mid b = 0] + \frac{1}{2} \Pr[\mathcal{A}_{\sf Id}^{\mathcal{O}_{\sf Id}} \to 1 \mid b = 1] \\
 		&\geq \frac{1}{4} + \frac{\tau}{4} \Pr[{\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg} }) \to 1 ] + \frac{1}{4} - \frac{1}{4}\max_{\text{PPT } \mathcal{A}'} \Pr[{\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A'}_{\sf Forg}^{\mathcal{O}_{\sf Forg} }) \to 1 ] \\
 		&= \frac{1}{2} + \frac{1}{4}\Adv_{\Pi, \mathbb{B}, \mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg}}}  - \frac{1-\tau}{4}\Pr[{\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}_{\sf Forg}^{\mathcal{O}_{\sf Forg} }) \to 1 ] \\
