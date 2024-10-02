@@ -531,9 +531,9 @@ The given oracle $\mathcal{O}$ can be any or more of the following three oracles
 \begin{itemize}
 	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$, it outputs a biometric sample $\mathbf{b}$ sampled from the distribution $\mathcal{B}_i \in \mathbb{B}$.
 
-	\item $\mathcal{O}_{\sf Enroll}^{ {\sf Re}} (\cdot, \cdot)$: On input ${\sf esk}$, it first samples $\mathbf{x} \getsdollar {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Enroll}({\sf esk}, \mathbf{x})$.
+	\item $\mathcal{O}_{\sf Enroll}^{ {\sf Re}} (\cdot)$: On input ${\sf esk}$, it first samples $\mathbf{x} \getsdollar {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Enroll}({\sf esk}, \mathbf{x})$.
 	
-	\item $\mathcal{O}_{\sf Probe}^{ {\sf Re}} (\cdot, \cdot)$: On input ${\sf psk}$, it first samples $\mathbf{y} \getsdollar {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Probe}({\sf psk}, \mathbf{y})$.
+	\item $\mathcal{O}_{\sf Probe}^{ {\sf Re}} (\cdot)$: On input ${\sf psk}$, it first samples $\mathbf{y} \getsdollar {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Probe}({\sf psk}, \mathbf{y})$.
 
 \end{itemize}
 
