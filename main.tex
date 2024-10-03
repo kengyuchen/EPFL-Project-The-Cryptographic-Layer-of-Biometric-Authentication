@@ -105,42 +105,56 @@ In general, an authentication shceme $\Pi$ associated with a family of biometric
 \end{itemize}
 
 
-The usage model we consider is described in Figure \ref{table:model}. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$.
+The usage model we consider is described in Figure \ref{fig:model_enrollment} (on enrollment) and Figure \ref{fig:model_auth} (on authentication).
 
-\begin{figure}[]
-	\begin{center}
-		\begin{tabular}{l c r c}
-			{\bf User} & 	& {\bf Server} \\
+\begin{itemize}
 
-			\hline
+	\item {\sf User}: We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$. 
+	\item {\sf Scanner}: It extracts the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
+	\item {\sf Device}: It is a device belonging to the user. In practice, it can be a desktop or a mobile phone. It is responsible for most computation and storing the enrollment secret key {\sf esk} and probe secret key {\sf psk}. It queries for biometric data through the {\sf Scanner}.
+	\item {\sf Server}: The server responsible for authenticating the user. It stores the comparison secret key {\sf csk} and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
 
-			\\
+\end{itemize}
 
-			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
+%\begin{figure}[]
+	%\begin{center}
+		%\begin{tabular}{l c r c}
+			%{\bf User} & 	& {\bf Server} \\
 
-			$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
+			%\hline
 
-			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
+			%\\
 
-			& $\xrightarrow{\quad {\sf csk}, \mathbf{c_x} \quad}$ \\
+			%${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
 
-			$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ \\
+			%$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
-			$\mathbf{c_y} \gets {\sf Probe}({\sf psk}, \mathbf{y})$ \\
+			%$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			& $\xrightarrow{\quad \mathbf{c_y} \quad}$ \\
+			%& $\xrightarrow{\quad {\sf csk}, \mathbf{c_x} \quad}$ \\
+
+			%$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ \\
+
+			%$\mathbf{c_y} \gets {\sf Probe}({\sf psk}, \mathbf{y})$ \\
+
+			%& $\xrightarrow{\quad \mathbf{c_y} \quad}$ \\
 			
-			&  & $s \gets {\sf Compare} ({\sf csk}, \mathbf{c_x}, \mathbf{c_y})$ \\
+			%&  & $s \gets {\sf Compare} ({\sf csk}, \mathbf{c_x}, \mathbf{c_y})$ \\
 
-			& & $r \gets {\sf Verify}(s) $ \\
+			%& & $r \gets {\sf Verify}(s) $ \\
 
-			& $\xleftarrow{\quad r \quad}$ & 
-		\end{tabular}
-	\end{center}
-	\caption{Authentication Model with User and Server}
-	\label{table:model}
-\end{figure}
+			%& $\xleftarrow{\quad r \quad}$ & 
+		%\end{tabular}
+	%\end{center}
+	%\caption{Authentication Model with User and Server}
+	%\label{table:model}
+%\end{figure}
 
+%-------------------
+
+\input{tikz/model.tex}
+
+%-------------------
 
 For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using ${\sf FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b'}$ be sampled from some distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of ${\sf FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
 
@@ -198,7 +212,7 @@ In the forgery game, we model the ability of an adversary who has access to the 
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}} ( \mathbf{c_x} )$ \\
+			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\mathcal{B}}} ( \mathbf{c_x}, {\sf csk} )$ \\	
 
 			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
 
@@ -222,7 +236,7 @@ In the forgery game, we model the ability of an adversary who has access to the 
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}}()$ \\
+			${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}_{\sf samp}}()$ \\
 
 			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
 
@@ -293,7 +307,7 @@ In the simulation game, we model the ability of the server who tries to learn so
 			
 			$\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$ \\
 
-			$b \gets \mathcal{A}^{\mathcal{O}} ({\sf csk}, \mathbf{c_x}, \{\mathbf{c_y}^{(i)}\}_{i=1}^t )$ \\
+			$b \gets \mathcal{A} ({\sf csk}, \mathbf{c_x}, \{\mathbf{c_y}^{(i)}\}_{i=1}^t )$ \\
 
 			\textbf{return} $b$
 			
@@ -301,7 +315,7 @@ In the simulation game, we model the ability of the server who tries to learn so
 		\end{subfigure}
 		\begin{subfigure}[t]{0.49\textwidth}
 		\begin{tabular}{l c}
-			${\sf SIM-Ideal}_{\Pi, \mathbb{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe}))$\\
+			${\sf SIM-Ideal}_{\Pi, \mathbb{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S} )$\\
 
 			\hline
 
@@ -323,7 +337,7 @@ In the simulation game, we model the ability of the server who tries to learn so
 
 			$\mathbf{c_x}', \{\mathbf{c_y}^{(i)'}\}_{i=1}^t \gets \mathcal{S}_0( {\sf csk}, {\sf C} )$ \\
 
-			$b \gets \mathcal{A}^{\tilde{\mathcal{O}}} ({\sf csk}, \mathbf{c_x}', \{ \mathbf{c_y}^{(i)'} \}_{i=1}^t )$ \\
+			$b \gets \mathcal{A} ({\sf csk}, \mathbf{c_x}', \{ \mathbf{c_y}^{(i)'} \}_{i=1}^t )$ \\
 
 			\textbf{return} $b$
 			
@@ -431,11 +445,15 @@ In the identification game, we model the ability of the server who tries to iden
 
 			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf USetup}(1^\lambda)$ \\
 
-			$\mathbf{x}^{(b)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathbf{B}^{(b)}}}()$ \\
+			$\mathbf{x}^{(b)} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(b)}}}()$ \\
 
 			$\mathbf{c_x}^{(b)} \gets {\sf Enroll}({\sf esk}, \mathbf{x}^{(b)})$ \\
 
-			$\tilde{b} \gets \mathcal{A}^{\mathcal{O}} ( {\sf csk}, \mathbf{c_x}^{(b)}, \mathcal{B}^{(0)}, \mathcal{B}^{(1)} )$ \\
+			$\{\mathbf{y}^{(b,i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}() \}_{i=1}^t $ \\
+			
+			$\{ \mathbf{c_y}^{(b,i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(b,i)} ) \right \}_{i=1}^t$ \\
+
+			$\tilde{b} \gets \mathcal{A} ( {\sf csk}, \mathbf{c_x}^{(b)}, \{ \mathbf{c_y}^{(b,i)} \}_{i=1}^t, \mathcal{B}^{(0)}, \mathcal{B}^{(1)} )$ \\
 
 			\textbf{return} $1_{\tilde{b} = b}$
 			
@@ -489,7 +507,7 @@ In the reusability game, we model the ability of a malicious application who tri
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}} ( \mathbf{c_x} )$ \\
+			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\sf Enroll}^{\sf Re}, \mathcal{O}_{\sf Probe}^{\sf Re}} ( \mathbf{c_x}, {\sf csk} )$ \\
 
 			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
 
@@ -513,7 +531,7 @@ In the reusability game, we model the ability of a malicious application who tri
 
 			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
 
-			${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}}()$ \\
+			${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}_{\sf samp}}()$ \\
 
 			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
 
