@@ -1,4 +1,4 @@
-\begin{figure}
+\begin{figure}[htp]
 \centering
 
 \begin{tikzpicture}[node distance=2cm]
@@ -14,10 +14,14 @@
 \node (server) [element] at (12,6.5) {{\sf Server}};
 
 % Texts
+
+% User
+\node [align=center] at ($(user) + (-0.9, 0.9)$) {{\sf User}};
+
 % User and Scanner
 \draw [arrow] (scanner.west) -| node [align=center, left] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} (user.south);
 
-\draw [arrow] (user.east) -| node [align=center, right] {{\sf resp.} \\ $\mathbf{b} \gets \mathcal{B}$}  (scanner.north);
+\draw [arrow] (user.east) -| node [align=center, right] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$}  (scanner.north);
 
 % Device
 \node [align=center] at ($(device.south) + (0, -1)$) {
@@ -33,7 +37,7 @@
 
 % Scanner and Device
 \draw [arrow]  ($(device.west) + (-1.5, -2.6)$) -- node[align=center, above] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} ($(scanner.east) + (0.5, -2.6)$);
-\draw [arrow]  ($(scanner.east) + (0.5, -2.8)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \gets \mathcal{B}$} ($(device.west) + (-1.5, -2.8)$);
+\draw [arrow]  ($(scanner.east) + (0.5, -2.8)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$} ($(device.west) + (-1.5, -2.8)$);
 
 % Device and Server
 \draw [arrow]  ($(device.east) + (1.5, -1.5)$) -- node[align=center, above] {${\sf csk}$} ($(server.west) + (-0.5, -1.5)$);
@@ -61,7 +65,7 @@
 
 
 % Authentication Model
-\begin{figure}
+\begin{figure}[htp]
 \centering
 
 \begin{tikzpicture}[node distance=2cm]
@@ -77,10 +81,14 @@
 \node (server) [element] at (12,6.5) {\sf Server};
 
 % Texts
+
+% User
+\node [align=center] at ($(user) + (-0.9, 0.9)$) {{\sf User}};
+
 % User and Scanner
 \draw [arrow] (scanner.west) -| node [align=center, left] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} (user.south);
 
-\draw [arrow] (user.east) -| node [align=center, right] {{\sf resp.} \\ $\mathbf{b} \gets \mathcal{B}$}  (scanner.north);
+\draw [arrow] (user.east) -| node [align=center, right] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$}  (scanner.north);
 
 % Device
 \node [align=center] at ($(device.south) + (0, -0.9)$) {
@@ -92,7 +100,7 @@
 
 % Scanner and Device
 \draw [arrow]  ($(device.west) + (-1.5, -1.5)$) -- node[align=center, above] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} ($(scanner.east) + (0.5, -1.5)$);
-\draw [arrow]  ($(scanner.east) + (0.5, -1.7)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \gets \mathcal{B}$} ($(device.west) + (-1.5, -1.7)$);
+\draw [arrow]  ($(scanner.east) + (0.5, -1.7)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$} ($(device.west) + (-1.5, -1.7)$);
 
 % Device and Server
 \draw [arrow]  ($(device.east) + (1, -3.4)$) -- node[align=center, above] {$\mathbf{c_y}$} ($(server.west) + (-1, -3.4)$);
