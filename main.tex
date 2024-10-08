@@ -162,11 +162,11 @@ For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\s
 
 	\item ${\sf USetup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}) \gets (({\sf msk}, {\sf pp}), ({\sf msk}, {\sf pp}))$ and ${\sf csk} \gets {\sf pp}$.
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{x}$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. The auxiliary oracle is empty.
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. 
 
 	\item ${\sf Enroll}({\sf esk}, \mathbf{x})$: It calls ${\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
 
-	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b'} = (b_1', b_2', \cdots, b_k')$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1', -2b_2', \cdots, -2b_k', \|\mathbf{b'}\|^2, 1)$. The auxiliary oracle is empty.
+	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b'} = (b_1', b_2', \cdots, b_k')$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1', -2b_2', \cdots, -2b_k', \|\mathbf{b'}\|^2, 1)$.
 
 	\item ${\sf Probe}({\sf psk}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
 
@@ -261,6 +261,7 @@ The given oracle $\mathcal{O}$ consists of the following oracles:
 		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
 	\end{itemize}
 
+	\item $\mathcal{O}_{\sf auth}^{q}({\sf csk}, \mathbf{c_x}, \cdot)$: If this oracle has been queried over $q$ times, it aborts. Otherwise, on input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
 \end{itemize}
 
 Depending on the threat model, we can also consider the following oracles:
@@ -274,7 +275,7 @@ Depending on the threat model, we can also consider the following oracles:
 
 \end{itemize}
 
-Note that if the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, or the comparison secret key ${\sf csk}$ is an empty or public string in the scheme, then the corresponding oracles are naturally and implicitly given since the adversary can compute them herself. 
+Note that if the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, or the comparison secret key ${\sf csk}$ is an empty or public string in the scheme, then the corresponding oracles are naturally and implicitly given since the adversary can compute them itself. 
 
 To consider potential false positives of biometrics match, we consider the plain forgery game in Figure \ref{fig:plain_forgery_game}, in which the adversary does not have any knowledge about the template. The given oracle $\mathcal{O'}$ consists of:
 \begin{itemize}
@@ -284,7 +285,7 @@ To consider potential false positives of biometrics match, we consider the plain
 		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
 	\end{itemize}
 	
-	\item $\mathcal{O}_{\sf auth}({\sf csk}, \mathbf{c_x}, \cdot)$: On input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
+	\item $\mathcal{O}_{\sf auth}^{q}({\sf csk}, \mathbf{c_x}, \cdot)$: If this oracle has been queried over $q$ times, it aborts. Otherwise, on input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
 \end{itemize}
 
 
@@ -385,7 +386,7 @@ Depending on the threat model, we can also consider the following oracles for $\
 	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y'}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y'})$.
 \end{itemize}
 
-Their corresponding oracles for $\mathcal{\tilde O}$ are stateful and memorize all the previous queries. It includes two simulators: $\mathcal{S}_{\sf Enroll}$ and $\mathcal{S}_{\sf Probe}$.
+The corresponding oracles of $\mathcal{O}_{\sf Enroll}$ and $\mathcal{O}_{\sf Probe}$ for $\mathcal{\tilde O}$ are $\tilde{\mathcal{O}}_{\sf Enroll}$ and $\tilde{\mathcal{O}}_{\sf Probe}$. They are stateful and memorize all the previous queries, and they include two simulators: $\mathcal{S}_{\sf Enroll}$ and $\mathcal{S}_{\sf Probe}$.
 
 \begin{itemize}
 
@@ -395,7 +396,7 @@ Their corresponding oracles for $\mathcal{\tilde O}$ are stateful and memorize a
 
 \end{itemize}
 
-The details of these oracles are given in Figure \ref{fig:sim_game_oracle}.
+The details of oracles $\tilde{\mathcal{O}}_{\sf Enroll}$ and $\tilde{\mathcal{O}}_{\sf Probe}$ are given in Figure \ref{fig:sim_game_oracle}.
 
 \begin{figure}[h]
 	\begin{center}
@@ -588,10 +589,11 @@ The given oracle $\mathcal{O}$ consist of the following oracles:
 		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
 	\end{itemize}
 	
-\item $\mathcal{O}_{\sf Enroll}^{ {\sf Re}} (\cdot)$: On input ${\sf esk'}$, it first samples $\mathbf{x'} \getsdollar {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Enroll}({\sf esk'}, \mathbf{x'})$.
+	\item $\mathcal{O}_{\sf Enroll}^{ {\sf Re}} (\cdot)$: On input ${\sf esk'}$, it first samples $\mathbf{x'} \getsdollar {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Enroll}({\sf esk'}, \mathbf{x'})$.
 	
 	\item $\mathcal{O}_{\sf Probe}^{ {\sf Re}} (\cdot)$: On input ${\sf psk'}$, it first samples $\mathbf{y'} \getsdollar {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Probe}({\sf psk'}, \mathbf{y'})$.
 
+	\item $\mathcal{O}_{\sf auth}^{q}({\sf csk}, \mathbf{c_x}, \cdot)$: If this oracle has been queried over $q$ times, it aborts. Otherwise, on input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
 \end{itemize}
 
 Depending on the threat model, we can also consider the following oracles:
@@ -617,7 +619,7 @@ To consider potential false positives of biometrics match, we consider the plain
 		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
 	\end{itemize}
 	
-	\item $\mathcal{O}_{\sf auth}({\sf csk}, \mathbf{c_x}, \cdot)$: On input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
+	\item $\mathcal{O}_{\sf auth}^{q}({\sf csk}, \mathbf{c_x}, \cdot)$: If this oracle has been queried over $q$ times, it aborts. Otherwise, on input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
 
 \end{itemize}
 
