@@ -1,0 +1,240 @@
+% User-Device with KDS
+% Usage Model – Device of User
+
+% Overview
+\begin{figure}
+\centering
+
+\begin{tikzpicture}[node distance=2cm]
+
+% Gadgets
+\node (user1) [inner sep=0pt] at (0,6) 
+    {\includegraphics[width=0.1\textwidth]{image/user.jpg}};
+
+\node (user2) [inner sep=0pt] at (0,3) 
+    {\includegraphics[width=0.1\textwidth]{image/user.jpg}};
+
+\node (scanner1) [element] at (3,7.5) {{\sf Scanner}};
+
+\node (scanner2) [element] at (3,5.5) {{\sf Scanner}};
+
+\node (scanner3) [element] at (3,3.5) {{\sf Scanner}};
+
+\node (scanner4) [element] at (3,1.5) {{\sf Scanner}};
+
+\node (device1) [element] at (7,6) {\sf Device};
+\node (udevice1) [inner sep=0pt] at ($(device1) + (-0.7, +0.95)$)
+    {\includegraphics[width=0.03\textwidth]{image/user.jpg}};
+
+\node (device2) [element] at (7,3) {\sf Device};
+\node (udevice2) [inner sep=0pt] at ($(device2) + (-0.7, +0.95)$)
+    {\includegraphics[width=0.03\textwidth]{image/user.jpg}};
+
+\node (server) [element] at (12,4.5) {\sf Server};
+
+% Texts
+% User
+\node [align=center] at ($(user1) + (-0.9, 0.9)$) {{\sf User1}};
+
+\node [align=center] at ($(user2) + (-0.9, 0.9)$) {{\sf User2}};
+
+\node [align=center] at ($(udevice1) + (0, 0.5)$) {{\sf User1}};
+
+\node [align=center] at ($(udevice2) + (0, 0.5)$) {{\sf User2}};
+
+% User and Scanner
+\draw [darrow, dotted] (user1.east) -- node [align=center, left]{$\mathcal{O}_\mathcal{B}$} (scanner1.west);
+
+\draw [darrow, dotted] (user1.east) -- (scanner2.west);
+
+\draw [darrow, dotted] (user1.east) -- (scanner3.west);
+
+\draw [darrow, dotted] (user1.east) -- (scanner4.west);
+
+\draw [darrow, dotted] (user2.east) -- (scanner1.west);
+
+\draw [darrow, dotted] (user2.east) -- (scanner2.west);
+
+\draw [darrow, dotted] (user2.east) -- (scanner3.west);
+
+\draw [darrow, dotted] (user2.east) -- (scanner4.west);
+
+
+% Scanner and Device
+\draw [darrow, dotted] (scanner1.east) -- node [align=center, above] {$\mathcal{O}_\mathcal{B}$} (device1.west);
+
+\draw [darrow, dotted] (scanner2.east) -- (device1.west);
+
+\draw [darrow, dotted] (scanner3.east) -- (device1.west);
+
+\draw [darrow, dotted] (scanner4.east) -- (device1.west);
+
+\draw [darrow, dotted] (scanner1.east) -- (device2.west);
+
+\draw [darrow, dotted] (scanner2.east) -- (device2.west);
+
+\draw [darrow, dotted] (scanner3.east) -- (device2.west);
+
+\draw [darrow, dotted] (scanner4.east) -- (device2.west);
+
+% Device and Server
+\draw [darrow, dotted] (device1.east) -- node [align=center, above, sloped] {${\sf esk}_1, {\sf psk}_1, {\sf csk}_1$} (server.west);
+
+\draw [darrow, dotted] (device2.east) -- node [align=center, above, sloped] {${\sf esk}_2, {\sf psk}_2, {\sf csk}_2$} (server.west);
+
+
+% Server
+
+
+\end{tikzpicture}
+
+\caption{An Overview of the Device-of-User Usage Model}
+\label{fig:model_dou_overview}
+\end{figure}
+
+
+%-------------------
+% Enrollment
+
+\begin{figure}
+\centering
+
+\begin{tikzpicture}[node distance=2cm]
+
+% Gadgets
+\node (user) [inner sep=0pt] at (0,8) 
+    {\includegraphics[width=0.1\textwidth]{image/user.jpg}};
+
+\node (scanner) [element] at (1.5,6.5) {{\sf Scanner}}; 
+
+\node (device) [element] at (7,6.5) {\sf Device};
+
+\node (KDS) [element] at (9.5, 9) {\sf KDS};
+
+\node (server) [element] at (12,6.5) {\sf Server};
+
+% Texts
+
+% KDS
+\node [align=center] at ($(KDS.south) + (0, -0.5)$) {${\sf esk}, 
+ {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$};
+
+% KDS and Device
+\draw [arrow] (KDS.west) -| node [align=center, above] {${\sf esk}, {\sf psk}$}  (device.north);
+
+% KDS and Server
+\draw [arrow] (KDS.east) -| node [align=center, above] {${\sf csk}$}  (server.north);
+
+% User
+\node [align=center] at ($(user) + (-0.9, 0.9)$) {{\sf User}};
+
+% User and Scanner
+\draw [arrow] (scanner.west) -| node [align=center, left] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} (user.south);
+
+\draw [arrow] (user.east) -| node [align=center, right] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$}  (scanner.north);
+
+% Scanner and Device
+\draw [arrow]  ($(device.west) + (-1.5, -2.1)$) -- node[align=center, above] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} ($(scanner.east) + (0.5, -2.1)$);
+\draw [arrow]  ($(scanner.east) + (0.5, -2.3)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$} ($(device.west) + (-1.5, -2.3)$);
+
+% Device
+\node [align=center] at ($(device.south) + (0, -0.5)$) {
+    Store ${\sf esk}, {\sf psk}$        
+};
+\node [align=center] at ($(device.south) + (0, -1.5)$) {
+	$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+};
+\node [align=center] at ($(device.south) + (0, -2.5)$) {
+    $\mathbf{c_x} \gets {\sf Enroll}({\sf esk, \mathbf{x}})$
+};
+
+% Device and Server
+\draw [arrow]  ($(device.east) + (1.3, -3.2)$) -- node[align=center, above] {$\mathbf{c_x}$} ($(server.west) + (-0.7, -3.2)$);
+
+% Server
+\node [align=center] at ($(server.south) + (0, -0.5)$) {
+    Store ${\sf csk}$        
+};
+\node [align=center] at ($(server.south) + (0, -2.7)$) {
+    Store $\mathbf{c_x}$
+};
+
+
+\end{tikzpicture}
+
+\caption{Device-of-User Usage Model on Enrollment}
+\label{fig:model_dou_enrollment}
+\end{figure}
+
+
+%-------------------
+
+% Authentication
+\begin{figure}[htp]
+\centering
+
+\begin{tikzpicture}[node distance=2cm]
+
+% Gadgets
+\node (user) [inner sep=0pt] at (0,8) 
+    {\includegraphics[width=0.1\textwidth]{image/user.jpg}};
+
+\node (scanner) [element] at (1.5,6.5) {{\sf Scanner}}; 
+
+\node (device) [element] at (7,6.5) {\sf Device};
+
+\node (server) [element] at (12,6.5) {\sf Server};
+
+% Texts
+
+% User
+\node [align=center] at ($(user) + (-0.9, 0.9)$) {{\sf User}};
+
+% User and Scanner
+\draw [arrow] (scanner.west) -| node [align=center, left] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} (user.south);
+
+\draw [arrow] (user.east) -| node [align=center, right] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$}  (scanner.north);
+
+% Device
+\node [align=center] at ($(device.south) + (0, -0.9)$) {
+    $\mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$
+};
+\node [align=center] at ($(device.south) + (0, -1.9)$) {
+    $\mathbf{c_y} \gets {\sf Probe}({\sf psk, \mathbf{y}})$
+};
+
+% % Scanner and Device
+% \draw [arrow]  ($(device.west) + (-1.5, -1.5)$) -- node[align=center, above] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} ($(scanner.east) + (0.5, -1.5)$);
+% \draw [arrow]  ($(scanner.east) + (0.5, -1.7)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$} ($(device.west) + (-1.5, -1.7)$);
+
+% % Device and Server
+% \draw [arrow]  ($(device.east) + (1, -3.4)$) -- node[align=center, above] {$\mathbf{c_y}$} ($(server.west) + (-1, -3.4)$);
+% \draw [arrow]  ($(server.west) + (-1, -4.4)$) -- node[align=center, above] {$r$} ($(device.east) + (1, -4.4)$);
+
+% % Server
+% \node [align=center] at ($(server.south) + (0, -3.4)$) {
+%     $s \gets {\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y})$ \\
+%     $r \gets {\sf Verify}(s)$
+% };
+
+
+% Scanner and Device
+\draw [arrow]  ($(device.west) + (-1.5, -1.5)$) -- node[align=center, above] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} ($(scanner.east) + (0.5, -1.5)$);
+\draw [arrow]  ($(scanner.east) + (0.5, -1.7)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$} ($(device.west) + (-1.5, -1.7)$);
+
+% Device and Server
+\draw [arrow]  ($(device.east) + (1, -2.7)$) -- node[align=center, above] {$\mathbf{c_y}$} ($(server.west) + (-1, -2.7)$);
+\draw [arrow]  ($(server.west) + (-1, -3.7)$) -- node[align=center, above] {$r$} ($(device.east) + (1, -3.7)$);
+
+% Server
+\node [align=center] at ($(server.south) + (0, -2.7)$) {
+    $s \gets {\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y})$ \\
+    $r \gets {\sf Verify}(s)$
+};
+
+\end{tikzpicture}
+
+\caption{Device-of-User Usage Model on Authentication}
+\label{fig:model_dou_auth}
+\end{figure}
+

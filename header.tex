@@ -62,6 +62,8 @@
 \newtheorem{corollary}{Corollary}
 
 
+
+% TikZ Setting
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows}
 \usetikzlibrary{positioning}
@@ -70,6 +72,7 @@
 
 \tikzstyle{st-arrow} = [thick,->,>=stealth]
 \tikzstyle{arrow} = [thick,-latex']
+\tikzstyle{darrow} = [thick,latex'-latex']
 
 \tikzstyle{gadget} = [rectangle, rounded corners,
 	minimum width=2cm,
@@ -85,6 +88,10 @@
 	fill=white!70!black,
 	draw=black
 ]
+\pgfdeclarelayer{background layer}
+\pgfdeclarelayer{foreground layer}
+\pgfsetlayers{background layer,main,foreground layer}
+
 
 
 

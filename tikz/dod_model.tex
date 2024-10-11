@@ -1,0 +1,327 @@
+% Usage Model – Device of Domain
+\begin{figure}
+\centering
+
+\begin{tikzpicture}[node distance=2cm]
+
+% Gadgets
+\node (user1) [inner sep=0pt] at (0,6) 
+    {\includegraphics[width=0.1\textwidth]{image/user.jpg}};
+
+\node (user2) [inner sep=0pt] at (0,3) 
+    {\includegraphics[width=0.1\textwidth]{image/user.jpg}};
+
+\node (scanner1) [element] at (3,7.5) {{\sf Scanner}};
+
+\node (scanner2) [element] at (3,5.5) {{\sf Scanner}};
+
+\node (scanner3) [element] at (3,3.5) {{\sf Scanner}};
+
+\node (scanner4) [element] at (3,1.5) {{\sf Scanner}};
+
+\node (station) [element] at (7,8) {\sf Station};
+
+\node (device1) [element] at (7,5.5) {\sf Device};
+
+\node (device2) [element] at (7,3.5) {\sf Device};
+
+\node (device3) [element] at (7,1.5) {\sf Device};
+
+\begin{pgfonlayer}{background layer}
+    \draw [rounded corners, fill=blue!50!white] ($(device1) + (-1.1, 1.4)$) rectangle ($(device2) + (1.1, -0.75)$);
+\end{pgfonlayer}
+
+\begin{pgfonlayer}{background layer}
+\node (domain1) [
+    rectangle, rounded corners, 
+    minimum width=2.2cm, 
+    minimum height=4cm,
+    fill=blue!50!white,
+    draw=black]
+at ($(device1)!0.5!(device2) + (0, 0.5)$) {};
+\end{pgfonlayer};
+
+\node (domain1_text) [element,fill=none,draw=none] at ($(domain1.north) + (0, -0.5)$) {\sf Domain1};
+
+\begin{pgfonlayer}{background layer}
+\node (domain2) [
+    rectangle, rounded corners, 
+    minimum width=2.2cm, 
+    minimum height=2.1cm,
+    fill=orange!50!white,
+    draw=black]
+at ($(device3) + (0, -0.3)$) {};
+\end{pgfonlayer};
+
+\node (domain2_text) [element,fill=none,draw=none] at ($(domain2.south) + (0, 0.4)$) {\sf Domain2};
+
+% \begin{pgfonlayer}{background layer}
+% \draw [rounded corners, fill=orange!50!white] ($(device3) + (-1.1, 0.75)$) rectangle ($(device3) + (1.1, -0.75)$);
+% \end{pgfonlayer}
+
+\node (server) [element] at (12,4.5) {\sf Server};
+
+
+% Texts
+% User
+\node [align=center] at ($(user1) + (-0.9, 0.9)$) {{\sf User1}};
+
+\node [align=center] at ($(user2) + (-0.9, 0.9)$) {{\sf User2}};
+
+% User and Scanner
+\draw [darrow, dotted] (user1.east) -- node [align=center, left]{$\mathcal{O}_\mathcal{B}$} (scanner1.west);
+
+\draw [darrow, dotted] (user1.east) -- (scanner2.west);
+
+\draw [darrow, dotted] (user1.east) -- (scanner3.west);
+
+\draw [darrow, dotted] (user1.east) -- (scanner4.west);
+
+\draw [darrow, dotted] (user2.east) -- (scanner1.west);
+
+\draw [darrow, dotted] (user2.east) -- (scanner2.west);
+
+\draw [darrow, dotted] (user2.east) -- (scanner3.west);
+
+\draw [darrow, dotted] (user2.east) -- (scanner4.west);
+
+% Scanner and Device
+\draw [darrow, dotted] (scanner1.east) -- (device1.west);
+
+\draw [darrow, dotted] (scanner2.east) -- (device1.west);
+
+\draw [darrow, dotted] (scanner3.east) -- (device1.west);
+
+\draw [darrow, dotted] (scanner4.east) -- (device1.west);
+
+\draw [darrow, dotted] (scanner1.east) -- (device2.west);
+
+\draw [darrow, dotted] (scanner2.east) -- (device2.west);
+
+\draw [darrow, dotted] (scanner3.east) -- (device2.west);
+
+\draw [darrow, dotted] (scanner4.east) -- (device2.west);
+
+\draw [darrow, dotted] (scanner1.east) -- (device3.west);
+
+\draw [darrow, dotted] (scanner2.east) -- (device3.west);
+
+\draw [darrow, dotted] (scanner3.east) -- (device3.west);
+
+\draw [darrow, dotted] (scanner4.east) -- (device3.west);
+
+% Scanner and Station
+\draw [darrow, dotted] (scanner1.east) -- node [align=center, above]{$\mathcal{O}_\mathcal{B}$} (station.west);
+
+\draw [darrow, dotted] (scanner2.east) -- (station.west);
+
+\draw [darrow, dotted] (scanner3.east) -- (station.west);
+
+\draw [darrow, dotted] (scanner4.east) -- (station.west);
+
+% Station and Server
+\draw [darrow, dotted] (station.east) -- node [align=center, midway, above, sloped] {$\textcolor{blue}{{\sf esk}_1}, \textcolor{orange}{{\sf esk}_2}$} (server.west);
+
+
+% Device and Server
+\draw [darrow, dotted] (device1.east) -- node [blue, align=center, midway, above, sloped] {${\sf psk}_1, {\sf csk}_1$} (server.west);
+
+\draw [darrow, dotted] (device2.east) -- node [blue, align=center, midway, above, sloped] {${\sf psk}_1, {\sf csk}_1$} (server.west);
+
+\draw [darrow, dotted] (device3.east) -- node [orange, align=center, midway, below, sloped] {${\sf psk}_2, {\sf csk}_2$} (server.west);
+
+
+% Server
+
+
+\end{tikzpicture}
+
+\caption{An overview of the Device-of-Domain Usage Model}
+\label{fig:model_dod_overview}
+\end{figure}
+
+
+
+%-------------------
+% Enrollment
+
+\begin{figure}
+\centering
+
+\begin{tikzpicture}[node distance=2cm]
+
+% Gadgets
+\node (user) [inner sep=0pt] at (0,8) 
+    {\includegraphics[width=0.1\textwidth]{image/user.jpg}};
+
+\node (scanner) [element] at (1.5,6.5) {{\sf Scanner}};
+
+\begin{pgfonlayer}{background layer}
+\node (domain) [
+    rectangle, rounded corners, 
+    minimum width=2.7cm, 
+    minimum height=1.8cm,
+    fill=blue!50!white,
+    draw=black] 
+at (4.5, 9.5) {};
+\end{pgfonlayer};
+
+\node (domain_text) [element,fill=none,draw=none] at ($(domain.south) + (0, 1.2)$) {\sf Domain};
+
+\node (device1) [
+    rectangle, rounded corners, 
+    minimum width=0.3cm, 
+    minimum height=0.3cm,
+    text centered,
+    fill=white!70!black,
+    draw=black]
+at ($(domain.south) + (-0.65, 0.4)$) {\scriptsize{\sf Device}};
+
+\node (device2) [
+    rectangle, rounded corners, 
+    minimum width=0.3cm, 
+    minimum height=0.3cm,
+    text centered,
+    fill=white!70!black,
+    draw=black]
+at ($(domain.south) + (0.65, 0.4)$) {\scriptsize{\sf Device}};
+
+
+\node (station) [element] at (7,6.5) {\sf Station};
+
+\node (KDS) [element] at (9.5, 9.5) {\sf KDS};
+
+\node (server) [element] at (12,6.5) {\sf Server};
+
+% Texts
+
+% KDS
+\node [align=center] at ($(KDS.south) + (0, -0.5)$) {${\sf esk}, 
+ {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$};
+
+% KDS and Station
+\draw [arrow] (KDS.west) -| node (esk) [align=center, below=1cm] {}  (station.north);
+\node [align=center] at ($(esk) + (-0.3, 0)$) { {\sf esk} };
+
+% KDS and Domain
+\draw [arrow] (KDS.west) -- node (psk) [align=center, above=0.1cm] {} (domain.east);
+\node [align=center] at ($(psk) + (-0.7, 0)$) { {\sf psk} };
+
+% KDS and Server
+\draw [arrow] (KDS.east) -| node [align=center, above] {${\sf csk}$}  (server.north);
+
+% Domain
+\node [align=center] at ($(domain.south) + (0, -0.5)$) {Store ${\sf psk}$};
+
+% User
+\node [align=center] at ($(user) + (-0.9, 0.9)$) {{\sf User}};
+
+% User and Scanner
+\draw [arrow] (scanner.west) -| node [align=center, left] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} (user.south);
+
+\draw [arrow] (user.east) -| node [align=center, right] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$}  (scanner.north);
+
+% Scanner and Station
+\draw [arrow]  ($(station.west) + (-1.5, -2.1)$) -- node[align=center, above] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} ($(scanner.east) + (0.5, -2.1)$);
+\draw [arrow]  ($(scanner.east) + (0.5, -2.3)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$} ($(station.west) + (-1.5, -2.3)$);
+
+% Station
+\node [align=center] at ($(station.south) + (0, -0.5)$) {
+    Store ${\sf esk}$        
+};
+\node [align=center] at ($(station.south) + (0, -1.5)$) {
+	$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+};
+\node [align=center] at ($(station.south) + (0, -2.5)$) {
+    $\mathbf{c_x} \gets {\sf Enroll}({\sf esk, \mathbf{x}})$
+};
+
+% Station and Server
+\draw [arrow]  ($(station.east) + (1.3, -3.2)$) -- node[align=center, above] {$\mathbf{c_x}$} ($(server.west) + (-0.7, -3.2)$);
+
+% Server
+\node [align=center] at ($(server.south) + (0, -0.5)$) {
+    Store ${\sf csk}$        
+};
+\node [align=center] at ($(server.south) + (0, -2.7)$) {
+    Store $\mathbf{c_x}$
+};
+
+
+\end{tikzpicture}
+
+\caption{Device-of-Domain Usage Model on Enrollment}
+\label{fig:model_dod_enrollment}
+\end{figure}
+
+
+%-------------------
+
+% Authentication
+\begin{figure}[htp]
+\centering
+
+\begin{tikzpicture}[node distance=2cm]
+
+% Gadgets
+\node (user) [inner sep=0pt] at (0,8) 
+    {\includegraphics[width=0.1\textwidth]{image/user.jpg}};
+
+\node (scanner) [element] at (1.5,6.5) {{\sf Scanner}}; 
+
+\node (device) [element] at (7,6.5) {\sf Device};
+
+\begin{pgfonlayer}{background layer}
+\node (domain) [
+    rectangle, rounded corners, 
+    minimum width=2.2cm, 
+    minimum height=2.2cm,
+    fill=blue!50!white,
+    draw=black] 
+at ($(device) + (0, 0.3)$) {};
+\end{pgfonlayer};
+
+\node (domain_text) [element,fill=none,draw=none] at ($(domain.south) + (0, 1.8)$) {\sf Domain};
+
+
+\node (server) [element] at (12,6.5) {\sf Server};
+
+% Texts
+
+% User
+\node [align=center] at ($(user) + (-0.9, 0.9)$) {{\sf User}};
+
+% User and Scanner
+\draw [arrow] (scanner.west) -| node [align=center, left] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} (user.south);
+
+\draw [arrow] (user.east) -| node [align=center, right] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$}  (scanner.north);
+
+% Device
+\node [align=center] at ($(device.south) + (0, -0.9)$) {
+    $\mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$
+};
+\node [align=center] at ($(device.south) + (0, -1.9)$) {
+    $\mathbf{c_y} \gets {\sf Probe}({\sf psk, \mathbf{y}})$
+};
+
+% Scanner and Device
+\draw [arrow]  ($(device.west) + (-1.5, -1.5)$) -- node[align=center, above] {{\sf query} \\ $\mathcal{O}_\mathcal{B}$} ($(scanner.east) + (0.5, -1.5)$);
+\draw [arrow]  ($(scanner.east) + (0.5, -1.7)$) -- node[align=center, below] {{\sf resp.} \\ $\mathbf{b} \getsdollar \mathcal{B}$} ($(device.west) + (-1.5, -1.7)$);
+
+% Device and Server
+\draw [arrow]  ($(device.east) + (1, -2.7)$) -- node[align=center, above] {$\mathbf{c_y}$} ($(server.west) + (-1, -2.7)$);
+\draw [arrow]  ($(server.west) + (-1, -3.7)$) -- node[align=center, above] {$r$} ($(device.east) + (1, -3.7)$);
+
+% Server
+\node [align=center] at ($(server.south) + (0, -2.7)$) {
+    $s \gets {\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y})$ \\
+    $r \gets {\sf Verify}(s)$
+};
+
+
+\end{tikzpicture}
+
+\caption{Device-of-Domain Usage Model on Authentication}
+\label{fig:model_dod_auth}
+\end{figure}
+

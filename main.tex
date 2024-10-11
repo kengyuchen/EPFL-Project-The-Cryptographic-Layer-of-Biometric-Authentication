@@ -88,7 +88,7 @@ In general, an authentication shceme $\Pi$ associated with a family of biometric
 
 \begin{itemize}
 
-	\item ${\sf USetup}(1^\lambda) \to {\sf esk}, {\sf psk}, {\sf csk}$: It outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, and compare secret key $\sf csk$.
+	\item ${\sf Setup}(1^\lambda) \to {\sf esk}, {\sf psk}, {\sf csk}$: It outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, and compare secret key $\sf csk$.
 
 	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{x}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{x}$, the input format for enrollment. 
 
@@ -105,62 +105,71 @@ In general, an authentication shceme $\Pi$ associated with a family of biometric
 \end{itemize}
 
 
-The usage model we consider is described in Figure \ref{fig:model_enrollment} (on enrollment) and Figure \ref{fig:model_auth} (on authentication).
+We discuss two usage models that employs the authentication scheme $\Pi$.
+
+
+\subsection{Usage Model – Device-of-User}
+\label{sec:dou_model}
+
+In the model described in Figure \ref{fig:model_dou_overview} (an overview), Figure \ref{fig:model_dou_enrollment} (on enrollment), and Figure \ref{fig:model_dou_auth} (on authentication), a user authenticates itself to a server through its own device and a biometric scanner that is shared among different users. A key distribution service distributes keys for them. In practice, this model applies to the situation when the user accesses an online service run by the server.
 
 \begin{itemize}
 
 	\item {\sf User}: The user who enrolls its biometric data and authenticates itself to the server. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$. 
+
 	\item {\sf Scanner}: A machine to extract the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
-	\item {\sf Device}: A device belonging to the user. In practice, it can be a desktop or a mobile phone. It is responsible for most computation and storing the enrollment secret key {\sf esk} and probe secret key {\sf psk}. It queries $\mathcal{O}_{\mathcal{B}}$ for biometric data through the {\sf Scanner}.
-	\item {\sf Server}: The server responsible for authenticating the user. It stores the comparison secret key {\sf csk} and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
+	
+	\item {\sf Device}: A device belonging to the user. In practice, it can be a desktop or a mobile phone. It processes the enrollment and probe for ${\sf User}$ with keys {\sf esk} and {\sf psk}. It queries $\mathcal{O}_{\mathcal{B}}$ for biometric data through the {\sf Scanner}.
+	
+	\item {\sf KDS}: A key distribution service. It runs ${\sf Setup}$ to generate keys and distribute them to ${\sf User}$ and ${\sf Server}$.
+		
+	\item {\sf Server}: The server responsible for authenticating the user. It stores the comparison key {\sf csk} and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message {\sf psk} with the registered enrollment message and returns the result.  
 
 \end{itemize}
 
-%\begin{figure}[]
-	%\begin{center}
-		%\begin{tabular}{l c r c}
-			%{\bf User} & 	& {\bf Server} \\
 
-			%\hline
-
-			%\\
-
-			%${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
-
-			%$ \mathbf{b} \getsdollar \mathcal{B}, \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
-
-			%$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
-
-			%& $\xrightarrow{\quad {\sf csk}, \mathbf{c_x} \quad}$ \\
-
-			%$ \mathbf{b'} \getsdollar \mathcal{B}, \mathbf{y} \gets {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ \\
-
-			%$\mathbf{c_y} \gets {\sf Probe}({\sf psk}, \mathbf{y})$ \\
-
-			%& $\xrightarrow{\quad \mathbf{c_y} \quad}$ \\
-			
-			%&  & $s \gets {\sf Compare} ({\sf csk}, \mathbf{c_x}, \mathbf{c_y})$ \\
-
-			%& & $r \gets {\sf Verify}(s) $ \\
-
-			%& $\xleftarrow{\quad r \quad}$ & 
-		%\end{tabular}
-	%\end{center}
-	%\caption{Authentication Model with User and Server}
-	%\label{table:model}
-%\end{figure}
+\input{tikz/dou_model.tex}
 
 %-------------------
 
-\input{tikz/model.tex}
+\subsection{Usage Model – Device-of-Domain}
+\label{sec:dod_model}
+
+In the model described in Figure \ref{fig:model_dod_overview} (an overview), Figure \ref{fig:model_dod_enrollment} (on enrollment), and Figure \ref{fig:model_dod_auth} (on authentication), users authenticate themselves to a server through devices that belong to a domain and biometric scanners that are shared among different users. A key distribution service distributes keys for them. In practice, a domain can be a department in an organization, and this models applies to the situation when a user wants to access a public service of a department, such as a restricted area or instrument. 
+
+\begin{itemize}
+
+	\item {\sf User}: The user who enrolls its biometric data at an enrollment station and authenticates itself to the server. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$.
+	
+	\item {\sf Domain}: A domain that owns several devices and one enrollment key ${\sf esk}$, one probe key ${\sf psk}$ and one comparison key ${\sf csk}$. In practice, a domain can be a department, and users enroll and authenticate themselves before accessing a restricted service of this department.
+
+	\item {\sf Scanner}: A machine to extract the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
+	
+	\item {\sf Station}: An enrollment station responsible for collecting the user's biometric data to enroll them for a domain on the server.
+
+	\item {\sf Device}: A device belonging to the domain. In practice, it can be a device checking identities for a restricted area or an instrument. It processes authentication for enrolled users of this domain.
+	
+	\item {\sf KDS}: A key distribution service. It runs ${\sf Setup}$ to generate keys and distribute them to {\sf Station}, {\sf Domain}, and {\sf Server}.
+		
+	\item {\sf Server}: The server responsible for authenticating the user. It stores the comparison key {\sf csk} and the user's enrollment message $\mathbf{c_x}$ for each domain. On authentication, it compares the probe message {\sf psk} with the registered enrollment message and returns the result.  
+
+\end{itemize}
+
 
 %-------------------
+
+\input{tikz/dod_model.tex}
+
+%-------------------
+
+\subsection{Instantiation with an fh-IPFE Scheme}
+\label{sec:instantiation}
 
 For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using ${\sf FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b'}$ be sampled from some distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of ${\sf FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
 
 \begin{itemize}
 
-	\item ${\sf USetup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}) \gets (({\sf msk}, {\sf pp}), ({\sf msk}, {\sf pp}))$ and ${\sf csk} \gets {\sf pp}$.
+	\item ${\sf Setup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}) \gets (({\sf msk}, {\sf pp}), ({\sf msk}, {\sf pp}))$ and ${\sf csk} \gets {\sf pp}$.
 
 	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. 
 
@@ -206,7 +215,7 @@ In the forgery game, we model the ability of a malicious {\sf Scanner} who has a
 
 			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$ \\
 
 			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
@@ -230,7 +239,7 @@ In the forgery game, we model the ability of a malicious {\sf Scanner} who has a
 
 			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$ \\
 
 			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
@@ -316,7 +325,7 @@ In the simulation game, we model the ability of the {\sf Server} who tries to le
 
 			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$ \\
 
 			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
@@ -340,7 +349,7 @@ In the simulation game, we model the ability of the {\sf Server} who tries to le
 
 			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf Setup}(1^\lambda)$ \\
 
 			$ \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
@@ -452,7 +461,7 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 \subsection{Identification Game}
 \label{sec:id_game}
 
-In the identification game, we model the ability of the {\sf Server} who tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}$, a list of $t$ probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$, and oracles to two distinct distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$. It tries to guess from which these messages are generated. The whole game is defined in Figure \ref{fig:id_game}.
+In the identification game, we model the ability of the malicious {\sf Server} who tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}$, a list of $t$ probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$, and oracles to two distinct distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$. It tries to guess from which these messages are generated. The whole game is defined in Figure \ref{fig:id_game}.
 
 \begin{figure}[h]
 	\begin{center}
@@ -465,7 +474,7 @@ In the identification game, we model the ability of the {\sf Server} who tries t
 
 			$\mathcal{B}^{(0)}, \mathcal{B}^{(1)} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \{ \mathcal{B}^{(0)}, \mathcal{B}^{(1)} \}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf Setup}(1^\lambda)$ \\
 
 			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(b)}}}()$ \\
 
@@ -529,7 +538,7 @@ In the reusability game, we model the ability of a malicious application who tri
 
 			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$ \\
 
 			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
@@ -553,7 +562,7 @@ In the reusability game, we model the ability of a malicious application who tri
 
 			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
 
-			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf USetup}(1^\lambda)$ \\
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$ \\
 
 			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
 
