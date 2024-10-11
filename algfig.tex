@@ -1,0 +1,55 @@
+\begin{figure}[h]
+\centerline{
+
+\minipage{0.45\textwidth}
+	\begin{tabular}{l c}
+		${\sf Forg}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O})$\\
+
+			\hline
+
+			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$ \\
+
+			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
+
+			${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O} } ( \mathbf{c_x} )$ \\	
+
+			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
+
+			\textbf{return} ${\sf Verify}(s)$
+			
+	\end{tabular}
+	\caption{The Forgery Game}
+	\label{fig:forgery_game}
+\endminipage
+\minipage{0.45\textwidth}
+	\begin{tabular}{l c}
+		${\sf Forg'}_{\Pi, \mathbb{B}}(\mathcal{A'}^{\mathcal{O'}})$\\
+
+			\hline
+
+			$\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \\
+
+			${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$ \\
+
+			$\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ \\
+
+			$\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ \\
+
+			${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O'}}()$ \\
+
+			$s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$ \\
+
+			\textbf{return} ${\sf Verify}(s)$
+			
+		\end{tabular}
+	\caption{The Plain Forgery Game}
+	\label{fig:plain_forgery_game}
+\endminipage
+}
+\end{figure}
+
+
