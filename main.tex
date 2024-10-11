@@ -269,8 +269,6 @@ Depending on the threat model, we can also consider the following oracles:
 \begin{itemize}
 	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x'}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x'})$.
 
-	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y'}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y'})$.
-
 	\item $\mathcal{O}_{\sf Compare}^q({\sf csk}, \cdot, \cdot)$: If this oracle has been queried over $q$ times, it aborts. Otherwise, on input $\mathbf{c_x'}$ and $\mathbf{c_y'}$, it outputs the comparison result ${\sf Compare}( {\sf csk}, \mathbf{c_x'}, \mathbf{c_y'} )$.
 
 \end{itemize}
@@ -367,7 +365,7 @@ In the simulation game, we model the ability of the {\sf Server} who tries to le
 	\label{fig:sim_game}
 \end{figure}
 
-The given oracle $\mathcal{O}$ and $\mathcal{\tilde O}$ consist of the oracle $\mathcal{O}_{\sf samp}$:
+The given oracle $\mathcal{O}$ and $\mathcal{\tilde O}$ consists of the oracle $\mathcal{O}_{\sf samp}$:
 
 \begin{itemize}
 	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$,
@@ -503,12 +501,6 @@ The given oracle $\mathcal{O}$ consists of the following oracles:
 	
 \end{itemize}
 
-Depending on the threat model, we can also consider the oracle:
-
-\begin{itemize}
-	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x'}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x'})$.
-\end{itemize}
-
 We define the advantage of an adversary $\mathcal{A}$ in the identification game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\sf Id}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} := |\Pr[{\sf Id}_{\Pi}(\mathcal{A}^\mathcal{O}) \to 1] - \frac{1}{2}|.
@@ -580,7 +572,7 @@ In the reusability game, we model the ability of a malicious application who tri
 }
 \end{figure}
 
-The given oracle $\mathcal{O}$ consist of the following oracles:
+The given oracle $\mathcal{O}$ consists of the following oracles:
 
 \begin{itemize}
 	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$,
