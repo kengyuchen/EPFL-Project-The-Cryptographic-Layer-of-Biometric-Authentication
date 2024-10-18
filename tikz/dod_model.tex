@@ -19,17 +19,19 @@
 
 \node (scanner4) [element] at (3,1.5) {{\sf Scanner}};
 
-\node (station) [element] at (7,8) {\sf Station};
+\node (station) [rectangle, rounded corners, 
+	minimum width=2.5cm, 
+	minimum height=1.5cm,
+	text centered,
+	fill=white!70!black,
+	draw=black
+] at (7,8) {\sf Station};
 
-\node (device1) [element] at (7,5.5) {\sf Device};
+\node (device1) [element] at (7, 5.3) {\sf Device};
 
-\node (device2) [element] at (7,3.5) {\sf Device};
+\node (device2) [element] at (7, 3.7) {\sf Device};
 
-\node (device3) [element] at (7,1.5) {\sf Device};
-
-\begin{pgfonlayer}{background layer}
-    \draw [rounded corners, fill=blue!50!white] ($(device1) + (-1.1, 1.4)$) rectangle ($(device2) + (1.1, -0.75)$);
-\end{pgfonlayer}
+\node (device3) [element] at (7, 1.5) {\sf Device};
 
 \begin{pgfonlayer}{background layer}
 \node (domain1) [
@@ -38,10 +40,10 @@
     minimum height=4cm,
     fill=blue!50!white,
     draw=black]
-at ($(device1)!0.5!(device2) + (0, 0.5)$) {};
+at ($(device1)!0.6!(device2) + (0, 0.5)$) {};
 \end{pgfonlayer};
 
-\node (domain1_text) [element,fill=none,draw=none] at ($(domain1.north) + (0, -0.5)$) {\sf Domain 1};
+\node (domain1_text) [element,fill=none,draw=none] at ($(domain1.north) + (0, -0.5)$) {\sf Domain1};
 
 \begin{pgfonlayer}{background layer}
 \node (domain2) [
@@ -55,9 +57,6 @@ at ($(device3) + (0, -0.3)$) {};
 
 \node (domain2_text) [element,fill=none,draw=none] at ($(domain2.south) + (0, 0.4)$) {\sf Domain 2};
 
-% \begin{pgfonlayer}{background layer}
-% \draw [rounded corners, fill=orange!50!white] ($(device3) + (-1.1, 0.75)$) rectangle ($(device3) + (1.1, -0.75)$);
-% \end{pgfonlayer}
 
 \node (server) [element] at (12,4.5) {\sf Server};
 

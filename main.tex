@@ -104,14 +104,15 @@ In general, an authentication shceme $\Pi$ associated with a family of biometric
 
 \end{itemize}
 
-
+\noindent 
 We discuss two usage models that employs the authentication scheme $\Pi$.
 
 
 \subsection{Usage Model – Device-of-User}
 \label{sec:dou_model}
 
-In the model described in Figure \ref{fig:model_dou_overview} (an overview), Figure \ref{fig:model_dou_enrollment} (on enrollment), and Figure \ref{fig:model_dou_auth} (on authentication), a user authenticates itself to a server through its own device and a biometric scanner that is shared among different users. A key distribution service distributes keys for them. In practice, this model applies to the situation when the user accesses an online service run by the server.
+In the model described in Figure \ref{fig:model_dou_overview} (an overview), Figure \ref{fig:model_dou_enrollment} (on enrollment), and Figure \ref{fig:model_dou_auth} (on authentication), users authenticate themselves to a server through their own devices and biometric scanners that are shared among different users.
+A key distribution service distributes keys for them. In practice, this model applies to the situation when the users access an online service run by the server.
 
 \begin{itemize}
 
@@ -136,7 +137,8 @@ In the model described in Figure \ref{fig:model_dou_overview} (an overview), Fig
 \subsection{Usage Model – Device-of-Domain}
 \label{sec:dod_model}
 
-In the model described in Figure \ref{fig:model_dod_overview} (an overview), Figure \ref{fig:model_dod_enrollment} (on enrollment), and Figure \ref{fig:model_dod_auth} (on authentication), users first enroll themselves at an enrollment station and then authenticate themselves to a server through devices that belong to a domain. A key distribution service distributes enrollment keys to the enrollment station, probe keys to the domain, and comparison keys to the server. In practice, a domain can be a department in an organization, and this models applies to the situation when a user wants to access a public service of a department, such as a restricted area or instrument. 
+In the model described in Figure \ref{fig:model_dod_overview} (an overview), Figure \ref{fig:model_dod_enrollment} (on enrollment), and Figure \ref{fig:model_dod_auth} (on authentication), users first enroll themselves at an enrollment station and then authenticate themselves to a server through devices that belong to a domain.
+A key distribution service distributes enrollment keys to the enrollment station, probe keys to the domain, and comparison keys to the server. In practice, a domain can be a department in an organization, and this models applies to the situation when a user wants to access a public service of a department, such as a restricted area or instrument. 
 
 \begin{itemize}
 
@@ -152,7 +154,7 @@ In the model described in Figure \ref{fig:model_dod_overview} (an overview), Fig
 	
 	\item {\sf KDS}: A key distribution service. It runs ${\sf Setup}$ to generate keys and distribute them to {\sf Station}, {\sf Domain}, and {\sf Server}.
 		
-	\item {\sf Server}: The server responsible for authenticating the user. It stores the comparison key {\sf csk} and the user's enrollment message $\mathbf{c_x}$ for each domain. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
+	\item {\sf Server}: The server responsible for authenticating the user. It stores the comparison key {\sf csk} for each domain and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
 
 \end{itemize}
 
@@ -172,7 +174,7 @@ For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\s
 
 \begin{itemize}
 
-	\item ${\sf Setup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs $({\sf esk}, {\sf psk}) \gets (({\sf msk}, {\sf pp}), ({\sf msk}, {\sf pp}))$ and ${\sf csk} \gets {\sf pp}$.
+	\item ${\sf Setup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs ${\sf esk} \gets ({\sf msk}, {\sf pp})$, ${\sf psk} \gets ({\sf msk}, {\sf pp})$ and ${\sf csk} \gets {\sf pp}$.
 
 	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. 
 
