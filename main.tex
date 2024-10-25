@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%
 
-% Semester Project for EPFL
+% Semester Project Fall 2024 for EPFL
 % Author: Keng-Yu Chen
 
 %%%%%%%%%%%%%%%%%%%%
@@ -67,16 +67,66 @@ In this report, we assume
 	
 		\item ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
 	
-		\item ${\sf FE.Dec}({\sf pp}, f_\mathbf{x}, \mathbf{c_y}) \to z \in \mathbb{F}$: It outputs a value $z$.
+		\item ${\sf FE.Dec}({\sf pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
 	
 	\end{itemize}
 	
-	\noindent Correctness: The fh-IPFE scheme {\sf FE} is \emph{correct} if $\forall ({\sf msk}, {\sf pp}) \gets {\sf FE.Setup}$, $\forall \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\noindent Correctness: The fh-IPFE scheme {\sf FE} is \emph{correct} if $\forall ({\sf msk}, {\sf pp}) \gets {\sf FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 	\[
-		{\sf FE.Dec}( {\sf pp}, {\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}), {\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) ) = \langle \mathbf{x} , \mathbf{y} \rangle \in \mathbb{F}.
+		{\sf FE.Dec}( {\sf pp}, {\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}), {\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \in \mathbb{F}.
 	\]
 
 \end{definition}
+
+
+\begin{definition}[Two-Input Inner Product Functional Encryption (adapted from \cite{cryptoeprint:2022/441})]
+\label{def:2i-IPFE}
+	A \emph{two-input inner product functional encryption} (2i-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms ${\sf FE.Setup}$, ${\sf FE.KeyGen}$, ${\sf FE.Enc}$, and ${\sf FE.Dec}$:
+
+	\begin{itemize}
+	
+		\item ${\sf FE.Setup}(1^\lambda) \to {\sf sk}, {\sf ek}_1, {\sf ek}_2$: It outputs a secret key ${\sf sk}$ and two encryption keys ${\sf ek}_1, {\sf ek}_2$.
+	
+		\item ${\sf FE.KeyGen}({\sf sk}, \mathbf{A}) \to {\sf dk}_\mathbf{A}$: It generates the functional decryption key ${\sf dk}_\mathbf{A}$ for a diagonal matrix $\mathbf{A} \in \mathbb{F}^{k \times k}$,  
+	
+		\item ${\sf FE.Enc}({\sf ek}_i, \mathbf{x}) \to \mathbf{c_x}$: Given an encryption key, either ${\sf ek}_1$ or ${\sf ek_2}$, it encrypts the input vector $\mathbf{x} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_x}$. 
+	
+		\item ${\sf FE.Dec}({\sf dk}_\mathbf{A}, \mathbf{c_x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
+	
+	\end{itemize}
+	
+	\noindent Correctness: The 2i-IPFE scheme {\sf FE} is \emph{correct} if $\forall ({\sf sk}, {\sf ek}_1, {\sf ek}_2) \gets {\sf FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, and $\mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+
+	\[
+		{\sf FE.Dec}({\sf FE.KeyGen}({\sf sk},  \mathbf{A}), {\sf FE.Enc}({\sf ek}_1, \mathbf{x}), {\sf FE.Enc}({\sf ek}_2, \mathbf{y}) ) = \mathbf{x} \mathbf{A} \mathbf{y}^T \in \mathbb{F}.
+	\]
+
+\end{definition}
+
+
+\begin{definition}[Two-Client Inner Product Functional Encryption (adapted from \cite{cryptoeprint:2022/441})]
+\label{def:2c-IPFE}
+	A \emph{two-client inner product functional encryption} (2c-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms ${\sf FE.Setup}$, ${\sf FE.KeyGen}$, ${\sf FE.Enc}$, and ${\sf FE.Dec}$:
+
+	\begin{itemize}
+	
+		\item ${\sf FE.Setup}(1^\lambda) \to {\sf sk}, {\sf ek}_1, {\sf ek}_2$: It outputs a secret key ${\sf sk}$ and two encryption keys ${\sf ek}_1, {\sf ek}_2$.
+	
+		\item ${\sf FE.KeyGen}({\sf sk}, \mathbf{A}) \to {\sf dk}_\mathbf{A}$: It generates the functional decryption key ${\sf dk}_\mathbf{A}$ for a diagonal matrix $\mathbf{A} \in \mathbb{F}^{k \times k}$,  
+	
+		\item ${\sf FE.Enc}(\ell, {\sf ek}_i, \mathbf{x}) \to \mathbf{c_x}$: Given a label $\ell$ and an encryption key, either ${\sf ek}_1$ or ${\sf ek_2}$, it encrypts the input vector $\mathbf{x} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_x}$. 
+	
+		\item ${\sf FE.Dec}({\sf dk}_\mathbf{A}, \mathbf{c_x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
+	
+	\end{itemize}
+	
+	\noindent Correctness: The 2c-IPFE scheme {\sf FE} is \emph{correct} if $\forall ({\sf sk}, {\sf ek}_1, {\sf ek}_2) \gets {\sf FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, label $\ell$, and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\[
+		{\sf FE.Dec}({\sf FE.KeyGen}({\sf sk},  \mathbf{A}), {\sf FE.Enc}(\ell, {\sf ek}_1, \mathbf{x}), {\sf FE.Enc}(\ell, {\sf ek}_2, \mathbf{y}) ) = \mathbf{x} \mathbf{A} \mathbf{y}^T \in \mathbb{F}.
+	\]
+
+\end{definition}
+
 
 %-------------------
 
@@ -168,9 +218,9 @@ A key distribution service distributes enrollment keys to the enrollment station
 %-------------------
 
 \subsection{Instantiation with an fh-IPFE Scheme}
-\label{sec:instantiation}
+\label{sec:fh-IPFE-instantiation}
 
-For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using ${\sf FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b'}$ be sampled from some distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of ${\sf FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
+Let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using ${\sf FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b'}$ be sampled from some distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of ${\sf FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
 
 \begin{itemize}
 
@@ -192,13 +242,91 @@ For example, let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\s
 
 By the correctness of the functional encryption scheme $\sf FE$, we have
 \[
-	s = {\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) = \langle \mathbf{x}, \mathbf{y} \rangle = \sum_{i=1}^k -2b_ib_i' + \|\mathbf{b}\|^2 + \|\mathbf{b'}\|^2 = \| \mathbf{b} - \mathbf{b'} \|^2.
+	s = {\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{y}^T = \sum_{i=1}^k -2b_ib_i' + \|\mathbf{b}\|^2 + \|\mathbf{b'}\|^2 = \| \mathbf{b} - \mathbf{b'} \|^2.
 \]
 
 which is the square of the Euclidean distance between two templates $\mathbf{b}$ and $\mathbf{b}'$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}'$ are close enough such that $\|\mathbf{b} - \mathbf{b'}\| < \tau$, the scheme results in $r = 1$, a successful authentication.
 
 
+Instantiated with an fh-IPFE scheme in this way, the comparison secret key ${\sf csk}$ is public, and the enrollment secret key ${\sf esk}$ and probe secret key ${\sf psk}$ are the same. Anyone with access to the enrollment message ${\sf cx}$ and either one of ${\sf esk}$, ${\sf psk}$, or a probe oracle ${\sf Probe}({\sf psk}, \cdot )$ can probe some $\mathbf{y}^{\prime} \in \mathbf{F}^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about $\mathbf{x}$. Even if the adversary can only sample random ciphertexts $\mathbf{c_{y}}$ without knowing $\mathbf{y}$, if the field size $q$ is not large enough, one can find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T < \tau$ to impersonate the user by sampling many times offline.
+
+Therefore, {\sf Server} must store $\mathbf{c_x}$ securely, to avoid such an attack from an adversary who can access the probe oracle; {\sf Device} must protect its probe function, to avoid such an attack from a malicious {\sf Server}. 
+
+In the Device-of-Domain model, we assume the probe oracle is public, just as everyone can try accessing a public service. A malicious {\sf Station} or {\sf Server}, who has the enrollment message $\mathbf{c_x}$, can utilize this attack to retrieve information about {\sf User}.
+
+
 %-------------------
+
+
+\subsection{Instantiation with a 2i-IPFE Scheme}
+\label{sec:2i-IPFE-instantiation}
+
+Let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be a 2i-IPFE scheme we defined in Definition \ref{def:2i-IPFE}. Following the scheme in Section \ref{sec:fh-IPFE-instantiation}, we can instantiate a biometric authentication scheme using ${\sf FE}$.
+
+\begin{itemize}
+
+	\item ${\sf Setup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf sk}, {\sf ek}_1, {\sf ek}_2$, $ {\sf dk}_{\mathbf{I}} \gets {\sf FE.KeyGen}(sk, \mathbf{I}_{k+2})$, where $\mathbf{I}_{k+2}$ is an identity matrix of size $(k+2) \times (k+2)$. It outputs ${\sf esk} \gets {\sf ek}_1$, ${\sf psk} \gets {\sf ek}_2$, and ${\sf csk} \gets {\sf dk}_{\mathbf{I}}$
+
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}(), {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: The same as the scheme in \ref{sec:fh-IPFE-instantiation}. 
+
+	\item ${\sf Enroll}({\sf esk}, \mathbf{x})$: It calls ${\sf FE.Enc}({\sf ek}_1, \mathbf{x}) \to \mathbf{c_x}$ and outputs $\mathbf{c_x}$.
+
+	\item ${\sf Probe}({\sf psk}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf ek}_2, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+
+	\item ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+
+	\item ${\sf Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
+
+\end{itemize}
+
+By the correctness of the functional encryption scheme $\sf FE$, we have
+\[
+	s = {\sf FE.Dec}({\sf dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \mathbf{x} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b'} \|^2.
+\]
+just as the scheme in Section \ref{sec:fh-IPFE-instantiation}
+
+
+Unlike the previous scheme, instantiated with a 2i-IPFE scheme in this way, the comparison secret key ${\sf csk}$ is now secret, and the enrollment secret key ${\sf esk}$ and probe secret key ${\sf psk}$ are distinct. Without ${\sf csk}$, one cannot compare an enrollment message $\mathbf{c_x}$ and a probe message $\mathbf{c_y}$. We can also transmit $\mathbf{c_x}$ in a public channel and store it in a public storage, under necessary security requirements of the 2i-IPFE scheme, such as indistinguishability of $\mathbf{c_x}$.
+
+In the Device-of-Domain model, the indistinguishability of $\mathbf{c_x}$ is against an adversary who has a probe oracle ${\sf Probe}({\sf psk}, \cdot)$. If {\sf Server} is malicious, then it can use ${\sf csk}$ to distinguish $\mathbf{c_x}$ enrolled by different samples. Therefore, we must limit the adversary's ability. For example, we can require the adversary to distinguish biometric vectors sampled from distributions in a pre-defined pool, and the adversary can only probe vectors randomly sampled from a distribution in the pool. We can also limit the rate of the probe oracle.
+
+%-------------------
+
+\subsection{Instantiation with a 2c-IPFE Scheme}
+\label{sec:2c-IPFE-instantiation}
+
+Note that if labels remain constant, a 2c-IPFE scheme is reduced to a 2i-IPFE scheme. Therefore, we can consider utilizing the label to represent each domain in the Device-of-Domain model. Let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be a 2c-IPFE scheme we defined in Definition \ref{def:2c-IPFE}. Following the scheme in Section \ref{sec:2i-IPFE-instantiation}, we can instantiate a biometric authentication scheme using ${\sf FE}$.
+
+\begin{itemize}
+
+	\item ${\sf Setup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf sk}, {\sf ek}_1, {\sf ek}_2$, $ {\sf dk}_{\mathbf{I}} \gets {\sf FE.KeyGen}(sk, \mathbf{I}_{k+2})$, where $\mathbf{I}_{k+2}$ is an identity matrix of size $(k+2) \times (k+2)$. For keys used for {\sf Domain} $\ell$, it outputs ${\sf esk} \gets (\ell, {\sf ek}_1)$, ${\sf psk} \gets (\ell, {\sf ek}_2)$, and ${\sf csk} \gets {\sf dk}_{\mathbf{I}}$.
+
+	Note that when the previous 2i-IPFE-based scheme in Section \ref{sec:2i-IPFE-instantiation} is applied to a Device-of-Domain model, we assume that ${\sf Setup}$ is run once for each domain to generate different ${\sf esk}, {\sf psk}, {\sf csk}$. In the scheme in this section, however, ${\sf Setup}$ is run only once for all the domains, and each domain shares the same ${\sf csk}$ and the same ${\sf esk}, {\sf psk}$ except different labels.
+
+	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}(), {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: The same as the scheme in \ref{sec:2i-IPFE-instantiation}. 
+
+	\item ${\sf Enroll}({\sf esk}, \mathbf{x})$: It calls ${\sf FE.Enc}(\ell, {\sf ek}_1, \mathbf{x}) \to \mathbf{c_x}$ and outputs $\mathbf{c_x}$.
+
+	\item ${\sf Probe}({\sf psk}, \mathbf{y})$: It calls ${\sf FE.Enc}(\ell, {\sf ek}_2, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+
+	\item ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+
+	\item ${\sf Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
+
+\end{itemize}
+
+By the correctness of the functional encryption scheme $\sf FE$, if the labels of $\mathbf{c_x}$ and $\mathbf{c_y}$ are the same (they are of the same domain), we have
+\[
+	s = {\sf FE.Dec}({\sf dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b'} \|^2.
+\]
+just as the scheme in Section \ref{sec:2i-IPFE-instantiation}
+
+When the Device-of-Domain model is instantiated with a 2c-IPFE scheme in this way, the enrollment secret key ${\sf esk}$ and probe secret key ${\sf psk}$ are now shared among all the devices, regardless of their domains. Therefore, to let a malicious or broken {\sf Domain} not threaten other honest ones, one needs to make sure given ${\sf esk}$ or ${\sf psk}$, $\mathbf{c_x}$ still does not leak information about $\mathbf{x}$. This is different from the scheme in Section \ref{sec:2i-IPFE-instantiation}, where we only need seurity against an adversary who has a probe oracle ${\sf Probe}(\sf psk)$.
+
+If {\sf Server} and {\sf Domain} are both malicious, then the adversary can use ${\sf csk}$ to distinguish $\mathbf{c_x}$ and even recover $\mathbf{x}$. Therefore, we assume at most one party of them can be malicious at the same time. Note that this is the same as the 2i-IPFE-based scheme, where only one of {\sf Server} and {\sf Domain} can be malicious.
+
+%-------------------
+
 
 \section{Security Games}
 
