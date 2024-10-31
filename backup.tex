@@ -92,3 +92,368 @@ The authentication scheme $\Pi$ is called \emph{IND} secure if for all PPT adver
 	\Adv^{\sf IND}_{\Pi, \mathcal{A^\mathcal{O}}} = \negl.
 \]
 
+%-------------------
+
+\subsection{Simulation Game}
+\label{sec:simulation_game}
+
+In the simulation game, we model the ability of the {\sf Server} who tries to learn something more than the comparison result of the enrollment and probe messages. The adversary $\mathcal{A}$ is given an enrollment message and a list of $t$ probe messages, and it needs to guess whether these are real messages or simulation results of a simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ based on the $\sf Compare$ function. Intuitively, the simulator receives a list of $\sf Compare$ results of real enrollment and probe messages, and it returns some manual enrollment or probe messages that look similar to real ones. The whole game is defined in Figure \ref{fig:sim_game}.
+
+
+\begin{figure}[h]
+\centerline{
+	
+	\begin{minipage}{0.49\textwidth}
+	\begin{algorithm}[H]
+	\caption{${\sf SIM-Real}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O})$}
+	\label{alg:sim_real_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ 
+
+		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$ 
+
+		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$ 
+
+		\State $\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}() \}_{i=1}^t $
+			
+		\State $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$
+
+		\State $b \gets \mathcal{A}^\mathcal{O} ({\sf csk}, \mathbf{c_x}, \{\mathbf{c_y}^{(i)}\}_{i=1}^t )$ 
+
+		\State \Return $b$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+		
+		
+	\begin{minipage}{0.49\textwidth}
+	\begin{algorithm}[H]
+	\caption{${\sf SIM-Ideal}_{\Pi, \mathbb{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S})$}
+	\label{alg:sim_ideal_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State ${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf Setup}(1^\lambda)$
+
+		\State $ \mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+
+		\State $\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{{\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()\}_{i=1}^t $
+
+		\State $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$
+
+		\State ${\sf C} \gets \{ {\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y}^{(i)}) \}_{i=1}^t$
+
+		\State $\mathbf{\tilde c_x}, \{\mathbf{\tilde c_y}^{(i)}\}_{i=1}^t \gets \mathcal{S}_0( {\sf csk}, {\sf C} )$
+
+		\State $b \gets \mathcal{A}^\mathcal{\tilde O} ({\sf csk}, \mathbf{\tilde c_x}, \{ \mathbf{\tilde c_y}^{(i)} \}_{i=1}^t )$
+
+		\State \Return $b$
+			
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}	
+}
+\caption{The Simulation Game}
+\label{fig:sim_game}
+\end{figure}
+
+The given oracle $\mathcal{O}$ and $\mathcal{\tilde O}$ consists of the oracle $\mathcal{O}_{\sf samp}$:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$,
+	\begin{itemize}
+		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ and then outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+	\end{itemize}
+
+\end{itemize}
+
+Depending on the threat model, we can also consider the following oracles for $\mathcal{O}$:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x'}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x'})$.
+
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y'}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y'})$.
+\end{itemize}
+
+The corresponding oracles of $\mathcal{O}_{\sf Enroll}$ and $\mathcal{O}_{\sf Probe}$ for $\mathcal{\tilde O}$ are $\tilde{\mathcal{O}}_{\sf Enroll}$ and $\tilde{\mathcal{O}}_{\sf Probe}$. They are stateful and memorize all the previous queries, and they include two simulators: $\mathcal{S}_{\sf Enroll}$ and $\mathcal{S}_{\sf Probe}$.
+
+\begin{itemize}
+
+	\item $\tilde{\mathcal{O}}_{\sf Enroll} ({\sf csk} ,{\sf esk}, \cdot)$: On input $\mathbf{x}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous probe messages $\mathbf{c_y}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Enroll}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
+
+	\item $\tilde{\mathcal{O}}_{\sf Probe} ({\sf csk}, {\sf psk}, \cdot)$: On input $\mathbf{y}^{(j)}$, it updates the collection of comparison results ${\sf C}$ by adding the results with all previous enrollment messages $\mathbf{c_x}^{(i)}$. Then it calls the simulator $\mathcal{S}_{\sf Probe}({\sf csk}, {\sf C})$ and returns whatever the simulator returns.
+
+\end{itemize}
+
+The details of oracles $\tilde{\mathcal{O}}_{\sf Enroll}$ and $\tilde{\mathcal{O}}_{\sf Probe}$ are given in Figure \ref{fig:sim_game_oracle}.
+
+\begin{figure}[h]
+\centerline{
+
+	\begin{minipage}{0.49\textwidth}
+	\begin{algorithm}[H]
+	\caption{${\mathcal{ \tilde O}}_{\sf Enroll}({\sf csk}, {\sf esk}, \mathbf{x}^{(j)})$}
+	\label{alg:tilde_O_enroll}
+	\begin{algorithmic}[1]
+		\State $\mathbf{c_x}^{(j)} \gets {\sf Enroll}({\sf esk}, \mathbf{x}^{(j)})$
+
+		\State ${\sf C} \gets {\sf C} \cup \{ {\sf Compare}({\sf csk}, \mathbf{c_x}^{(j)}, \mathbf{c_y}^{(i)}) \}_{i}$
+
+		\State $\mathbf{c_x}' \gets \mathcal{S}_{\sf Enroll}({\sf csk}, {\sf C} )$
+			
+		\State \Return $\mathbf{c_x}'$
+			
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+	\begin{minipage}{0.49\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\tilde{\mathcal{O}}_{\sf Probe}({\sf csk}, {\sf psk}, \mathbf{y}^{(j)})$}
+	\label{alg:tilde_O_probe}
+	\begin{algorithmic}[1]
+
+		\State $\mathbf{c_y}^{(j)} \gets {\sf Probe}( {\sf psk}, \mathbf{y}^{(j)} ) $ 
+
+		\State ${\sf C} \gets {\sf C} \cup \{ {\sf Compare}({\sf csk}, \mathbf{c_x}^{(i)}, \mathbf{c_y}^{(j)}) \}_{i}$
+
+		\State $\mathbf{c_y}' \gets \mathcal{S}_{\sf Probe}({\sf csk}, {\sf C} )$
+
+		\State \Return $\mathbf{c_y}'$
+			
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+}
+\caption{Choice of the Oracle $\tilde{\mathcal{O}}$}
+\label{fig:sim_game_oracle}
+\end{figure}
+
+
+We define the advantage of an adversary $\mathcal{A}$ and a simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ in the simulation game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\sf SIM}_{\Pi, \mathbb{B}, \mathcal{A}^{\mathcal{O}, \tilde{\mathcal{O}}}, \mathcal{S}} := |\Pr[{\sf SIM-Real}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O}) \to 1] - \Pr[{\sf SIM-Ideal}_{\Pi, \mathbb{B}}(\mathcal{A}^{\tilde{\mathcal{O}}}, \mathcal{S}) \to 1]|.
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{simulation secure} if for any PPT adversary $\mathcal{A}$, there exists a PPT simulator $\mathcal{S} = (\mathcal{S}_0, \mathcal{S}_{\sf Enroll}, \mathcal{S}_{\sf Probe})$ such that
+\[
+	\Adv^{\sf SIM}_{\Pi, \mathbb{B}, \mathcal{A}^{\mathcal{O}, \tilde{\mathcal{O}}}, \mathcal{S}} = \negl.
+\]
+
+%-------------------
+
+\subsection{Identification Game}
+\label{sec:id_game}
+
+In the identification game, we model the ability of the malicious {\sf Server} who tries to identify the user. The adversary $\mathcal{A}$ is given an enrollment message $\mathbf{c_x}$, a list of $t$ probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$, and oracles to two distinct distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$. It tries to guess from which these messages are generated. The whole game is defined in Algorithm \ref{alg:id_game}.
+
+\begin{figure}[h]
+\centerline{
+
+	\begin{minipage}{0.7\textwidth}
+	\begin{algorithm}[H]
+	\caption{${\sf Id}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O})$}
+	\label{alg:id_game}
+	\begin{algorithmic}[1]
+		\State $b \getsdollar \{0, 1\}$
+
+		\State $\mathcal{B}^{(0)}, \mathcal{B}^{(1)} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \{ \mathcal{B}^{(0)}, \mathcal{B}^{(1)} \}$
+
+		\State ${\sf esk}, {\sf psk}, {\sf csk}, \gets {\sf Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(b)}}}()$
+
+		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+
+		\State $\{\mathbf{y}^{(i)}\}_{i=1}^t \gets \{ {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(b)}}}() \}_{i=1}^t $
+
+		\State $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t \gets \left\{ {\sf Probe}( {\sf psk}, \mathbf{y}^{(i)} ) \right \}_{i=1}^t$
+
+		\State $\tilde{b} \gets \mathcal{A}^\mathcal{O} ( {\sf csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+
+		\State \Return $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+}
+\caption{The Identification Game}
+\label{fig:id_game}
+\end{figure}
+
+
+The given oracle $\mathcal{O}$ consists of the following oracles:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\mathcal{B}^{(0)}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}^{(0)}$.
+
+	\item $\mathcal{O}_{\mathcal{B}^{(1)}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}^{(1)}$.
+
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$,
+	\begin{itemize}
+		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ and then outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+	\end{itemize}
+	
+\end{itemize}
+
+We define the advantage of an adversary $\mathcal{A}$ in the identification game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\sf Id}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} := |\Pr[{\sf Id}_{\Pi}(\mathcal{A}^\mathcal{O}) \to 1] - \frac{1}{2}|.
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{identification secure} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\sf Id}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} = \negl.
+\]
+
+%-------------------
+
+\subsection{Reusability Game}
+\label{sec:reuse_game}
+
+In the reusability game, we model the ability of a malicious application who tries to forge the user in another application. The adversay $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracle $\mathcal{O}$ and tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game is defined in Algorithm \ref{alg:reuse_game}.
+
+\begin{figure}[h]
+\centerline{
+
+	\begin{minipage}{0.45\textwidth}
+	\begin{algorithm}[H]
+	\caption{${\sf Reuse}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O})$}
+	\label{alg:reuse_game}
+	\begin{algorithmic}[1]
+
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}} ( \mathbf{c_x} )$
+
+		\State $s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return ${\sf Verify}(s)$
+			
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+
+	\begin{minipage}{0.45\textwidth}
+	\begin{algorithm}[H]
+	\caption{${\sf Reuse'}_{\Pi, \mathbb{B}}(\mathcal{A'}^{\mathcal{O'}})$}
+	\label{alg:plain_reuse_game}
+	\begin{algorithmic}[1]
+			
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O'}}()$
+
+		\State $s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return ${\sf Verify}(s)$
+			
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+}
+\caption{The Reusability Game (Left) and Plain Reusability Game (Right)}
+\label{fig:reuse_game}
+\end{figure}
+
+The given oracle $\mathcal{O}$ consists of the following oracles:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$,
+	\begin{itemize}
+		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ and then outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+	\end{itemize}
+	
+	\item $\mathcal{O}_{\sf Enroll}^{ {\sf Re}} (\cdot)$: On input ${\sf esk'}$, it first samples $\mathbf{x'} \getsdollar {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Enroll}({\sf esk'}, \mathbf{x'})$.
+	
+	\item $\mathcal{O}_{\sf Probe}^{ {\sf Re}} (\cdot)$: On input ${\sf psk'}$, it first samples $\mathbf{y'} \getsdollar {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Probe}({\sf psk'}, \mathbf{y'})$.
+
+	\item $\mathcal{O}_{\sf auth}^{q}({\sf csk}, \mathbf{c_x}, \cdot)$: If this oracle has been queried over $q$ times, it aborts. Otherwise, on input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
+\end{itemize}
+
+Depending on the threat model, we can also consider the following oracles:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\sf Enroll}({\sf esk}, \cdot)$: On input $\mathbf{x'}$, it outputs the enrollment message ${\sf Enroll}({\sf esk}, \mathbf{x'})$.
+
+	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y'}$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y'})$.
+
+	\item $\mathcal{O}_{\sf Compare}^q({\sf csk}, \cdot, \cdot)$: If this oracle has been queried over $q$ times, it aborts. Otherwise, on input $\mathbf{c_x'}$ and $\mathbf{c_y'}$, it outputs the comparison result ${\sf Compare}( {\sf csk}, \mathbf{c_x'}, \mathbf{c_y'} )$.
+
+\end{itemize}
+
+Note that the resuability game is defined in a similar way as the forgery game in Section \ref{sec:forgery_game}. The difference is their use cases and oracles. In the forgery game, the targeted adversary is an eavesdropper who has access to the server's database. If it can also access the user's device, it may be able to execute $\mathcal{O}_{\sf Enroll}$ and $\mathcal{O}_{\sf Probe}$. In contrast, the reusability game targets a malicious application, who can ask the user to enroll and probe with crafted secret keys. We assume the malicious application cannot access other functions in other applications.
+
+To consider potential false positives of biometrics match, we consider the plain reusability game in Algorithm \ref{alg:plain_reuse_game}, in which the adversary does not have any knowledge about the template. The given oracle $\mathcal{O'}$ consists of:
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$,
+	\begin{itemize}
+		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ and then outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+	\end{itemize}
+	
+	\item $\mathcal{O}_{\sf auth}^{q}({\sf csk}, \mathbf{c_x}, \cdot)$: If this oracle has been queried over $q$ times, it aborts. Otherwise, on input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
+
+\end{itemize}
+
+
+We define the advantage of an adversary $\mathcal{A}$ in the reusability game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\sf Reuse}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} := \Pr[{\sf Reuse}_{\Pi, \mathbb{B}}(\mathcal{A}^\mathcal{O}) \to 1] -
+	\max_{\text{PPT } \mathcal{A}'} \Pr[{\sf Reuse'}_{\Pi, \mathbb{B}}(\mathcal{A'}^\mathcal{O'}) \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{reusability secure} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\sf Reuse}_{\Pi, \mathbb{B}, \mathcal{A^\mathcal{O}}} = \negl.
+\]
+
+%-------------------
+
+%\input{analysis.tex}
+
+%-------------------
+
+% Section for Attacks and Reduction
+%1. If one can know whether x_1 is 0 or 1, it can break the fh-IPFE based scheme in the simuation game.
+	%a. Show that distributions of <x,y> and <x,y> | x_1 = 0 are very close
+	%b. Show that the simulator must follow the inner product rule
+
+%2. If one can break the forgery game without E_probe, it can break the identification game with E_enroll and E_compare
+	%a. First E_enroll(b^0)
+	%b. Let the adversary for the forgery game finds a c_y
+	%c. Check whether c_y is close to c_x^b or not
+	%d. Need to specify that Compare(c_x^0, c_y^1) and Compare(c_x^1, c_y^0) are high
+
+%3 For uniform distributed biometrics, if one can break the privacy game, one can break the simulation game.
+	%a. Let the adversary for the privacy game on c_x return x1
+	%b. x2 = x1 + r, r is uniformly generated
+	%c. O_enroll(x2) returns cx2
+	%d. Let the adversary for the privacy game on cx2 return x2'
+	%e. Check whether x2' = x2
+	%f. Show that in the real setting, x2' = x2 with high probability
+	%g. Show that in the ideal setting, there are too many possibilities that cx2 can match the Compare results, so not likely a simulator who only knows the Compare results can return exactly x2'.
+
