@@ -57,23 +57,23 @@ In this report, we assume
 
 \begin{definition}[Functional Hiding Inner Product Functional Encryption]
 \label{def:fh-IPFE}
-	A \emph{functional hiding inner product functional encryption} (fh-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms ${\sf FE.Setup}$, ${\sf FE.KeyGen}$, ${\sf FE.Enc}$, and ${\sf FE.Dec}$:
+	A \emph{functional hiding inner product functional encryption} (fh-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms $\textsf{FE.Setup}$, $\textsf{FE.KeyGen}$, $\textsf{FE.Enc}$, and $\textsf{FE.Dec}$:
 
 	\begin{itemize}
 	
-		\item ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$: It outputs the public parameter ${\sf pp}$ and the master secret key ${\sf msk}$.
+		\item $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$: It outputs the public parameter $\textsf{pp}$ and the master secret key $\textsf{msk}$.
 	
-		\item ${\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$: It generates the functional decryption key $f_\mathbf{x}$ for an input vector $\mathbf{x} \in \mathbb{F}^k$. 
+		\item $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to f_\mathbf{x}$: It generates the functional decryption key $f_\mathbf{x}$ for an input vector $\mathbf{x} \in \mathbb{F}^k$. 
 	
-		\item ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
+		\item $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
 	
-		\item ${\sf FE.Dec}({\sf pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
+		\item $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
 	
 	\end{itemize}
 	
-	\noindent Correctness: The fh-IPFE scheme {\sf FE} is \emph{correct} if $\forall ({\sf msk}, {\sf pp}) \gets {\sf FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\noindent Correctness: The fh-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 	\[
-		{\sf FE.Dec}( {\sf pp}, {\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}), {\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \in \mathbb{F}.
+		\textsf{FE.Dec}( \textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}), \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \in \mathbb{F}.
 	\]
 
 \end{definition}
@@ -81,24 +81,24 @@ In this report, we assume
 
 \begin{definition}[Two-Input Inner Product Functional Encryption (adapted from \cite{cryptoeprint:2022/441})]
 \label{def:2i-IPFE}
-	A \emph{two-input inner product functional encryption} (2i-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms ${\sf FE.Setup}$, ${\sf FE.KeyGen}$, ${\sf FE.Enc}$, and ${\sf FE.Dec}$:
+	A \emph{two-input inner product functional encryption} (2i-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms $\textsf{FE.Setup}$, $\textsf{FE.KeyGen}$, $\textsf{FE.Enc}$, and $\textsf{FE.Dec}$:
 
 	\begin{itemize}
 	
-		\item ${\sf FE.Setup}(1^\lambda) \to {\sf sk}, {\sf ek}_1, {\sf ek}_2$: It outputs a secret key ${\sf sk}$ and two encryption keys ${\sf ek}_1, {\sf ek}_2$.
+		\item $\textsf{FE.Setup}(1^\lambda) \to \textsf{sk}, \textsf{ek}_1, \textsf{ek}_2$: It outputs a secret key $\textsf{sk}$ and two encryption keys $\textsf{ek}_1, \textsf{ek}_2$.
 	
-		\item ${\sf FE.KeyGen}({\sf sk}, \mathbf{A}) \to {\sf dk}_\mathbf{A}$: It generates the functional decryption key ${\sf dk}_\mathbf{A}$ for a diagonal matrix $\mathbf{A} \in \mathbb{F}^{k \times k}$,  
+		\item $\textsf{FE.KeyGen}(\textsf{sk}, \mathbf{A}) \to \textsf{dk}_\mathbf{A}$: It generates the functional decryption key $\textsf{dk}_\mathbf{A}$ for a diagonal matrix $\mathbf{A} \in \mathbb{F}^{k \times k}$,  
 	
-		\item ${\sf FE.Enc}({\sf ek}_i, \mathbf{x}) \to \mathbf{c_x}$: Given an encryption key, either ${\sf ek}_1$ or ${\sf ek_2}$, it encrypts the input vector $\mathbf{x} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_x}$. 
+		\item $\textsf{FE.Enc}(\textsf{ek}_i, \mathbf{x}) \to \mathbf{c_x}$: Given an encryption key, either $\textsf{ek}_1$ or $\textsf{ek}_2$, it encrypts the input vector $\mathbf{x} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_x}$. 
 	
-		\item ${\sf FE.Dec}({\sf dk}_\mathbf{A}, \mathbf{c_x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
+		\item $\textsf{FE.Dec}(\textsf{dk}_\mathbf{A}, \mathbf{c_x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
 	
 	\end{itemize}
 	
-	\noindent Correctness: The 2i-IPFE scheme {\sf FE} is \emph{correct} if $\forall ({\sf sk}, {\sf ek}_1, {\sf ek}_2) \gets {\sf FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, and $\mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\noindent Correctness: The 2i-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{sk}, \textsf{ek}_1, \textsf{ek}_2) \gets \textsf{FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, and $\mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 
 	\[
-		{\sf FE.Dec}({\sf FE.KeyGen}({\sf sk},  \mathbf{A}), {\sf FE.Enc}({\sf ek}_1, \mathbf{x}), {\sf FE.Enc}({\sf ek}_2, \mathbf{y}) ) = \mathbf{x} \mathbf{A} \mathbf{y}^T \in \mathbb{F}.
+		\textsf{FE.Dec}(\textsf{FE.KeyGen}(\textsf{sk},  \mathbf{A}), \textsf{FE.Enc}(\textsf{ek}_1, \mathbf{x}), \textsf{FE.Enc}(\textsf{ek}_2, \mathbf{y}) ) = \mathbf{x} \mathbf{A} \mathbf{y}^T \in \mathbb{F}.
 	\]
 
 \end{definition}
@@ -106,29 +106,30 @@ In this report, we assume
 
 \begin{definition}[Two-Client Inner Product Functional Encryption (adapted from \cite{cryptoeprint:2022/441})]
 \label{def:2c-IPFE}
-	A \emph{two-client inner product functional encryption} (2c-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms ${\sf FE.Setup}$, ${\sf FE.KeyGen}$, ${\sf FE.Enc}$, and ${\sf FE.Dec}$:
+	A \emph{two-client inner product functional encryption} (2c-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms $\textsf{FE.Setup}$, $\textsf{FE.KeyGen}$, $\textsf{FE.Enc}$, and $\textsf{FE.Dec}$:
 
 	\begin{itemize}
 	
-		\item ${\sf FE.Setup}(1^\lambda) \to {\sf sk}, {\sf ek}_1, {\sf ek}_2$: It outputs a secret key ${\sf sk}$ and two encryption keys ${\sf ek}_1, {\sf ek}_2$.
+		\item $\textsf{FE.Setup}(1^\lambda) \to \textsf{sk}, \textsf{ek}_1, \textsf{ek}_2$: It outputs a secret key $\textsf{sk}$ and two encryption keys $\textsf{ek}_1, \textsf{ek}_2$.
 	
-		\item ${\sf FE.KeyGen}({\sf sk}, \mathbf{A}) \to {\sf dk}_\mathbf{A}$: It generates the functional decryption key ${\sf dk}_\mathbf{A}$ for a diagonal matrix $\mathbf{A} \in \mathbb{F}^{k \times k}$,  
+		\item $\textsf{FE.KeyGen}(\textsf{sk}, \mathbf{A}) \to \textsf{dk}_\mathbf{A}$: It generates the functional decryption key $\textsf{dk}_\mathbf{A}$ for a diagonal matrix $\mathbf{A} \in \mathbb{F}^{k \times k}$,  
 	
-		\item ${\sf FE.Enc}(\ell, {\sf ek}_i, \mathbf{x}) \to \mathbf{c_x}$: Given a label $\ell$ and an encryption key, either ${\sf ek}_1$ or ${\sf ek_2}$, it encrypts the input vector $\mathbf{x} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_x}$. 
+		\item $\textsf{FE.Enc}(\ell, \textsf{ek}_i, \mathbf{x}) \to \mathbf{c_x}$: Given a label $\ell$ and an encryption key, either $\textsf{ek}_1$ or $\textsf{ek}_2$, it encrypts the input vector $\mathbf{x} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_x}$. 
 	
-		\item ${\sf FE.Dec}({\sf dk}_\mathbf{A}, \mathbf{c_x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
+		\item $\textsf{FE.Dec}(\textsf{dk}_\mathbf{A}, \mathbf{c_x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
 	
 	\end{itemize}
 	
-	\noindent Correctness: The 2c-IPFE scheme {\sf FE} is \emph{correct} if $\forall ({\sf sk}, {\sf ek}_1, {\sf ek}_2) \gets {\sf FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, label $\ell$, and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\noindent Correctness: The 2c-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{sk}, \textsf{ek}_1, \textsf{ek}_2) \gets \textsf{FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, label $\ell$, and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 	\[
-		{\sf FE.Dec}({\sf FE.KeyGen}({\sf sk},  \mathbf{A}), {\sf FE.Enc}(\ell, {\sf ek}_1, \mathbf{x}), {\sf FE.Enc}(\ell, {\sf ek}_2, \mathbf{y}) ) = \mathbf{x} \mathbf{A} \mathbf{y}^T \in \mathbb{F}.
+		\textsf{FE.Dec}(\textsf{FE.KeyGen}(\textsf{sk},  \mathbf{A}), \textsf{FE.Enc}(\ell, \textsf{ek}_1, \mathbf{x}), \textsf{FE.Enc}(\ell, \textsf{ek}_2, \mathbf{y}) ) = \mathbf{x} \mathbf{A} \mathbf{y}^T \in \mathbb{F}.
 	\]
 
 \end{definition}
 
 
 %-------------------
+
 
 \section{Formalization}
 \label{sec:formalization}
@@ -138,24 +139,27 @@ In general, an authentication shceme $\Pi$ associated with a family of biometric
 
 \begin{itemize}
 
-	\item ${\sf Setup}(1^\lambda) \to {\sf esk}, {\sf psk}, {\sf csk}$: It outputs the enrollment secret key ${\sf esk}$, probe secret key ${\sf psk}$, and compare secret key $\sf csk$.
+	\item $\textsf{Setup}(1^\lambda) \to \textsf{esk}, \textsf{psk}, \textsf{csk}$: It outputs the enrollment secret key $\textsf{esk}$, probe secret key $\textsf{psk}$, and compare secret key $\sf csk$.
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{x}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{x}$, the input format for enrollment. 
+	\item $\textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{x}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{x}$, the input format for enrollment. 
 
-	\item ${\sf Enroll}({\sf esk}, \mathbf{x}) \to \mathbf{c_x}$: It outputs the enrollment message $\mathbf{c_x}$ from $\mathbf{x}$.
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{x}) \to \mathbf{c_x}$: It outputs the enrollment message $\mathbf{c_x}$ from $\mathbf{x}$.
 
-	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{y}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{y}$, the input format for probe.
+	\item $\textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{y}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from the distribution $\mathcal{B} \in \mathbb{B}$, it encodes biometric samples as $\mathbf{y}$, the input format for probe.
 
-	\item ${\sf Probe}({\sf psk}, \mathbf{y}) \to \mathbf{c_y}$: It outputs the probe message $\mathbf{c_y}$ from $\mathbf{y}$.
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{y}) \to \mathbf{c_y}$: It outputs the probe message $\mathbf{c_y}$ from $\mathbf{y}$.
 
-	\item ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
 
-	\item ${\sf Verify}(s) \to r \in \{0,1\}$: It is a deterministic algorithm that reads the comparison score $s$ and determines whether this is a successful authentication ($r = 1$) or not ($r = 0$).
+	\item $\textsf{Verify}(s) \to r \in \{0,1\}$: It is a deterministic algorithm that reads the comparison score $s$ and determines whether this is a successful authentication ($r = 1$) or not ($r = 0$).
 
 \end{itemize}
 
 \noindent 
 We discuss two usage models that employs the authentication scheme $\Pi$.
+
+
+%-------------------
 
 
 \subsection{Usage Model – Device-of-User}
@@ -166,22 +170,23 @@ A key distribution service distributes keys for them. In practice, this model ap
 
 \begin{itemize}
 
-	\item {\sf User}: The user who enrolls its biometric data and authenticates itself to the server. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$. 
+	\item \textsf{User}: The user who enrolls its biometric data and authenticates itself to the server. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$. 
 
-	\item {\sf Scanner}: A machine to extract the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
+	\item \textsf{Scanner}: A machine to extract the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
 	
-	\item {\sf Device}: A device belonging to the user. In practice, it can be a desktop or a mobile phone. It processes the {\sf Enroll} and {\sf Probe} functions for ${\sf User}$ with keys {\sf esk} and {\sf psk}. It queries $\mathcal{O}_{\mathcal{B}}$ for biometric data through the {\sf Scanner}.
+	\item \textsf{Device}: A device belonging to the user. In practice, it can be a desktop or a mobile phone. It processes the \textsf{Enroll} and \textsf{Probe} functions for $\textsf{User}$ with keys \textsf{esk} and \textsf{psk}. It queries $\mathcal{O}_{\mathcal{B}}$ for biometric data through the \textsf{Scanner}.
 	
-	\item {\sf KDS}: A key distribution service. It runs ${\sf Setup}$ to generate keys and distribute them to ${\sf Device}$ and ${\sf Server}$.
+	\item \textsf{KDS}: A key distribution service. It runs $\textsf{Setup}$ to generate keys and distribute them to $\textsf{Device}$ and $\textsf{Server}$.
 		
-	\item {\sf Server}: The server responsible for authenticating the user. It stores the comparison key {\sf csk} and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
+	\item \textsf{Server}: The server responsible for authenticating the user. It stores the comparison key \textsf{csk} and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
 
 \end{itemize}
+
+The Device-of-User model is similar to the use case in \cite{cryptoeprint:2023/481}, except that \textsf{Scanner} and \textsf{KDS} are part of \textsf{Device}, which is a secure hardware token in their model.
 
 
 \input{tikz/dou_model.tex}
 
-\pagebreak
 %-------------------
 
 \subsection{Usage Model – Device-of-Domain}
@@ -192,19 +197,19 @@ A key distribution service distributes enrollment keys to the enrollment station
 
 \begin{itemize}
 
-	\item {\sf User}: The user who enrolls its biometric data at an enrollment station and authenticates itself to the server. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$.
+	\item \textsf{User}: The user who enrolls its biometric data at an enrollment station and authenticates itself to the server. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$.
 	
-	\item {\sf Domain}: A domain that owns several devices, all of which share one enrollment key ${\sf esk}$, one probe key ${\sf psk}$ and one comparison key ${\sf csk}$. Only the probe key is stored at each device of a domain. The enrollment key is stored at the enrollment station, and the comparison key is stored at the server. In practice, a domain can be a department, and users enroll and authenticate themselves before accessing a restricted service of this department.
+	\item \textsf{Domain}: A domain that owns several devices, all of which share one enrollment key $\textsf{esk}$, one probe key $\textsf{psk}$ and one comparison key $\textsf{csk}$. Only the probe key is stored at each device of a domain. The enrollment key is stored at the enrollment station, and the comparison key is stored at the server. In practice, a domain can be a department, and users enroll and authenticate themselves before accessing a restricted service of this department.
 
-	\item {\sf Scanner}: A machine to extract the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
+	\item \textsf{Scanner}: A machine to extract the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
 	
-	\item {\sf Station}: An enrollment station responsible for collecting the user's biometric data to enroll them for a domain on the server.
+	\item \textsf{Station}: An enrollment station responsible for collecting the user's biometric data to enroll them for a domain on the server.
 
-	\item {\sf Device}: A device belonging to a domain. In practice, it can be a device checking identities for a restricted area or an instrument. It owns a probe key $\sf psk$ and processes the $\sf Probe$ function for enrolled users of this domain.
+	\item \textsf{Device}: A device belonging to a domain. In practice, it can be a device checking identities for a restricted area or an instrument. It owns a probe key $\sf psk$ and processes the $\sf Probe$ function for enrolled users of this domain.
 	
-	\item {\sf KDS}: A key distribution service. It runs ${\sf Setup}$ to generate keys and distribute them to {\sf Station}, {\sf Domain}, and {\sf Server}.
+	\item \textsf{KDS}: A key distribution service. It runs $\textsf{Setup}$ to generate keys and distribute them to \textsf{Station}, \textsf{Domain}, and \textsf{Server}.
 		
-	\item {\sf Server}: The server responsible for authenticating the user. It stores the comparison key {\sf csk} for each domain and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
+	\item \textsf{Server}: The server responsible for authenticating the user. It stores the comparison key \textsf{csk} for each domain and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
 
 \end{itemize}
 
@@ -220,39 +225,39 @@ A key distribution service distributes enrollment keys to the enrollment station
 \subsection{Instantiation with an fh-IPFE Scheme}
 \label{sec:fh-IPFE-instantiation}
 
-Let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using ${\sf FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b'}$ be sampled from some distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of ${\sf FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
+Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using $\textsf{FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b}^\prime$ be sampled from some distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
 
 \begin{itemize}
 
-	\item ${\sf Setup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf msk}, {\sf pp}$ and outputs ${\sf esk} \gets ({\sf msk}, {\sf pp})$, ${\sf psk} \gets ({\sf msk}, {\sf pp})$ and ${\sf csk} \gets {\sf pp}$.
+	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$ and outputs $\textsf{esk} \gets (\textsf{msk}, \textsf{pp})$, $\textsf{psk} \gets (\textsf{msk}, \textsf{pp})$ and $\textsf{csk} \gets \textsf{pp}$.
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. 
+	\item $\textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. 
 
-	\item ${\sf Enroll}({\sf esk}, \mathbf{x})$: It calls ${\sf FE.KeyGen}({\sf msk}, {\sf pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{x})$: It calls $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
 
-	\item ${\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b'} = (b_1', b_2', \cdots, b_k')$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1', -2b_2', \cdots, -2b_k', \|\mathbf{b'}\|^2, 1)$.
+	\item $\textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$ sampled from $\mathcal{O}_{\mathcal{B}}$, the function encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1^\prime, -2b_2^\prime, \cdots, -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$.
 
-	\item ${\sf Probe}({\sf psk}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf msk}, {\sf pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{y})$: It calls $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
 
-	\item ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
 
-	\item ${\sf Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
+	\item $\textsf{Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
 
 \end{itemize}
 
 By the correctness of the functional encryption scheme $\sf FE$, we have
 \[
-	s = {\sf FE.Dec}({\sf pp}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{y}^T = \sum_{i=1}^k -2b_ib_i' + \|\mathbf{b}\|^2 + \|\mathbf{b'}\|^2 = \| \mathbf{b} - \mathbf{b'} \|^2.
+	s = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{y}^T = \sum_{i=1}^k -2b_ib_i^\prime + \|\mathbf{b}\|^2 + \|\mathbf{b}^\prime\|^2 = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
 \]
 
-which is the square of the Euclidean distance between two templates $\mathbf{b}$ and $\mathbf{b}'$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}'$ are close enough such that $\|\mathbf{b} - \mathbf{b'}\| < \tau$, the scheme results in $r = 1$, a successful authentication.
+which is the square of the Euclidean distance between two templates $\mathbf{b}$ and $\mathbf{b}^\prime$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}^\prime$ are close enough such that $\|\mathbf{b} - \mathbf{b}^\prime\| < \tau$, the scheme results in $r = 1$, a successful authentication.
 
 
-Instantiated with an fh-IPFE scheme in this way, the comparison secret key ${\sf csk}$ is public, and the enrollment secret key ${\sf esk}$ and probe secret key ${\sf psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either one of ${\sf esk}$, ${\sf psk}$, or a probe oracle ${\sf Probe}({\sf psk}, \cdot )$ can probe some $\mathbf{y}^{\prime} \in \mathbf{F}^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about $\mathbf{x}$. Even if the adversary can only sample random ciphertexts $\mathbf{c_{y}}$ without knowing $\mathbf{y}$, if the field size $q$ is not large enough, one can find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T < \tau$ to impersonate the user by sampling many times offline.
+Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either one of $\textsf{esk}$, $\textsf{psk}$, or a probe oracle $\textsf{Probe}(\textsf{psk}, \cdot )$ can probe some $\mathbf{y}^{\prime} \in \mathbf{F}^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about $\mathbf{x}$. Even if the adversary can only sample random ciphertexts $\mathbf{c_{y}}$ without knowing $\mathbf{y}$, if the field size $q$ is not large enough, one can find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T < \tau$ to impersonate the user by sampling many times offline.
 
-Therefore, {\sf Server} must store $\mathbf{c_x}$ securely, to avoid such an attack from an adversary who can access the probe oracle; {\sf Device} must protect its probe function, to avoid such an attack from a malicious {\sf Server}. 
+Therefore, \textsf{Server} must store $\mathbf{c_x}$ securely, to avoid such an attack from an adversary who can access the probe oracle; \textsf{Device} must protect its probe function, to avoid such an attack from a malicious \textsf{Server}. 
 
-In the Device-of-Domain model, we assume the probe oracle is public, just as everyone can try accessing a public service. A malicious {\sf Station} or {\sf Server}, who has the enrollment message $\mathbf{c_x}$, can utilize this attack to retrieve information about {\sf User}.
+In the Device-of-Domain model, we assume the probe oracle is public, just as everyone can try accessing a public service. A malicious \textsf{Station} or \textsf{Server}, who has the enrollment message $\mathbf{c_x}$, can utilize this attack to retrieve information about \textsf{User}.
 
 
 %-------------------
@@ -261,79 +266,81 @@ In the Device-of-Domain model, we assume the probe oracle is public, just as eve
 \subsection{Instantiation with a 2i-IPFE Scheme}
 \label{sec:2i-IPFE-instantiation}
 
-Let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be a 2i-IPFE scheme we defined in Definition \ref{def:2i-IPFE}. Following the scheme in Section \ref{sec:fh-IPFE-instantiation}, we can instantiate a biometric authentication scheme using ${\sf FE}$.
+Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be a 2i-IPFE scheme we defined in Definition \ref{def:2i-IPFE}. Following the scheme in Section \ref{sec:fh-IPFE-instantiation}, we can instantiate a biometric authentication scheme using $\textsf{FE}$.
 
 \begin{itemize}
 
-	\item ${\sf Setup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf sk}, {\sf ek}_1, {\sf ek}_2$, $ {\sf dk}_{\mathbf{I}} \gets {\sf FE.KeyGen}(sk, \mathbf{I}_{k+2})$, where $\mathbf{I}_{k+2}$ is an identity matrix of size $(k+2) \times (k+2)$. It outputs ${\sf esk} \gets {\sf ek}_1$, ${\sf psk} \gets {\sf ek}_2$, and ${\sf csk} \gets {\sf dk}_{\mathbf{I}}$
+	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{sk}, \textsf{ek}_1, \textsf{ek}_2$, $ \textsf{FE.KeyGen}(sk, \mathbf{I}_{k+2}) \to \textsf{dk}_{\mathbf{I}} $, where $\mathbf{I}_{k+2}$ is an identity matrix of size $(k+2) \times (k+2)$. It outputs $\textsf{esk} \gets \textsf{ek}_1$, $\textsf{psk} \gets \textsf{ek}_2$, and $\textsf{csk} \gets \textsf{dk}_{\mathbf{I}}$
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}(), {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: The same as the scheme in \ref{sec:fh-IPFE-instantiation}. 
+	\item $\textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}(), \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: The same as the scheme in \ref{sec:fh-IPFE-instantiation}. 
 
-	\item ${\sf Enroll}({\sf esk}, \mathbf{x})$: It calls ${\sf FE.Enc}({\sf ek}_1, \mathbf{x}) \to \mathbf{c_x}$ and outputs $\mathbf{c_x}$.
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{x})$: It calls $\textsf{FE.Enc}(\textsf{ek}_1, \mathbf{x}) \to \mathbf{c_x}$ and outputs $\mathbf{c_x}$.
 
-	\item ${\sf Probe}({\sf psk}, \mathbf{y})$: It calls ${\sf FE.Enc}({\sf ek}_2, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{y})$: It calls $\textsf{FE.Enc}(\textsf{ek}_2, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
 
-	\item ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{FE.Dec}(\textsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
 
-	\item ${\sf Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
+	\item $\textsf{Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
 
 \end{itemize}
 
 By the correctness of the functional encryption scheme $\sf FE$, we have
 \[
-	s = {\sf FE.Dec}({\sf dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \mathbf{x} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b'} \|^2.
+	s = \textsf{FE.Dec}(\textsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \mathbf{x} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
 \]
 just as the scheme in Section \ref{sec:fh-IPFE-instantiation}
 
 
-Unlike the previous scheme, instantiated with a 2i-IPFE scheme in this way, the comparison secret key ${\sf csk}$ is now secret, and the enrollment secret key ${\sf esk}$ and probe secret key ${\sf psk}$ are distinct. Without ${\sf csk}$, one cannot compare an enrollment message $\mathbf{c_x}$ and a probe message $\mathbf{c_y}$. We can also transmit $\mathbf{c_x}$ in a public channel and store it in a public storage, under necessary security requirements of the 2i-IPFE scheme, such as indistinguishability of $\mathbf{c_x}$.
+Unlike the previous scheme, instantiated with a 2i-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is now secret, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are distinct. Without $\textsf{csk}$, one cannot compare an enrollment message $\mathbf{c_x}$ and a probe message $\mathbf{c_y}$. We can also transmit $\mathbf{c_x}$ in a public channel and store it in a public storage, under necessary security requirements of the 2i-IPFE scheme, such as indistinguishability of $\mathbf{c_x}$.
 
-In the Device-of-Domain model, the indistinguishability of $\mathbf{c_x}$ is against an adversary who has a probe oracle ${\sf Probe}({\sf psk}, \cdot)$. If {\sf Server} is malicious, then it can use ${\sf csk}$ to distinguish $\mathbf{c_x}$ enrolled by different samples. Therefore, we must limit the adversary's ability. For example, we can require the adversary to distinguish biometric vectors sampled from distributions in a pre-defined pool, and the adversary can only probe vectors randomly sampled from a distribution in the pool. We can also limit the rate of the probe oracle.
+In the Device-of-Domain model, the indistinguishability of $\mathbf{c_x}$ is against an adversary who has a probe oracle $\textsf{Probe}(\textsf{psk}, \cdot)$. If \textsf{Server} is malicious, then it can use $\textsf{csk}$ to distinguish $\mathbf{c_x}$ enrolled by different samples. Therefore, we must limit the adversary's ability. For example, we can require the adversary to distinguish biometric vectors sampled from distributions in a pre-defined pool, and the adversary can only probe vectors randomly sampled from a distribution in the pool. We can also limit the rate of the probe oracle.
 
 %-------------------
 
 \subsection{Instantiation with a 2c-IPFE Scheme}
 \label{sec:2c-IPFE-instantiation}
 
-Note that if labels remain constant, a 2c-IPFE scheme is reduced to a 2i-IPFE scheme. Therefore, we can consider utilizing the label to represent each domain in the Device-of-Domain model. Let ${\sf FE} = ({\sf FE.Setup}, {\sf FE.KeyGen}, {\sf FE.Enc}, {\sf FE.Dec})$ be a 2c-IPFE scheme we defined in Definition \ref{def:2c-IPFE}. Following the scheme in Section \ref{sec:2i-IPFE-instantiation}, we can instantiate a biometric authentication scheme using ${\sf FE}$.
+Note that if labels remain constant, a 2c-IPFE scheme is reduced to a 2i-IPFE scheme. Therefore, we can consider utilizing the label to represent each domain in the Device-of-Domain model. Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be a 2c-IPFE scheme we defined in Definition \ref{def:2c-IPFE}. Following the scheme in Section \ref{sec:2i-IPFE-instantiation}, we can instantiate a biometric authentication scheme using $\textsf{FE}$.
 
 \begin{itemize}
 
-	\item ${\sf Setup}(1^\lambda)$: It calls ${\sf FE.Setup}(1^\lambda) \to {\sf sk}, {\sf ek}_1, {\sf ek}_2$, $ {\sf dk}_{\mathbf{I}} \gets {\sf FE.KeyGen}(sk, \mathbf{I}_{k+2})$, where $\mathbf{I}_{k+2}$ is an identity matrix of size $(k+2) \times (k+2)$. For keys used for {\sf Domain} $\ell$, it outputs ${\sf esk} \gets (\ell, {\sf ek}_1)$, ${\sf psk} \gets (\ell, {\sf ek}_2)$, and ${\sf csk} \gets {\sf dk}_{\mathbf{I}}$.
+	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{sk}, \textsf{ek}_1, \textsf{ek}_2$, $\textsf{FE.KeyGen}(sk, \mathbf{I}_{k+2}) \to \textsf{dk}_{\mathbf{I}} $, where $\mathbf{I}_{k+2}$ is an identity matrix of size $(k+2) \times (k+2)$. For keys used for \textsf{Domain} $\ell$, it outputs $\textsf{esk} \gets (\ell, \textsf{ek}_1)$, $\textsf{psk} \gets (\ell, \textsf{ek}_2)$, and $\textsf{csk} \gets \textsf{dk}_{\mathbf{I}}$.
 
-	Note that when the previous 2i-IPFE-based scheme in Section \ref{sec:2i-IPFE-instantiation} is applied to a Device-of-Domain model, we assume that ${\sf Setup}$ is run once for each domain to generate different ${\sf esk}, {\sf psk}, {\sf csk}$. In the scheme in this section, however, ${\sf Setup}$ is run only once for all the domains, and each domain shares the same ${\sf csk}$ and the same ${\sf esk}, {\sf psk}$ except different labels.
+	Note that when the previous 2i-IPFE-based scheme in Section \ref{sec:2i-IPFE-instantiation} is applied to a Device-of-Domain model, we assume that $\textsf{Setup}$ is run once for each domain to generate different $\textsf{esk}, \textsf{psk}, \textsf{csk}$. In the scheme in this section, however, $\textsf{Setup}$ is run only once for all the domains, and each domain shares the same $\textsf{csk}$ and the same $\textsf{esk}, \textsf{psk}$ except different labels.
 
-	\item ${\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}(), {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: The same as the scheme in \ref{sec:2i-IPFE-instantiation}. 
+	\item $\textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}(), \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: The same as the scheme in \ref{sec:2i-IPFE-instantiation}. 
 
-	\item ${\sf Enroll}({\sf esk}, \mathbf{x})$: It calls ${\sf FE.Enc}(\ell, {\sf ek}_1, \mathbf{x}) \to \mathbf{c_x}$ and outputs $\mathbf{c_x}$.
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{x})$: It calls $\textsf{FE.Enc}(\ell, \textsf{ek}_1, \mathbf{x}) \to \mathbf{c_x}$ and outputs $\mathbf{c_x}$.
 
-	\item ${\sf Probe}({\sf psk}, \mathbf{y})$: It calls ${\sf FE.Enc}(\ell, {\sf ek}_2, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{y})$: It calls $\textsf{FE.Enc}(\ell, \textsf{ek}_2, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
 
-	\item ${\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls ${\sf FE.Dec}({\sf dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{FE.Dec}(\textsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
 
-	\item ${\sf Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
+	\item $\textsf{Verify}(s)$: If $\sqrt{s} < \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
 
 \end{itemize}
 
 By the correctness of the functional encryption scheme $\sf FE$, if the labels of $\mathbf{c_x}$ and $\mathbf{c_y}$ are the same (they are of the same domain), we have
 \[
-	s = {\sf FE.Dec}({\sf dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b'} \|^2.
+	s = \textsf{FE.Dec}(\textsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
 \]
 just as the scheme in Section \ref{sec:2i-IPFE-instantiation}
 
-When the Device-of-Domain model is instantiated with a 2c-IPFE scheme in this way, the enrollment secret key ${\sf esk}$ and probe secret key ${\sf psk}$ are now shared among all the devices, regardless of their domains. Therefore, to let a malicious or broken {\sf Domain} not threaten other honest ones, one needs to make sure given ${\sf esk}$ or ${\sf psk}$, $\mathbf{c_x}$ still does not leak information about $\mathbf{x}$. This is different from the scheme in Section \ref{sec:2i-IPFE-instantiation}, where we only need seurity against an adversary who has a probe oracle ${\sf Probe}({\sf psk}, \cdot)$.
+When the Device-of-Domain model is instantiated with a 2c-IPFE scheme in this way, the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are now shared among all the devices, regardless of their domains. Therefore, to let a malicious or broken \textsf{Domain} not threaten other honest ones, one needs to make sure given $\textsf{esk}$ or $\textsf{psk}$, $\mathbf{c_x}$ still does not leak information about $\mathbf{x}$. This is different from the scheme in Section \ref{sec:2i-IPFE-instantiation}, where we only need seurity against an adversary who has a probe oracle $\textsf{Probe}(\textsf{psk}, \cdot)$.
 
-If {\sf Server} and {\sf Domain} are both malicious, then the adversary can use ${\sf csk}$ to distinguish $\mathbf{c_x}$ and even recover $\mathbf{x}$. Therefore, we assume at most one party of them can be malicious at the same time. Note that this is the same as the 2i-IPFE-based scheme, where only one of {\sf Server} and {\sf Domain} can be malicious.
+If \textsf{Server} and \textsf{Domain} are both malicious, then the adversary can use $\textsf{csk}$ to distinguish $\mathbf{c_x}$ and even recover $\mathbf{x}$. Therefore, we assume at most one party of them can be malicious at the same time. Note that this is the same as the 2i-IPFE-based scheme, where only one of \textsf{Server} and \textsf{Domain} can be malicious.
 
 %-------------------
 
 
 \section{Security Games}
+\label{sec:security_game}
 
-From now on, we consider a family of biometric distributions $\mathbb{B}$. Removing a person $\mathcal{B}$ from $\mathbb{B}$ is written as $\mathbb{B} \setminus \mathcal{B}$. To model the knowledge about the biometric distributions, we offer an oracle $\mathcal{O}_{\sf samp}(\cdot)$ to all adversaries in this section.
+From now on, we consider a family of biometric distributions $\mathbb{B}$. Removing a person $\mathcal{B}$ from $\mathbb{B}$ is written as $\mathbb{B} \setminus \mathcal{B}$.
+To model the knowledge about the biometric distributions, we offer an oracle $\mathcal{O}_\textsf{samp}(\cdot)$ to all adversaries in this section.
 
 \begin{itemize}
-	\item $\mathcal{O}_{\sf samp}(\cdot)$: On input an index $i$,
+	\item $\mathcal{O}_\textsf{samp}(\cdot)$: On input an index $i$,
 	\begin{itemize}
 		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ and then outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
 		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
@@ -341,259 +348,436 @@ From now on, we consider a family of biometric distributions $\mathbb{B}$. Remov
 \end{itemize}
 
 
-
-\subsection{Unforgeability against Malicious Scanner (\textsf{UF-MSC})}
+\subsection{Unforgeability against Malicious Scanner (UF-MSC)}
 \label{sec:uf-msc_game}
 
-In the game of Unforgeability against Malicious Scanner ({\sf UF-MSC}), we model the ability of a malicious {\sf Scanner} in the Device-of-User model who has access to {\sf Server}'s database of registered enrollments and tries to impersonate {\sf User}. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracles $\mathcal{O}_{\mathcal{B}}$ and $\mathcal{O}_{\sf auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game is defined in Algorithm \ref{alg:uf-msc_game}.
-
+In the game of Unforgeability against Malicious Scanner, we model the ability of a malicious \textsf{Scanner} in the Device-of-User model who has access to \textsf{Server}'s database of registered enrollments and tries to impersonate \textsf{User}. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracles $\mathcal{O}_{\mathcal{B}}$ and $\mathcal{O}_\textsf{auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game \textsf{UF-MSC} is defined in Algorithm \ref{alg:uf-msc_game}.
 
 \begin{figure}[h]
 \centering
-
-	\begin{minipage}[t]{0.45\linewidth}
+\vspace*{-\multicolsep}
+\begin{multicols}{2}
+	\begin{minipage}[t]{0.9\linewidth}
+	\centering
 	\begin{algorithm}[H]
 	\caption{$\textsf{UF-MSC}_{\Pi, \mathbb{B}}(\mathcal{A})$}
 	\label{alg:uf-msc_game}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
 
-		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
 
-		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
-		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\sf auth}^q } ( \mathbf{c_x} )$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
 
-		\State $s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
-		\State \Return ${\sf Verify}(s)$
+		\State \Return $\textsf{Verify}(s)$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
-	\begin{minipage}[t]{0.45\linewidth}
+	
+	\begin{minipage}[t]{0.9\linewidth}
+	\centering
 	\begin{algorithm}[H]
 	\caption{$\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A^\prime})$}
-	\label{alg:plain_uf-msc_game}
+	\label{alg:uf-msc-prime_game}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
 
-		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
 
-		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
-		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}_{\sf auth}^{q}}()$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{auth}^{q}}()$
 
-		\State $s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
-		\State \Return ${\sf Verify}(s)$
+		\State \Return $\textsf{Verify}(s)$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
-
-\caption{The \textsf{UF-MSC} Game (Left) and Plain \textsf{UF-MSC} Game (Right)}
+\end{multicols}
+%\caption{The \textsf{UF-MSC} Game (Left) and $\textsf{UF-MSC}^\prime$ Game (Right)}
 \label{fig:uf-msc_game}
 \end{figure}
+
 
 The given oracle is defined as follows:
 
 \begin{itemize}
 	\item $\mathcal{O}_{\mathcal{B}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}$.
 
-	\item $\mathcal{O}_{\sf auth}^{q}({\sf csk}, \mathbf{c_x}, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{z}$, it outputs ${\sf Verify}({\sf Compare}({\sf csk}, \mathbf{c_x}, \mathbf{z}))$.
+	\item $\mathcal{O}_\textsf{auth}^{q}(\textsf{csk}, \mathbf{c_x}, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{z}$, it outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{z}))$.
 \end{itemize}
 
-Note that if the the comparison secret key ${\sf csk}$ is an empty or public string in the scheme, then the oracle $\mathcal{O}_{\sf auth}^{q}$ is useless since the adversary can run $\sf Compare$ with $\mathbf{c_x}$ itself.
 
-To consider potential false positives of biometrics match, we consider the plain \textsf{UF-MSC} game in Algorithm \ref{alg:plain_uf-msc_game}, in which the adversary does not have any knowledge about the template.
+To consider potential false positives of biometrics match, we consider the plain $\textsf{UF-MSC}^\prime$ game in Algorithm \ref{alg:uf-msc-prime_game}, in which the adversary does not have any knowledge about the template.
 
 We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\textsf{UF-MSC}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MSC}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
-	\sup_{\text{PPT } \mathcal{A'}} \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A'}) \to 1].
+	q\cdot \sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
 \]
 
-An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious scanner} if for any PPT adversary $\mathcal{A}$,
+The $q$ factor is to avoid trivial attacks.
+Let $\mathcal{A}^\prime$ be a $\textsf{UF-MSC}^\prime$ adversary.
+An adversary $\mathcal{A}$ can run $\mathcal{A}^\prime() \to \mathbf{\tilde{z}}$ and $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}})$ up to $q$ times and then outputs a successful forged probe message if there is any.
+The probability that $\mathcal{A}$ wins is
+\begin{align*}
+	\Pr[{\textsf{UF-MSC}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] 
+	&= 1 - (1 - \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1])^q \\
+	&\leq q \cdot \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1]
+\end{align*}
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious scanner (UF-MSC)} if for any PPT adversary $\mathcal{A}$,
 \[
 	\Adv^{\textsf{UF-MSC}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
 \]
 
-Note that in the Device-of-Domain model, the probe oracle ${\sf Probe}({\sf psk}, \cdot)$ is assumed to be public, so the scheme is never unforgeable against a malicious scanner who has access to the {\sf User}'s biometric data ($\mathcal{O}_{\mathcal{B}}$). Therefore, we only consider \textsf{UF-MSC} security in the Device-of-User model. 
-
+Note that if $\textsf{csk}$ is an empty or public string, then the scheme cannot achieve UF-MSC security when the false positive rate is not negligible, as the adversary can run the $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot)$ over $q$ times.
+Also note that in the Device-of-Domain model, the probe oracle $\textsf{Probe}(\textsf{psk}, \cdot)$ is assumed to be public, so the scheme is never UF-MSC since the adversary can generate valid probe messages itself. Therefore, we only consider UF-MSC security in the Device-of-User model. 
 
 %-------------------
 
-\subsection{Unforgeability against Malicious Device (\textsf{UF-MDV})}
+\subsection{Unforgeability against Malicious Device (UF-MDV)}
 \label{sec:uf-mdv_game}
 
-In the game of Unforgeability against Malicious Device (\textsf{UF-MDV}), we model the ability of a malicious {\sf Device} who has access to {\sf Server}'s database of registered enrollments and tries to impersonate {\sf User}. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$, keys ${\sf esk}, {\sf psk}$ (only {\sf psk} if it is in Device-of-Domain model), and oracle $\mathcal{O}_{\sf auth}^q$ and tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game is defined in Algorithm \ref{alg:uf-mdv_game}.
-
+In the game of Unforgeability against Malicious Device, we model the ability of a malicious \textsf{Device} who has access to \textsf{Server}'s database of registered enrollments and tries to impersonate \textsf{User}.
+The adversary $\mathcal{A}$ is given the keys $\textsf{esk}, \textsf{psk}$ (only \textsf{psk} in Device-of-Domain model), enrollment message $\mathbf{c_x}$, and oracle $\mathcal{O}_\textsf{auth}^q$ and tries to find a valid probe message $\mathbf{\tilde{z}}$.
+The whole game \textsf{UF-MDV} is defined in Algorithm \ref{alg:uf-mdv_game}. Similarly to Section \ref{sec:uf-msc_game}, we also consider the plain $\textsf{UF-MDV}^\prime$ game in Algorithm \ref{alg:uf-mdv-prime_game}.
 
 \begin{figure}[h]
 \centering
+\vspace*{-\multicolsep}
+\begin{multicols}{2}
 
-	\begin{minipage}[t]{0.45\linewidth}
+	\begin{minipage}[t]{0.9\linewidth}
 	\begin{algorithm}[H]
 	\caption{$\textsf{UF-MDV}_{\Pi, \mathbb{B}}(\mathcal{A})$}
 	\label{alg:uf-mdv_game}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
 
-		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
 
-		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
-		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 
 		\State In Device-of-User model:
 		
-		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\sf auth}^q } ({\sf esk}, {\sf psk}, \mathbf{c_x} )$
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{auth}^q } (\textsf{esk}, \textsf{psk}, \mathbf{c_x} )$
 
 		\State In Device-of-Domain model:
 		
-		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\sf auth}^q } ( {\sf psk}, \mathbf{c_x} )$
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{auth}^q } ( \textsf{psk}, \mathbf{c_x} )$
 
-		\State $s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
-		\State \Return ${\sf Verify}(s)$
+		\State \Return $\textsf{Verify}(s)$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
-	\begin{minipage}[t]{0.45\linewidth}
+	
+	\begin{minipage}[t]{0.9\linewidth}
 	\begin{algorithm}[H]
 	\caption{$\textsf{UF-MDV}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
-	\label{alg:plain_uf-mdv_game}
+	\label{alg:uf-mdv-prime_game}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
 
-		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
 
-		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
-		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 
 		\State In Device-of-User model:
 		
-		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}_{\sf auth}^q}()$
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{auth}^q}()$
 
 		\State In Device-of-Domain model:
 
-		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}_{\sf Probe}, \mathcal{O}_{\sf auth}^q}()$
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q}()$
 		
-		\State $s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
-		\State \Return ${\sf Verify}(s)$
+		\State \Return $\textsf{Verify}(s)$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
 
-\caption{The \textsf{UF-MDV} Game (Left) and Plain \textsf{UF-MDV} Game (Right)}
+\end{multicols}
+%\caption{The \textsf{UF-MDV} Game (Left) and $\textsf{UF-MDV}^\prime$ Game (Right)}
 \label{fig:uf-mdv_game}
 \end{figure}
 
-To consider potential false positives of biometrics match, we consider the plain \textsf{UF-MDV} game in Algorithm \ref{alg:plain_uf-mdv_game}, in which the adversary does not have any knowledge about the template. Note that in Device-of-Domain model, a probe oracle is given.
+Note that in Device-of-Domain model, a probe oracle is given to $\textsf{UF-MDV}^\prime$ adversary.
 
 \begin{itemize}
-
-	\item $\mathcal{O}_{\sf Probe}({\sf psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message ${\sf Probe}({\sf psk}, \mathbf{y}^\prime)$.
-
+	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$.
 \end{itemize}
 
 We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MDV} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\textsf{UF-MDV}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MDV}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
-	\sup_{\text{PPT } \mathcal{A'}} \Pr[{\textsf{UF-MDV}^\prime}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+	q \cdot \sup_{\text{PPT } \mathcal{A}^\prime} \Pr[{\textsf{UF-MDV}^\prime}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
 \]
 
-An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious device} if for any PPT adversary $\mathcal{A}$,
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious device (UF-MDV)} if for any PPT adversary $\mathcal{A}$,
 \[
 	\Adv^{\textsf{UF-MDV}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
 \]
 
-
 %-------------------
 
 
-\subsection{Unforgeability against Malicious Domain (\textsf{UF-MDM})}
+\subsection{Unforgeability against Malicious Domain (UF-MDM)}
 \label{sec:uf-mdm_game}
 
-In the game of Unforgeability against Malicious Domain (\textsf{UF-MDM}), we model the ability of a malicious {\sf Domain} in the Device-of-Domain model who tries to access an honest {\sf Domain} through a {\sf User} who has enrolled in both of them. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ of the honest {\sf Domain} and oracles $\mathcal{O}_{\sf Probe}, \mathcal{O}_{\sf Probe}^\prime$, and $ \mathcal{O}_{\sf auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game is defined in Algorithm \ref{alg:uf-mdm_game}.
-
+In the game of Unforgeability against Malicious Domain, we model the ability of a malicious \textsf{Domain} in the Device-of-Domain model who tries to access an honest \textsf{Domain} through a \textsf{User} who has enrolled in both of them.
+The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ of the honest \textsf{Domain} and oracles $\mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Probe}^\prime$, and $ \mathcal{O}_\textsf{auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$.
+The whole game \textsf{UF-MDM} is defined in Algorithm \ref{alg:uf-mdm_game}. Similarly to Section \ref{sec:uf-msc_game}, we also consider the plain $\textsf{UF-MDM}^\prime$ game in Algorithm \ref{alg:uf-mdm-prime_game}.
 
 \begin{figure}[h]
 \centering
+\vspace*{-\multicolsep}
+\begin{multicols}{2}
 
-	\begin{minipage}[t]{0.45\linewidth}
+	\begin{minipage}[t]{0.9\linewidth}
 	\begin{algorithm}[H]
 	\caption{${\textsf{UF-MDM}}_{\Pi, \mathbb{B}}(\mathcal{A})$}
 	\label{alg:uf-mdm_game}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
 
-		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
 
-		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
-		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\sf Probe}, \mathcal{O}_{\sf Probe}^\prime, \mathcal{O}_{\sf auth}^q } ( \mathbf{c_x} )$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Probe}^\prime, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
 
-		\State $s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
-		\State \Return ${\sf Verify}(s)$
+		\State \Return $\textsf{Verify}(s)$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
-	\begin{minipage}[t]{0.45\linewidth}
+
+	\begin{minipage}[t]{0.9\linewidth}
 	\begin{algorithm}[H]
-	\caption{${\textsf{UF-MDM}}^\prime_{\Pi, \mathbb{B}}(\mathcal{A'})$}
-	\label{alg:plain_uf-mdm_game}
+	\caption{${\textsf{UF-MDM}}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
+	\label{alg:uf-mdm-prime_game}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
 
-		\State ${\sf esk}, {\sf psk}, {\sf csk} \gets {\sf Setup}(1^\lambda)$
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
 
-		\State $\mathbf{x} \gets {\sf encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
-		\State $\mathbf{c_x} \gets {\sf Enroll}({\sf esk}, \mathbf{x})$
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A'}^{\mathcal{O}_{\sf Probe}, \mathcal{O}_{\sf auth}^q}()$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q}()$
 
-		\State $s \gets {\sf Compare}( {\sf csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
-		\State \Return ${\sf Verify}(s)$
+		\State \Return $\textsf{Verify}(s)$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
 
-\caption{The \textsf{UF-MDM} Game (Left) and Plain \textsf{UF-MDM} Game (Right)}
+\end{multicols}
+%\caption{The \textsf{UF-MDM} Game (Left) and $\textsf{UF-MDM}^\prime$ Game (Right)}
 \label{fig:uf-mdm_game}
 \end{figure}
 
-The $\mathcal{O}_{\sf Probe}^\prime$ oracle is to model the ability that the malicious {\sf Domain} can let {\sf User} probe with a contrived key.
+The $\mathcal{O}_\textsf{Probe}^\prime$ oracle is to model the ability that the malicious \textsf{Domain} can let \textsf{User} probe with a contrived key.
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\sf Probe}^\prime$: On input ${\sf psk}^\prime$, it first samples $\mathbf{y}^\prime \getsdollar {\sf encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs ${\sf Probe}({\sf psk}^\prime, \mathbf{y}^\prime)$.
+	\item $\mathcal{O}_\textsf{Probe}^\prime (\cdot)$: On input $\textsf{psk}^\prime$, it first samples $\mathbf{y}^\prime \getsdollar \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Probe}(\textsf{psk}^\prime, \mathbf{y}^\prime)$.
 
 \end{itemize}
-
-To consider potential false positives of biometrics match, we consider the plain \textsf{UF-MDM} game in Algorithm \ref{alg:plain_uf-mdm_game}, in which the adversary does not have any knowledge about the template.
 
 We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MDM} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\textsf{UF-MDM}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MDM}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
-	\sup_{\text{PPT } \mathcal{A'}} \Pr[\textsf{UF-MDM}^\prime_{\Pi, \mathbb{B}}(\mathcal{A'}) \to 1].
+	q \cdot \sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF-MDM}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
 \]
 
-An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious domain} if for any PPT adversary $\mathcal{A}$,
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious domain (UF-MDM)} if for any PPT adversary $\mathcal{A}$,
 \[
 	\Adv^{\textsf{UF-MDM}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
 \]
+
+
 %-------------------
+
+\subsection{Unforgeability against Malicious Station (UF-MST)}
+\label{sec:uf-mst_game}
+
+In the game of Unforgeability against Malicious Station, we model the ability of a malicious \textsf{Station} in the Device-of-Domain model who tries to impersonate \textsf{User}.
+The adversary $\mathcal{A}$ is given the enrollment key $\textsf{esk}$, enrollment message $\mathbf{c_x}$, and oracles $\mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Enroll}^\prime$, and $ \mathcal{O}_\textsf{auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$.
+The whole game \textsf{UF-MST} is defined in Algorithm \ref{alg:uf-mst_game}. Similarly to Section \ref{sec:uf-msc_game}, we also consider the plain $\textsf{UF-MST}^\prime$ game in Algorithm \ref{alg:uf-mst-prime_game}.
+
+\begin{figure}[h]
+\centering
+\vspace*{-\multicolsep}
+\begin{multicols}{2}
+
+	\begin{minipage}[t]{0.9\linewidth}
+	\begin{algorithm}[H]
+	\caption{${\textsf{UF-MST}}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:uf-mst_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.9\linewidth}
+	\begin{algorithm}[H]
+	\caption{${\textsf{UF-MST}}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
+	\label{alg:uf-mst-prime_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q}()$
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{multicols}
+%\caption{The \textsf{UF-MST} Game (Left) and $\textsf{UF-MST}^\prime$ Game (Right)}
+\label{fig:uf-mst_game}
+\end{figure}
+
+The $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$ oracle is to model the ability that the malicious \textsf{Station} can let \textsf{User} enroll with a contrived key.
+
+\begin{itemize}
+
+	\item $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, it first samples $\mathbf{x}^\prime \getsdollar \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{x}^\prime)$.
+
+\end{itemize}
+
+We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MST} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{UF-MST}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MST}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
+	q \cdot \sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF-MST}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious station (UF-MST)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF-MST}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
+\]
+
+
+%-------------------
+
+
+\subsection{Indistinguishable against Malicious Server (IND-MSV)}
+\label{sec:ind-msv_game}
+
+In the game of Indistinguishable against Malicious Server, we model the ability of a malicious \textsf{Server} who tries to identify the user. The adversary $\mathcal{A}$ is given oracles to two biometric distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$, the comparison key $\textsf{csk}$, an enrollment message $\mathbf{c_x}$, and a list of $t$ probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$ . It tries to guess from either $\mathcal{B}^{(0)}$ or $ \mathcal{B}^{(1)}$ these messages are generated. The whole game is defined in Algorithm \ref{alg:ind-msv_game}.
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.6\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{IND-MSV}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:ind-msv_game}
+	\begin{algorithmic}[1]
+		\State $b \getsdollar \{0, 1\}$
+
+		\State $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$
+
+		\State $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(b)}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\For{$i = 1$ to $t$}
+
+			\State $\mathbf{y}^{(i)} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(b)}}}() $
+		
+			\State $\mathbf{c_y}^{(i)} \gets \textsf{Probe}( \textsf{psk}, \mathbf{y}^{(i)} )$
+
+		\EndFor
+
+		\State In Device-of-User Model:
+		
+			\State \hspace{\algorithmicindent} $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_\mathcal{B}^{(0)}, \mathcal{O}_\mathcal{B}^{(1)}} ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+
+		\State In Device-of-Domain Model:
+		
+			\State \hspace{\algorithmicindent} $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_\mathcal{B}^{(0)}, \mathcal{O}_\mathcal{B}^{(1)}, \mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}} ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+
+		\State \Return $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+%\caption{The \textsf{IND-MSV} Game}
+\label{fig:ind-msv_game}
+\end{figure}
+
+Note that in Device-of-Domain model, a probe oracle is given to the adversary.
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}(\cdot)$: On input an index $i$, it first samples $\mathbf{y}^\prime \getsdollar \textsf{encodeProbe}^{\mathcal{O}_{\textsf{samp}}(i)}$, which uses $\mathcal{O}_{\textsf{samp}}(i)$ to answer biometric queries, and outputs $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime )$. 
+
+\end{itemize}
+
+We provide $\mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}(\cdot)$ instead of $\mathcal{O}_{\textsf{Probe}}(\textsf{psk}, \cdot)$. This is to avoid the trivial attack where the adversary probes samples from the oracles $\mathcal{O}_{\mathcal{B}^{(0)}}$ and $\mathcal{O}_{\mathcal{B}^{(1)}}$ and compare the results with $\mathbf{c_x}$.
+
+We define the advantage of an adversary $\mathcal{A}$ in the \textsf{IND-MSV} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{IND-MSV}}_{\Pi, \mathbb{B}, \mathcal{A}^\mathcal{O}} := \left |\Pr[\textsf{IND-MSV}_{\Pi}(\mathcal{A}^\mathcal{O}) \to 1] - \frac{1}{2} \right|.
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{indistinguishable against malicious server (IND-MSV)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{IND-MSV}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
+\]
+
+%-------------------
+
+
 %% Backup File
 
 % \input{backup.tex}
