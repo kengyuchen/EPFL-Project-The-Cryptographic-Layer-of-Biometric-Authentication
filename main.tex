@@ -347,6 +347,34 @@ To model the knowledge about the biometric distributions, we offer an oracle $\m
 	\end{itemize}
 \end{itemize}
 
+In Table \ref{table:security_games}, we list a summary of the adversary in each game.
+
+\begin{table}[htp]
+\centering
+	\begin{tabular}{l c l@{\hspace{15pt}} l@{\hspace{2pt}}}
+	\toprule
+
+		\makecell[c]{\multirow{2}{*}{\textbf{Games}}} & \multirow{2}{*}{\textbf{Goals}} & \multicolumn{2}{c}{\textbf{Knowledge and Oracles}} \\ \cline{3-4}
+		 & & \makecell[c]{Device-of-User} & \makecell[c]{Device-of-Domain} \\
+
+	\midrule
+	
+		\textsf{UF-MSC} (Section \ref{sec:uf-msc_game}) & Forge a probe & $\mathbf{c_x}, \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q$ & \makecell[c]{-} \\
+		\textsf{UF-MDV} (Section \ref{sec:uf-mdv_game}) & Forge a probe & $\textsf{esk}, \textsf{psk}, \mathbf{c_x},\mathcal{O}_\textsf{auth}^q$ & $\textsf{psk}, \mathbf{c_x},\mathcal{O}_\textsf{auth}^q$ \\
+		\textsf{UF-MDM} (Section \ref{sec:uf-mdm_game}) & Forge a probe & \makecell[c]{-} & $\mathbf{c_x}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_{\textsf{Probe}}^\prime, \mathcal{O}_\textsf{auth}^q$ \\
+		\textsf{UF-MST} (Section \ref{sec:uf-mst_game}) & Forge a probe & \makecell[c]{-} & $ \textsf{esk}, \mathbf{c_x}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_{\textsf{Enroll}}^\prime, \mathcal{O}_\textsf{auth}^q$ \\
+		\textsf{IND-MSV} (Section \ref{sec:ind-msv_game}) & Identify \textsf{User} 
+			& \makecell[l]{ $\textsf{csk}, \mathbf{c_x}, \{\mathbf{c_y}\}_{i=1}^t$, \\ $\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}$ } 
+			& \makecell[l]{ $ \textsf{csk}, \mathbf{c_x}, \{\mathbf{c_y}\}_{i=1}^t$, \\ $\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}, \mathcal{O}_{\textsf{Probe}}^{\textsf{samp}} $ } \\
+
+	\bottomrule
+	\end{tabular}
+	\caption{Summary of Adversaries in Security Games}
+	\label{table:security_games}
+
+\end{table}
+
+
 
 \subsection{Unforgeability against Malicious Scanner (UF-MSC)}
 \label{sec:uf-msc_game}
@@ -646,7 +674,7 @@ The whole game \textsf{UF-MST} is defined in Algorithm \ref{alg:uf-mst_game}. Si
 
 		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{auth}^q } ( \textsf{esk} \mathbf{c_x} )$
 
 		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
@@ -740,11 +768,11 @@ In the game of Indistinguishable against Malicious Server, we model the ability 
 
 		\State In Device-of-User Model:
 		
-			\State \hspace{\algorithmicindent} $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_\mathcal{B}^{(0)}, \mathcal{O}_\mathcal{B}^{(1)}} ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+			\State \hspace{\algorithmicindent} $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}} } ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
 
 		\State In Device-of-Domain Model:
 		
-			\State \hspace{\algorithmicindent} $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_\mathcal{B}^{(0)}, \mathcal{O}_\mathcal{B}^{(1)}, \mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}} ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+			\State \hspace{\algorithmicindent} $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}, \mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}} ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
 
 		\State \Return $1_{\tilde{b} = b}$
 	\end{algorithmic}
