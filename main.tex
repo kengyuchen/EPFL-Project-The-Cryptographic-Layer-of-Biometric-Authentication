@@ -558,6 +558,8 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 Note that if $\textsf{csk}$ is an empty or public string, the the scheme cannot achieve UF-MSC security when the false positive rate is not negligible, as the adversary can run the $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot)$ over $q$ times to boost the false positive rates.
 Also note that in the Device-of-Domain model, the probe oracle $\mathcal{O}_\textsf{Probe}$ is assumed to be public, so the adversary is asked to return some $\mathbf{\tilde{z}}$ that is not returned by the probe oracle.
 
+For the rest of this report, if the scheme and the family distribution are clear from context, we omit the subscript and write the game as $\textsf{UF-MSC}(\mathcal{A})$. This abbreviation also holds for all other games.
+
 
 %-------------------
 
@@ -812,7 +814,7 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{IND} game in algorith
 \begin{figure}[h]
 \centering
 
-	\begin{minipage}[t]{0.6\textwidth}
+	\begin{minipage}[t]{0.4\textwidth}
 	\begin{algorithm}[H]
 	\caption{$\textsf{IND}_{\textsf{FE}}(\mathcal{A})$}
 	\label{alg:ind-fh-IPFE}
@@ -902,19 +904,20 @@ To show this, first we define a middle game for UF-MSC security in Algorithm \re
 
 
 \begin{theorem}
+\label{thm:ind-uf-msc1}
 
-	For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}$ in the \textsf{UF-MSC} game,
+	In the Device-of-User model, for any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}$ in the \textsf{UF-MSC} game,
 	\[
-		\Pr[\textsf{UF-MSC}_{\Pi, \mathbb{B}}(A) \to 1] - \Pr[\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(A^*) \to 1] = \negl.
+		\Pr[\textsf{UF-MSC}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] - \Pr[\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(\mathcal{A}^*) \to 1] = \negl.
 	\]
-	where $\mathcal{A}^*$ is an adversary in the $\textsf{UF-MSC}^*$ game which runs $\mathcal{A}$ and simulates oracle $\mathcal{O}_{\mathcal{B}}$ by $\mathcal{O}_{\sf samp}(i^*)$ for some index $i^*$ that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\sf samp}$.
+	where $\mathcal{A}^*$ is an adversary in the $\textsf{UF-MSC}^*$ game which runs $\mathcal{A}$ and simulates oracle $\mathcal{O}_{\mathcal{B}}$ by $\mathcal{O}_{\sf samp}(i^*)$ for some index $i^*$ that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\sf samp}(\cdot)$.
 
 \end{theorem}
 
 
 \begin{proof}
 
-Given an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game, consider a reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-msc-star_game} which plays the \textsf{IND} game.
+	Given an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-msc1_game} which plays the \textsf{IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates $\mathcal{O}_{\mathcal{B}}$ by $\mathcal{O}_{\mathcal{B}^{(0)}}$ and $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$ by $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$. Note that since $\mathcal{R}$ never calls $\mathcal{O}_{\textsf{Enc}}$, it is an admissible adversary.
 
 \begin{figure}[h]
 \centering
@@ -922,8 +925,8 @@ Given an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game, consider a reducti
 	\begin{minipage}[t]{0.5\linewidth}
 	\centering
 	\begin{algorithm}[H]
-		\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp}, \mathcal{A})$}
-	\label{alg:reduction-ind-uf-msc-star_game}
+		\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:reduction-ind-uf-msc1_game}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$
 
@@ -939,57 +942,184 @@ Given an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game, consider a reducti
 
 		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
-		\If{$\textsf{Verify}(s) = 1$}
+		\If{$\textsf{Verify}(s) = 1$} \label{alg:reduction-ind-uf-msc1_game:verify}
 			\State \Return $\tilde{b} = 0$
 		\Else
-			\State \Return $\tilde{b} \gets \{0, 1\}$
+			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
 		\EndIf
 
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
 	
-\label{fig:uf-msc-star_game}
+\label{fig:reduction-ind-uf-msc1_game}
 \end{figure}
 
-If the challenge bit $b = 0$, then $\Pr[\textsf{Verify}(s) = 1 \mid b = 0]$ in Algorithm \ref{alg:reduction-ind-uf-msc-star_game} is $\Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1]$.
+If the challenge bit $b = 0$, then $\mathcal{R}$ perfectly simulates a \textsf{UF-MSC} game for $\mathcal{A}$. Therefore, the probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:reduction-ind-uf-msc1_game:verify} is $\Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1]$.
 
-If the challenge bit $b = 1$, then since $\mathcal{B}^{(1)}$ is never seen by $\mathcal{A}$, and since $\mathcal{B}^{(0)}$ has the same distribution as any $\mathcal{B} \in \mathbb{B}$ in the view of $\mathcal{A}$, $\Pr[\textsf{Verify}(s) = 1 \mid b = 1]$ in Algorithm \ref{alg:reduction-ind-uf-msc-star_game} is $\Pr[ \textsf{UF-MSC}^*(\mathcal{A}^*) \to 1 ]$.
+If the challenge bit $b = 1$, then $\mathcal{B}^{(1)}$ is never seen by $\mathcal{A}$, and since $\mathcal{B}^{(0)}$ has the same distribution as any $\mathcal{B}^* \in \mathbb{B}$ that has never been queried before in the view of $\mathcal{A}$. Therefore, the probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:reduction-ind-uf-msc1_game:verify} is $\Pr[ \textsf{UF-MSC}^*(\mathcal{A}^*) \to 1 ]$.
+
+In conclusion,
+\begin{align*}
+	\Pr[\textsf{IND}(\mathcal{R}) \to 1]
+	&= \Pr[b = 0] \cdot \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 0] \right)  \\
+	&\quad + \Pr[b = 1] \cdot \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 1] \\
+	&= \frac{1}{2} \cdot \left ( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} (1 - \Pr[\textsf{Verify}(s) = 1 \mid b = 0]) \right) \\
+	& \quad +  \frac{1}{4} \cdot (1 - \Pr[\textsf{Verify}(s) = 1 \mid b = 1]) \\
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] - \Pr[\textsf{Verify}(s) = 1 \mid b = 1] \right) \\
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-MSC}^*(\mathcal{A}^*) \to 1 ] \right)
+\end{align*}
+
+\noindent Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{IND} = \left| \Pr[\textsf{IND}(\mathcal{R}) \to 1 ] - \frac{1}{2} \right| = \negl$,
+
+\[
+	\Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-MSC}^*(\mathcal{A}^*) \to 1 ] = 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{IND} = \negl.
+\]
 
 \end{proof}
 
+For the next theorem, we consider two assumptions for the fh-IPFE scheme \textsf{FE}.
 
 \begin{assumption}
-	\label{assump:1}
-	Assume that there exists a simulator $\mathcal{S}$ such that the statistical distance between $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathcal{U}_{k+2})$, where $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$ and $\mathcal{U}_{k+2}$ is a uniform distribution over $\mathbb{F}^{k+2}$, and output of $\mathcal{S}$ is bounded by $\delta$.
+\label{assump:ind-uf-msc:simulator}
+	Assume that there exists a simulator $\mathcal{S}$ such that the statistical distance between $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$, where $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$, and the output of $\mathcal{S}$ is bounded by $\delta$.
+	That is, let $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$,
 	\[
-		\Delta(\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathcal{U}_{k+2}), \mathcal{S}) \leq \delta.
+		\Delta(\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r}), \mathcal{S}) \leq \delta.
 	\]
+	The distribution of $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$ is taken over $\textsf{FE.Setup}$, $\textsf{FE.KeyGen}$, and $\mathbf{r}$.
 
 \end{assumption}
 
 
 \begin{assumption}
-	\label{assump:2}
-Assume that $\forall \mathbf{z}, \forall \mathbf{x} \gets \mathcal{B} \in \mathbb{B}$, two invocations of $\textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z})$ are the same with a probability bounded below by $p$.
+\label{assump:ind-uf-msc:decryption}
+	Assume that $\forall \mathbf{z}$ and $\forall \mathbf{x} \getsdollar \mathcal{B} \in \mathbb{B}$, functional decryption results of two invocations of $\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x})$ and $\mathbf{z}$ are the same with a probability bounded below by $1 - \epsilon$.
+	That is, let $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$,
 \[
-	\Pr[ \textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z}) = \textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z})] \geq p
+	\Pr \left[ \textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z}) = \textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z}) \right] \geq 1 - \epsilon
 \]
+	The probability is taken over $\textsf{FE.Setup}$ and $\textsf{FE.KeyGen}$.
 
 \end{assumption}
-
 
 
 \begin{theorem}
+\label{thm:ind-uf-msc2}
 
-Given Assumption \ref{assump:1} with $\delta = \negl$ and Assumption \ref{assump:2} with $p \geq 1 - \negl$.
-For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}^*$ in the $\textsf{UF-MSC}^*$ game,
+Given Assumption \ref{assump:ind-uf-msc:simulator} with a negligible $\delta$ and Assumption \ref{assump:ind-uf-msc:decryption} with a negligible $\epsilon$.
+In the Device-of-User model, for any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}^*$ in the $\textsf{UF-MSC}^*$ game,
 	\[
-		\Pr[\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(A^*) \to 1] - \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(A^\prime) \to 1] = \negl.
+		\Pr[\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1] = \negl.
 	\]
-	where $\mathcal{A}^\prime$ is an adversary in the $\textsf{UF-MSC}^\prime$ game which runs $\mathcal{A}^*$ and simulates $\mathbf{c_x}$ by the output of the simulator $\mathcal{S}$
+	where $\mathcal{A}^\prime$ is an adversary in the $\textsf{UF}$ game which runs $\mathcal{A}^*$ and simulates $\mathbf{c_x}$ by the output of the simulator $\mathcal{S}$ from Assumption \ref{assump:ind-uf-msc:simulator}.
 \end{theorem}
 
+
+\begin{proof}
+
+	Given an adversary $\mathcal{A}^*$ in the $\textsf{UF-MSC}^*$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-msc2_game} which plays the \textsf{IND} game. $\mathcal{R}$ runs $\mathcal{A}^*$ and simulates $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$ by $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$. Note that since $\mathcal{R}$ never calls $\mathcal{O}_{\textsf{Enc}}$, it is an admissible adversary.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+		\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:reduction-ind-uf-msc2_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
+		
+		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:reduction-ind-uf-msc2_game:c}
+
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}^*}^{\mathcal{O}_\textsf{auth}^q} ( \mathbf{c} )$
+
+		\State $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{x})$
+
+		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\If{$\textsf{Verify}(s) = 1$} \label{alg:reduction-ind-uf-msc2_game:verify}
+			\State \Return $\tilde{b} = 0$
+		\Else
+			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
+		\EndIf
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\label{fig:reduction-ind-uf-msc2_game}
+\end{figure}
+
+If the challenge bit $b = 0$, then $\mathcal{R}$ perfectly simulates a $\textsf{UF-MSC}^*$ game for $\mathcal{A}^*$. Therefore, the probability that $\textsf{Verify}(\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}})) = 1$ is $\Pr[\textsf{UF-MSC}^*(\mathcal{A}^*) \to 1]$. By Assumption \ref{assump:ind-uf-msc:decryption}, the probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:reduction-ind-uf-msc2_game:verify} is at least
+\begin{align*}
+	& \Pr \left[ s = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \right]  \cdot \Pr \left[ \textsf{Verify}(\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}})) = 1 \right] \\
+	\geq & \quad (1 - \epsilon) \cdot \Pr[\textsf{UF-MSC}^*(\mathcal{A}^*) \to 1]
+\end{align*}
+
+	If the challenge bit $b = 1$, then the statistical distance between $\mathbf{c}$ in Line \ref{alg:reduction-ind-uf-msc2_game:c} and the output of $\mathcal{S}$ from Assumption \ref{assump:ind-uf-msc:simulator} is within $\delta$. Therefore, the probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:reduction-ind-uf-msc2_game:verify} is at most $\Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] + \delta$.
+
+In conclusion,
+\begin{align*}
+	\Pr[\textsf{IND}(\mathcal{R}) \to 1] 
+	&= \Pr[b = 0] \cdot \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 0] \right) \\
+	&\quad + \Pr[b = 1] \cdot \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 1] \\
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] - \Pr[\textsf{Verify}(s) = 1 \mid b = 1] \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( (1-\epsilon) \cdot \Pr[\textsf{UF-MSC}^*(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] - \delta \right)
+\end{align*}
+
+\noindent Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{IND} = \left| \Pr[\textsf{IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right| = \negl$, $\epsilon = \negl$, and $\delta = \negl$,
+\[
+	\Pr[\textsf{UF-MSC}^*(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{IND} + \epsilon + \delta = \negl.
+\]
+
+\end{proof}
+
+\begin{corollary}
+Given Assumption \ref{assump:ind-uf-msc:simulator} with a negligible $\delta$ and Assumption \ref{assump:ind-uf-msc:decryption} with a negligible $\epsilon$.
+In the Device-of-User model, for any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}$ in the $\textsf{UF-MSC}$ game, there exists an adversary $\mathcal{A}^\prime$ such that
+\[
+	\Pr[\textsf{UF-MSC}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] - \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1] = \negl.
+\]
+As a result, $\Adv_{\Pi, \mathbb{B}, \mathcal{A}}^{\textsf{UF-MSC}} = \negl.$ The authentication scheme is UF-MSC secure.	
+
+\end{corollary}
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game, from Theorem \ref{thm:ind-uf-msc1}, we know there exists a reduction $\mathcal{R}_1$ and an adversary $\mathcal{A}^*$ such that
+\[
+	\Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-MSC}^*(\mathcal{A}^*) \to 1 ] = 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}_1}^\textsf{IND}
+\]
+
+With $\mathcal{A}^*$, from Theorem \ref{thm:ind-uf-msc2}, we know there exists a reduction $\mathcal{R}_2$ and an adversary $\mathcal{A}^\prime$ such that 
+\[
+	\Pr[\textsf{UF-MSC}^*(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}_2}^\textsf{IND} + \epsilon + \delta.
+\]
+
+Hence,
+\[
+	\Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \left( \Adv_{\textsf{FE}, \mathcal{R}_1}^\textsf{IND} + \Adv_{\textsf{FE}, \mathcal{R}_2}^\textsf{IND} \right) + \epsilon + \delta
+\]
+
+Since \textsf{FE} is \textsf{IND} secure and both $\epsilon$ and $\delta$ are negligible,
+\[
+	\Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] = \negl.
+\]
+
+In particular, since $\Adv_{\Pi, \mathbb{B}, \mathcal{A}}^{\textsf{UF-MSC}} \leq \Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1]$,
+\[
+	\Adv_{\Pi, \mathbb{B}, \mathcal{A}}^{\textsf{UF-MSC}} = \negl.
+\]
+
+This holds for all PPT adversaries $\mathcal{A}$, so $\Pi$ is UF-MSC secure.
+
+\end{proof}
 
 
 %-------------------
