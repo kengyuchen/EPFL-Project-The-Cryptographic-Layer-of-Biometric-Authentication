@@ -54,10 +54,11 @@ In this report, we assume
 
 \end{itemize}
 
+We introduce three types of inner product functional encryption schemes: function hiding functional encryption, two-input functional encryption, and two-client functional encryption. We will instantiate our biometric authentication scheme using these primitives.
 
-\begin{definition}[Functional Hiding Inner Product Functional Encryption]
+\begin{definition}[Function Hiding Inner Product Functional Encryption]
 \label{def:fh-IPFE}
-	A \emph{functional hiding inner product functional encryption} (fh-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms $\textsf{FE.Setup}$, $\textsf{FE.KeyGen}$, $\textsf{FE.Enc}$, and $\textsf{FE.Dec}$:
+	A \emph{function hiding inner product functional encryption} (fh-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms $\textsf{FE.Setup}$, $\textsf{FE.KeyGen}$, $\textsf{FE.Enc}$, and $\textsf{FE.Dec}$:
 
 	\begin{itemize}
 	
@@ -78,6 +79,7 @@ In this report, we assume
 
 \end{definition}
 
+Instantiation using an fh-IPFE scheme is given in Section \ref{sec:fh-IPFE-instantiation}.
 
 \begin{definition}[Two-Input Inner Product Functional Encryption (adapted from \cite{cryptoeprint:2022/441})]
 \label{def:2i-IPFE}
@@ -103,6 +105,7 @@ In this report, we assume
 
 \end{definition}
 
+Instantiation using a 2i-IPFE is given in Section \ref{sec:2i-IPFE-instantiation}.
 
 \begin{definition}[Two-Client Inner Product Functional Encryption (adapted from \cite{cryptoeprint:2022/441})]
 \label{def:2c-IPFE}
@@ -126,6 +129,41 @@ In this report, we assume
 	\]
 
 \end{definition}
+
+Instantiation using a 2c-IPFE is given in Section \ref{sec:2c-IPFE-instantiation}.
+
+We also consider an instantiation using a relational hash scheme.
+
+\begin{definition}[Relational Hash (adapted from \cite{cryptoeprint:2014/394})]
+\label{def:rh}
+	Let $R_\lambda$ be a relation over sets $X_\lambda, Y_\lambda$, and $ Z_\lambda$. A \emph{relational hash} scheme \textsf{RH} for $R_\lambda$ consists of PPT algorithms \textsf{RH.KeyGen}, $\textsf{RH.HASH}_1$, $\textsf{RH.HASH}_2$, and \textsf{RH.Verify}:
+	
+	\begin{itemize}
+	
+		\item $\textsf{RH.KeyGen}(1^\lambda) \to \textsf{pk}$: It outputs a public hash key \textsf{pk}.  
+			
+		\item $\textsf{RH.Hash}_1(\textsf{pk}, \mathbf{x}) \to \mathbf{h_x}$: Given a hash key \textsf{pk} and $\mathbf{x} \in X_\lambda$, it outputs a hash $\mathbf{h_x}$.
+
+		\item $\textsf{RH.Hash}_2(\textsf{pk}, \mathbf{y}) \to \mathbf{h_y}$: Given a hash key \textsf{pk} and $\mathbf{y} \in Y_\lambda$, it outputs a hash $\mathbf{h_y}$.
+
+		\item $\textsf{RH.Verify}(\textsf{pk}, \mathbf{h_x}, \mathbf{h_y}) \to r \in \{0, 1\}$: Given a hash key \textsf{pk}, two hashes $\mathbf{h_x}$ and $\mathbf{h_y}$, and $\mathbf{z} \in Z_\lambda$, it verifies whether the relation among $\mathbf{x}, \mathbf{y}$ and $\mathbf{z}$ holds.
+
+	\end{itemize}
+
+	\noindent Correctness: The relational hash scheme \textsf{RH} is \emph{correct} if $\forall \mathbf{x}, \mathbf{y}, \mathbf{z} \in X_\lambda \times Y_\lambda \times Z_\lambda$,
+	\[
+		\Pr \left [
+			\begin{cases} 
+				 \textsf{pk} \gets \textsf{RH.KeyGen}(1^\lambda) \\
+				 \mathbf{h_x} \gets \textsf{RH.Hash}_1(\textsf{pk}, \mathbf{x}) \\
+				 \mathbf{h_y} \gets \textsf{RH.Hash}_2(\textsf{pk}, \mathbf{y})
+			\end{cases} :
+			\textsf{RH.Verify}(\textsf{pk}, \mathbf{h_x}, \mathbf{h_y}, \mathbf{z}) = R(\mathbf{x}, \mathbf{y}, \mathbf{z})
+			\right ] = 1 - \negl.
+	\]
+\end{definition}
+
+Instantiation using a relational hash is given in Section \ref{sec:rh-instantiation}.
 
 
 %-------------------
@@ -182,8 +220,7 @@ A key distribution service distributes keys for them. In practice, this model ap
 
 \end{itemize}
 
-The Device-of-User model is similar to the use case in \cite{cryptoeprint:2023/481}, except that \textsf{Scanner} and \textsf{KDS} are part of \textsf{Device}, which is a secure hardware token in their model.
-
+The Device-of-User model is analogous to the use case presented in \cite{cryptoeprint:2023/481}. In their model, a user possesses a personal device, such as a smartphone or laptop, and a secure hardware device that runs an initial setup and stores all the keys, which corresponds to our \textsf{KDS}. On enrollemnt and authentication, the user inputs biometric templates onto the device, which corresponds to our \textsf{Scanner}. Subsequently, the device transmits the template to the secure hardware for the enrollment or probing processes, which are equivalent to our \textsf{Device}. In addition, they incorporate a two-factor authentication mechanism. The secure hardware also executes a digital signature scheme and sign the probe message on authentication.
 
 \input{tikz/dou_model.tex}
 
@@ -225,7 +262,7 @@ A key distribution service distributes enrollment keys to the enrollment station
 \subsection{Instantiation with an fh-IPFE Scheme}
 \label{sec:fh-IPFE-instantiation}
 
-Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using $\textsf{FE}$ with the distance metric the Euclidean distance. Let the biometric templates $\mathbf{b}$ and $\mathbf{b}^\prime$ be sampled from some distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
+Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using $\textsf{FE}$ with the distance metric the Euclidean distance. Let the biometric distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
 
 \begin{itemize}
 
@@ -332,6 +369,42 @@ If \textsf{Server} and \textsf{Domain} are both malicious, then the adversary ca
 
 %-------------------
 
+\subsection{Instantiation with a Relational Hash Scheme}
+\label{sec:rh-instantiation}
+
+Let $\textsf{RH} = (\textsf{RH.KeyGen}, \textsf{RH.Hash}_1, \textsf{RH.Hash}_2, \textsf{RH.Verify})$ be a relational hash scheme we defined in Definition \ref{def:rh} for the relation $R$ of Hamming distance proximity parametrized by a constant $\tau$.
+\[
+	R = \{ (\mathbf{x}, \mathbf{y}) \mid \textsf{HD}(\mathbf{x}, \mathbf{y}) \leq \tau, \mathbf{x}, \mathbf{y} \in \{0,1\}^k \}
+\]
+Note that here we ignore the third parameter $Z$.
+Following \cite{cryptoeprint:2023/481} and \cite{cryptoeprint:2014/394}, we can instantiate a biometric authentication scheme using $\textsf{RH}$.  Let the biometric distribution $\mathcal{B} \subseteq \{0,1\}^k$.
+
+\begin{itemize}
+
+	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{RH.Setup}(1^\lambda) \to \textsf{pk}$ and outputs $\textsf{esk} \gets \textsf{pk}$, $\textsf{psk} \gets \textsf{pk}$, and $\textsf{csk} \gets \textsf{pk}$.
+
+	\item $\textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b}$ sampled from $\mathcal{O}_\mathcal{B}$, it direclty outputs $\mathbf{x} \gets \mathbf{b}$.
+
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{x})$: It calls $\textsf{RH.Hash}_1(\textsf{pk}, \mathbf{x}) \to \mathbf{h_x}$ and outputs $\mathbf{c_x} \gets \mathbf{h_x}$.
+
+	\item $\textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: For a template vector $\mathbf{b}^\prime$ sampled from $\mathcal{O}_\mathcal{B}$, it directy outputs $\mathbf{y} \gets \mathbf{b}^\prime$.
+
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{y})$: It calls $\textsf{RH.Hash}_2(\textsf{pk}, \mathbf{y}) \to \mathbf{h_y}$ and outputs $\mathbf{c_y} \gets \mathbf{h_y}$.
+
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{RH.Verify}(\textsf{pk}, \mathbf{h_x}, \mathbf{h_y}) \to s$ and outputs the value $s$.
+
+	\item $\textsf{Verify}(s)$: It direclty returns $r \gets s$.
+
+\end{itemize}
+
+By the correctness of the relational hash scheme $\textsf{RH}$, we have (except for a negligible probability),
+\[
+	r = 1 \Leftrightarrow (\mathbf{x}, \mathbf{y}^\prime) \in R \Leftrightarrow \textsf{HD}(\mathbf{b}, \mathbf{b}^\prime) \leq \tau
+\]
+
+
+%-------------------
+
 
 \section{Security Games}
 \label{sec:security_game}
@@ -383,9 +456,7 @@ In the game of Unforgeability against Malicious Scanner, we model the ability of
 
 \begin{figure}[h]
 \centering
-\vspace*{-\multicolsep}
-\begin{multicols}{2}
-	\begin{minipage}[t]{0.9\linewidth}
+	\begin{minipage}[t]{0.6\linewidth}
 	\centering
 	\begin{algorithm}[H]
 	\caption{$\textsf{UF-MSC}_{\Pi, \mathbb{B}}(\mathcal{A})$}
@@ -398,9 +469,20 @@ In the game of Unforgeability against Malicious Scanner, we model the ability of
 		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
 		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+		
+		\State In Device-of-User model:
+		
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
-
+		\State In Device-of-Domain model:
+		
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
+		
+		\If{ $\mathbf{\tilde{z}}$ equals to any output of $\mathcal{O}_\textsf{Probe}$ }
+		
+		\State \Return $\bot$
+		
+		\EndIf
 		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
 		\State \Return $\textsf{Verify}(s)$
@@ -408,29 +490,6 @@ In the game of Unforgeability against Malicious Scanner, we model the ability of
 	\end{algorithm}
 	\end{minipage}
 	
-	\begin{minipage}[t]{0.9\linewidth}
-	\centering
-	\begin{algorithm}[H]
-	\caption{$\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A^\prime})$}
-	\label{alg:uf-msc-prime_game}
-	\begin{algorithmic}[1]
-		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
-
-		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
-
-		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
-
-		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
-
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{auth}^{q}}()$
-
-		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
-
-		\State \Return $\textsf{Verify}(s)$
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-\end{multicols}
 %\caption{The \textsf{UF-MSC} Game (Left) and $\textsf{UF-MSC}^\prime$ Game (Right)}
 \label{fig:uf-msc_game}
 \end{figure}
@@ -441,35 +500,64 @@ The given oracle is defined as follows:
 \begin{itemize}
 	\item $\mathcal{O}_{\mathcal{B}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}$.
 
-	\item $\mathcal{O}_\textsf{auth}^{q}(\textsf{csk}, \mathbf{c_x}, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{z}$, it outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{z}))$.
+	\item $\mathcal{O}_\textsf{auth}^{q}(\textsf{csk}, \cdot, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}$, it outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}} ) )$.
 \end{itemize}
 
 
-To consider potential false positives of biometrics match, we consider the plain $\textsf{UF-MSC}^\prime$ game in Algorithm \ref{alg:uf-msc-prime_game}, in which the adversary does not have any knowledge about the template.
+To consider potential false positives of biometrics match, we consider the plain $\textsf{UF}$ game in Algorithm \ref{alg:uf_game}, in which the adversary has only public information.
+
+\begin{figure}[H]
+\centering
+	\begin{minipage}[t]{0.5\linewidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
+	\label{alg:uf_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State In Device-of-User model:
+		
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{auth}^q}()$
+
+		\State In Device-of-Domain model:
+
+		\State \hspace{\algorithmicindent} $\mathbf{\tilde{z}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q}()$
+		
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+\label{fig:uf_game}
+\end{figure}
+
+Note that in Device-of-Domain model, a probe oracle is given to the adversary.
+
+\begin{itemize}
+	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$.
+\end{itemize}
 
 We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\textsf{UF-MSC}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MSC}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
-	q\cdot \sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
 \]
-
-The $q$ factor is to avoid trivial attacks.
-Let $\mathcal{A}^\prime$ be a $\textsf{UF-MSC}^\prime$ adversary.
-An adversary $\mathcal{A}$ can run $\mathcal{A}^\prime() \to \mathbf{\tilde{z}}$ and $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}})$ up to $q$ times and then outputs a successful forged probe message if there is any.
-The probability that $\mathcal{A}$ wins is
-\begin{align*}
-	\Pr[{\textsf{UF-MSC}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] 
-	&= 1 - (1 - \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1])^q \\
-	&\leq q \cdot \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1]
-\end{align*}
 
 An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious scanner (UF-MSC)} if for any PPT adversary $\mathcal{A}$,
 \[
 	\Adv^{\textsf{UF-MSC}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
 \]
 
-Note that if $\textsf{csk}$ is an empty or public string, then the scheme cannot achieve UF-MSC security when the false positive rate is not negligible, as the adversary can run the $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot)$ over $q$ times.
-Also note that in the Device-of-Domain model, the probe oracle $\textsf{Probe}(\textsf{psk}, \cdot)$ is assumed to be public, so the scheme is never UF-MSC since the adversary can generate valid probe messages itself. Therefore, we only consider UF-MSC security in the Device-of-User model. 
+Note that if $\textsf{csk}$ is an empty or public string, the the scheme cannot achieve UF-MSC security when the false positive rate is not negligible, as the adversary can run the $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot)$ over $q$ times to boost the false positive rates.
+Also note that in the Device-of-Domain model, the probe oracle $\mathcal{O}_\textsf{Probe}$ is assumed to be public, so the adversary is asked to return some $\mathbf{\tilde{z}}$ that is not returned by the probe oracle.
+
 
 %-------------------
 
@@ -478,14 +566,11 @@ Also note that in the Device-of-Domain model, the probe oracle $\textsf{Probe}(\
 
 In the game of Unforgeability against Malicious Device, we model the ability of a malicious \textsf{Device} who has access to \textsf{Server}'s database of registered enrollments and tries to impersonate \textsf{User}.
 The adversary $\mathcal{A}$ is given the keys $\textsf{esk}, \textsf{psk}$ (only \textsf{psk} in Device-of-Domain model), enrollment message $\mathbf{c_x}$, and oracle $\mathcal{O}_\textsf{auth}^q$ and tries to find a valid probe message $\mathbf{\tilde{z}}$.
-The whole game \textsf{UF-MDV} is defined in Algorithm \ref{alg:uf-mdv_game}. Similarly to Section \ref{sec:uf-msc_game}, we also consider the plain $\textsf{UF-MDV}^\prime$ game in Algorithm \ref{alg:uf-mdv-prime_game}.
-
+The whole game \textsf{UF-MDV} is defined in Algorithm \ref{alg:uf-mdv_game}. 
 \begin{figure}[h]
 \centering
-\vspace*{-\multicolsep}
-\begin{multicols}{2}
 
-	\begin{minipage}[t]{0.9\linewidth}
+	\begin{minipage}[t]{0.5\linewidth}
 	\begin{algorithm}[H]
 	\caption{$\textsf{UF-MDV}_{\Pi, \mathbb{B}}(\mathcal{A})$}
 	\label{alg:uf-mdv_game}
@@ -513,49 +598,15 @@ The whole game \textsf{UF-MDV} is defined in Algorithm \ref{alg:uf-mdv_game}. Si
 	\end{algorithm}
 	\end{minipage}
 	
-	\begin{minipage}[t]{0.9\linewidth}
-	\begin{algorithm}[H]
-	\caption{$\textsf{UF-MDV}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
-	\label{alg:uf-mdv-prime_game}
-	\begin{algorithmic}[1]
-		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
-
-		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
-
-		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
-
-		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
-
-		\State In Device-of-User model:
-		
-		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{auth}^q}()$
-
-		\State In Device-of-Domain model:
-
-		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q}()$
-		
-		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
-
-		\State \Return $\textsf{Verify}(s)$
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-
-\end{multicols}
 %\caption{The \textsf{UF-MDV} Game (Left) and $\textsf{UF-MDV}^\prime$ Game (Right)}
 \label{fig:uf-mdv_game}
 \end{figure}
 
-Note that in Device-of-Domain model, a probe oracle is given to $\textsf{UF-MDV}^\prime$ adversary.
-
-\begin{itemize}
-	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$.
-\end{itemize}
 
 We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MDV} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\textsf{UF-MDV}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MDV}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
-	q \cdot \sup_{\text{PPT } \mathcal{A}^\prime} \Pr[{\textsf{UF-MDV}^\prime}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[{\textsf{UF}}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
 \]
 
 An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious device (UF-MDV)} if for any PPT adversary $\mathcal{A}$,
@@ -571,14 +622,12 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 
 In the game of Unforgeability against Malicious Domain, we model the ability of a malicious \textsf{Domain} in the Device-of-Domain model who tries to access an honest \textsf{Domain} through a \textsf{User} who has enrolled in both of them.
 The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ of the honest \textsf{Domain} and oracles $\mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Probe}^\prime$, and $ \mathcal{O}_\textsf{auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$.
-The whole game \textsf{UF-MDM} is defined in Algorithm \ref{alg:uf-mdm_game}. Similarly to Section \ref{sec:uf-msc_game}, we also consider the plain $\textsf{UF-MDM}^\prime$ game in Algorithm \ref{alg:uf-mdm-prime_game}.
+The whole game \textsf{UF-MDM} is defined in Algorithm \ref{alg:uf-mdm_game}.
 
 \begin{figure}[h]
 \centering
-\vspace*{-\multicolsep}
-\begin{multicols}{2}
 
-	\begin{minipage}[t]{0.9\linewidth}
+	\begin{minipage}[t]{0.5\linewidth}
 	\begin{algorithm}[H]
 	\caption{${\textsf{UF-MDM}}_{\Pi, \mathbb{B}}(\mathcal{A})$}
 	\label{alg:uf-mdm_game}
@@ -600,30 +649,6 @@ The whole game \textsf{UF-MDM} is defined in Algorithm \ref{alg:uf-mdm_game}. Si
 	\end{algorithm}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.9\linewidth}
-	\begin{algorithm}[H]
-	\caption{${\textsf{UF-MDM}}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
-	\label{alg:uf-mdm-prime_game}
-	\begin{algorithmic}[1]
-		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
-
-		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
-
-		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
-
-		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
-
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q}()$
-
-		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
-
-		\State \Return $\textsf{Verify}(s)$
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-
-\end{multicols}
-%\caption{The \textsf{UF-MDM} Game (Left) and $\textsf{UF-MDM}^\prime$ Game (Right)}
 \label{fig:uf-mdm_game}
 \end{figure}
 
@@ -638,7 +663,7 @@ The $\mathcal{O}_\textsf{Probe}^\prime$ oracle is to model the ability that the 
 We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MDM} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\textsf{UF-MDM}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MDM}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
-	q \cdot \sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF-MDM}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
 \]
 
 An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious domain (UF-MDM)} if for any PPT adversary $\mathcal{A}$,
@@ -654,14 +679,12 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 
 In the game of Unforgeability against Malicious Station, we model the ability of a malicious \textsf{Station} in the Device-of-Domain model who tries to impersonate \textsf{User}.
 The adversary $\mathcal{A}$ is given the enrollment key $\textsf{esk}$, enrollment message $\mathbf{c_x}$, and oracles $\mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Enroll}^\prime$, and $ \mathcal{O}_\textsf{auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$.
-The whole game \textsf{UF-MST} is defined in Algorithm \ref{alg:uf-mst_game}. Similarly to Section \ref{sec:uf-msc_game}, we also consider the plain $\textsf{UF-MST}^\prime$ game in Algorithm \ref{alg:uf-mst-prime_game}.
+The whole game \textsf{UF-MST} is defined in Algorithm \ref{alg:uf-mst_game}. 
 
 \begin{figure}[h]
 \centering
-\vspace*{-\multicolsep}
-\begin{multicols}{2}
 
-	\begin{minipage}[t]{0.9\linewidth}
+	\begin{minipage}[t]{0.5\linewidth}
 	\begin{algorithm}[H]
 	\caption{${\textsf{UF-MST}}_{\Pi, \mathbb{B}}(\mathcal{A})$}
 	\label{alg:uf-mst_game}
@@ -683,30 +706,6 @@ The whole game \textsf{UF-MST} is defined in Algorithm \ref{alg:uf-mst_game}. Si
 	\end{algorithm}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.9\linewidth}
-	\begin{algorithm}[H]
-	\caption{${\textsf{UF-MST}}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
-	\label{alg:uf-mst-prime_game}
-	\begin{algorithmic}[1]
-		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
-
-		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
-
-		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
-
-		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
-
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q}()$
-
-		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
-
-		\State \Return $\textsf{Verify}(s)$
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-
-\end{multicols}
-%\caption{The \textsf{UF-MST} Game (Left) and $\textsf{UF-MST}^\prime$ Game (Right)}
 \label{fig:uf-mst_game}
 \end{figure}
 
@@ -721,7 +720,7 @@ The $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$ oracle is to model the ability 
 We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MST} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\textsf{UF-MST}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MST}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
-	q \cdot \sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF-MST}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
 \]
 
 An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious station (UF-MST)} if for any PPT adversary $\mathcal{A}$,
@@ -806,6 +805,194 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 %-------------------
 
 
+\section{Security Analysis}
+
+Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{IND} game in algorithm \ref{alg:ind-fh-IPFE}.
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.6\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{IND}_{\textsf{FE}}(\mathcal{A})$}
+	\label{alg:ind-fh-IPFE}
+	\begin{algorithmic}[1]
+		\State $b \getsdollar \{0, 1\}$
+
+		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}} ( \textsf{pp} )$
+
+		\State \Return $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\label{fig:ind-fh-IPFE}
+\end{figure}
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\textsf{KeyGen}}(\cdot, \cdot)$: On input $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$, it outputs $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^{(b)} )$
+
+	\item $\mathcal{O}_{\textsf{Enc}}(\cdot, \cdot)$: On input pair $(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$, it outputs $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^{(b)} )$
+
+\end{itemize}
+
+\noindent To avoid trivial attacks, we consider \emph{admissible adversaries}.
+
+\begin{definition}[Admissible Adversary]
+
+	Let $\mathcal{A}$ be an adversary in an \textsf{IND} game, and let $ (\mathbf{x}_1^{(0)}, \mathbf{x}_1^{(1)}), \cdots, (\mathbf{x}_{Q_K}^{(0)}, \mathbf{x}_{Q_K}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{KeyGen}}$ and $(\mathbf{y}_1^{(0)}, \mathbf{y}_1^{(1)}), \cdots, (\mathbf{y}_{Q_E}^{(0)}, \mathbf{y}_{Q_E}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{Enc}}$.
+	We say $\mathcal{A}$ is \emph{admissible} if $\forall i \in [Q_K], \forall j \in [Q_E]$,
+\[
+	{\mathbf{x}^{(0)}_{i}}^T \mathbf{y}^{(0)}_{j} = {\mathbf{x}^{(1)}_{i}}^T \mathbf{y}^{(1)}_{j}
+\]
+
+\end{definition}
+
+
+
+\begin{definition}[IND Security]
+
+	An fh-IPFE scheme \textsf{FE} is called IND secure if for any admissible adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the IND game in Algorithm \ref{alg:ind-fh-IPFE} is
+
+\[
+	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{IND}} := \left| \Pr[\textsf{IND}_{\textsf{FE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
+\]
+
+\end{definition}
+
+
+\subsection{IND Security and UF-MSC Security}
+\label{sec:ind-uf-msc}
+
+Let $\Pi$ be the authentication scheme instantiated by an fh-IPFE scheme \textsf{FE} as in Section \ref{sec:fh-IPFE-instantiation}.
+We see a relation between the IND security of \textsf{FE} and the UF-MSC security of $\Pi$.
+To show this, first we define a middle game for UF-MSC security in Algorithm \ref{alg:uf-msc-star_game}.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:uf-msc-star_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\label{fig:uf-msc-star_game}
+\end{figure}
+
+
+\begin{theorem}
+
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}$ in the \textsf{UF-MSC} game,
+	\[
+		\Pr[\textsf{UF-MSC}_{\Pi, \mathbb{B}}(A) \to 1] - \Pr[\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(A^*) \to 1] = \negl.
+	\]
+	where $\mathcal{A}^*$ is an adversary in the $\textsf{UF-MSC}^*$ game which runs $\mathcal{A}$ and simulates oracle $\mathcal{O}_{\mathcal{B}}$ by $\mathcal{O}_{\sf samp}(i^*)$ for some index $i^*$ that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\sf samp}$.
+
+\end{theorem}
+
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game, consider a reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-msc-star_game} which plays the \textsf{IND} game.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+		\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp}, \mathcal{A})$}
+	\label{alg:reduction-ind-uf-msc-star_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$
+
+		\State $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$
+
+		\State $\mathbf{x}^{(0)} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+
+		\State $\mathbf{x}^{(1)} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+
+		\State $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
+
+		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\If{$\textsf{Verify}(s) = 1$}
+			\State \Return $\tilde{b} = 0$
+		\Else
+			\State \Return $\tilde{b} \gets \{0, 1\}$
+		\EndIf
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\label{fig:uf-msc-star_game}
+\end{figure}
+
+If the challenge bit $b = 0$, then $\Pr[\textsf{Verify}(s) = 1 \mid b = 0]$ in Algorithm \ref{alg:reduction-ind-uf-msc-star_game} is $\Pr[\textsf{UF-MSC}(\mathcal{A}) \to 1]$.
+
+If the challenge bit $b = 1$, then since $\mathcal{B}^{(1)}$ is never seen by $\mathcal{A}$, and since $\mathcal{B}^{(0)}$ has the same distribution as any $\mathcal{B} \in \mathbb{B}$ in the view of $\mathcal{A}$, $\Pr[\textsf{Verify}(s) = 1 \mid b = 1]$ in Algorithm \ref{alg:reduction-ind-uf-msc-star_game} is $\Pr[ \textsf{UF-MSC}^*(\mathcal{A}^*) \to 1 ]$.
+
+\end{proof}
+
+
+\begin{assumption}
+	\label{assump:1}
+	Assume that there exists a simulator $\mathcal{S}$ such that the statistical distance between $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathcal{U}_{k+2})$, where $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$ and $\mathcal{U}_{k+2}$ is a uniform distribution over $\mathbb{F}^{k+2}$, and output of $\mathcal{S}$ is bounded by $\delta$.
+	\[
+		\Delta(\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathcal{U}_{k+2}), \mathcal{S}) \leq \delta.
+	\]
+
+\end{assumption}
+
+
+\begin{assumption}
+	\label{assump:2}
+Assume that $\forall \mathbf{z}, \forall \mathbf{x} \gets \mathcal{B} \in \mathbb{B}$, two invocations of $\textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z})$ are the same with a probability bounded below by $p$.
+\[
+	\Pr[ \textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z}) = \textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z})] \geq p
+\]
+
+\end{assumption}
+
+
+
+\begin{theorem}
+
+Given Assumption \ref{assump:1} with $\delta = \negl$ and Assumption \ref{assump:2} with $p \geq 1 - \negl$.
+For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}^*$ in the $\textsf{UF-MSC}^*$ game,
+	\[
+		\Pr[\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(A^*) \to 1] - \Pr[\textsf{UF-MSC}^\prime_{\Pi, \mathbb{B}}(A^\prime) \to 1] = \negl.
+	\]
+	where $\mathcal{A}^\prime$ is an adversary in the $\textsf{UF-MSC}^\prime$ game which runs $\mathcal{A}^*$ and simulates $\mathbf{c_x}$ by the output of the simulator $\mathcal{S}$
+\end{theorem}
+
+
+
+%-------------------
 %% Backup File
 
 % \input{backup.tex}
