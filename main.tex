@@ -923,7 +923,7 @@ To show this, first we define a middle game for UF-MSC security in Algorithm \re
 
 
 \begin{proof}
-
+\label{proof:ind-uf-msc1}
 	Given an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-msc1_game} which plays the \textsf{IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates $\mathcal{O}_{\mathcal{B}}$ by $\mathcal{O}_{\mathcal{B}^{(0)}}$ and $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$ by $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$. Note that since $\mathcal{R}$ never calls $\mathcal{O}_{\textsf{Enc}}$, it is an admissible adversary.
 
 \begin{figure}[h]
@@ -989,10 +989,10 @@ For the next theorem, we consider two assumptions for the fh-IPFE scheme \textsf
 
 \begin{assumption}
 \label{assump:ind-uf-msc:simulator}
-	Assume that there exists a simulator $\mathcal{S}$ such that the statistical distance between $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$, where $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$, and the output of $\mathcal{S}$ is bounded by $\delta$.
+	Assume that there exists a simulator $\mathcal{S}$ such that given $\textsf{pp}$, the statistical distance between $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$ and $\mathcal{S}(\textsf{pp})$, where $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$, is bounded by $\delta$.
 	That is, let $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$,
 	\[
-		\Delta(\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r}), \mathcal{S}) \leq \delta.
+		\Delta \left( (\textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})), (\textsf{pp}, \mathcal{S}(\textsf{pp}) ) \right) \leq \delta.
 	\]
 	The distribution of $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$ is taken over $\textsf{FE.Setup}$, $\textsf{FE.KeyGen}$, and $\mathbf{r}$.
 
@@ -1004,7 +1004,12 @@ For the next theorem, we consider two assumptions for the fh-IPFE scheme \textsf
 	Assume that $\forall \mathbf{z}$ and $\forall \mathbf{x} \getsdollar \mathcal{B} \in \mathbb{B}$, functional decryption results of two invocations of $\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x})$ and $\mathbf{z}$ are the same with a probability bounded below by $1 - \epsilon$.
 	That is, let $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$,
 \[
-	\Pr \left[ \textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z}) = \textsf{FE.Dec}(\textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z}) \right] \geq 1 - \epsilon
+	\Pr \left[
+		\begin{aligned}
+			& \textsf{FE.Dec}(\textsf{pp}, \textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z}) \\
+		  =\; & \textsf{FE.Dec}(\textsf{pp}, \textsf{FE.KeyGen}( \textsf{msk}, \textsf{pp}, \mathbf{x}), \mathbf{z})
+		\end{aligned}
+	\right] \geq 1 - \epsilon
 \]
 	The probability is taken over $\textsf{FE.Setup}$ and $\textsf{FE.KeyGen}$.
 
@@ -1016,15 +1021,15 @@ For the next theorem, we consider two assumptions for the fh-IPFE scheme \textsf
 
 Given Assumption \ref{assump:ind-uf-msc:simulator} with a negligible $\delta$ and Assumption \ref{assump:ind-uf-msc:decryption} with a negligible $\epsilon$.
 In the Device-of-User model, for any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}^*$ in the $\textsf{UF-MSC}^*$ game,
-	\[
-		\Pr[\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1] = \negl.
-	\]
-	where $\mathcal{A}^\prime$ is an adversary in the $\textsf{UF}$ game which runs $\mathcal{A}^*$ and simulates $\mathbf{c_x}$ by the output of the simulator $\mathcal{S}$ from Assumption \ref{assump:ind-uf-msc:simulator}.
+\[
+	\Pr[\textsf{UF-MSC}^*_{\Pi, \mathbb{B}}(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1] = \negl.
+\]
+where $\mathcal{A}^\prime$ is an adversary in the $\textsf{UF}$ game which runs $\mathcal{A}^*$ and simulates $\mathbf{c_x}$ by $\mathcal{S}(\textsf{pp})$ from Assumption \ref{assump:ind-uf-msc:simulator}.
 \end{theorem}
 
 
 \begin{proof}
-
+\label{proof:ind-uf-msc2}
 	Given an adversary $\mathcal{A}^*$ in the $\textsf{UF-MSC}^*$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-msc2_game} which plays the \textsf{IND} game. $\mathcal{R}$ runs $\mathcal{A}^*$ and simulates $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$ by $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$. Note that since $\mathcal{R}$ never calls $\mathcal{O}_{\textsf{Enc}}$, it is an admissible adversary.
 
 \begin{figure}[h]
