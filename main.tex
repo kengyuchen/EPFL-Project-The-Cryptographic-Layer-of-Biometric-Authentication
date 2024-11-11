@@ -410,7 +410,7 @@ By the correctness of the relational hash scheme $\textsf{RH}$, we have (except 
 \label{sec:security_game}
 
 From now on, we consider a family of biometric distributions $\mathbb{B}$. Removing a person $\mathcal{B}$ from $\mathbb{B}$ is written as $\mathbb{B} \setminus \mathcal{B}$.
-To model the knowledge about the biometric distributions, we offer an oracle $\mathcal{O}_\textsf{samp}(\cdot)$ to all adversaries in this section.
+We presume that $\mathbb{B}$ has an excessively large size for an adversary to enumerate. To model the knowledge about the biometric distributions, we offer an oracle $\mathcal{O}_\textsf{samp}(\cdot)$ to all adversaries in this section.
 
 \begin{itemize}
 	\item $\mathcal{O}_\textsf{samp}(\cdot)$: On input an index $i$,
@@ -424,19 +424,26 @@ In Table \ref{table:security_games}, we list a summary of the adversary in each 
 
 \begin{table}[htp]
 \centering
-	\begin{tabular}{l c l@{\hspace{15pt}} l@{\hspace{2pt}}}
+	\begin{tabular}{l l c l@{\hspace{15pt}} l}
 	\toprule
 
-		\makecell[c]{\multirow{2}{*}{\textbf{Games}}} & \multirow{2}{*}{\textbf{Goals}} & \multicolumn{2}{c}{\textbf{Knowledge and Oracles}} \\ \cline{3-4}
-		 & & \makecell[c]{Device-of-User} & \makecell[c]{Device-of-Domain} \\
+		\multicolumn{2}{c}{ \multirow{2}{*}{\textbf{Games}} } & \multirow{2}{*}{\textbf{Goals}} & \multicolumn{2}{c}{\textbf{Knowledge and Oracles}} \\
+
+		\cmidrule{4-5}
+		
+		 & & & \makecell[c]{Device-of-User} & \makecell[c]{Device-of-Domain} \\
 
 	\midrule
 	
-		\textsf{UF-MSC} (Section \ref{sec:uf-msc_game}) & Forge a probe & $\mathbf{c_x}, \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q$ & \makecell[c]{-} \\
-		\textsf{UF-MDV} (Section \ref{sec:uf-mdv_game}) & Forge a probe & $\textsf{esk}, \textsf{psk}, \mathbf{c_x},\mathcal{O}_\textsf{auth}^q$ & $\textsf{psk}, \mathbf{c_x},\mathcal{O}_\textsf{auth}^q$ \\
-		\textsf{UF-MDM} (Section \ref{sec:uf-mdm_game}) & Forge a probe & \makecell[c]{-} & $\mathbf{c_x}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_{\textsf{Probe}}^\prime, \mathcal{O}_\textsf{auth}^q$ \\
-		\textsf{UF-MST} (Section \ref{sec:uf-mst_game}) & Forge a probe & \makecell[c]{-} & $ \textsf{esk}, \mathbf{c_x}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_{\textsf{Enroll}}^\prime, \mathcal{O}_\textsf{auth}^q$ \\
-		\textsf{IND-MSV} (Section \ref{sec:ind-msv_game}) & Identify \textsf{User} 
+		\textsf{UF-MSC} &(Section \ref{sec:uf-msc_game}) & Forge a probe & $\mathbf{c_x}, \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q$ & $\mathbf{c_x}, \mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_\textsf{auth}^q$ \\ [5pt]
+
+		\textsf{UF-MDV} &(Section \ref{sec:uf-mdv_game}) & Forge a probe & $\textsf{esk}, \textsf{psk}, \mathbf{c_x},\mathcal{O}_\textsf{auth}^q$ & $\textsf{psk}, \mathbf{c_x},\mathcal{O}_\textsf{auth}^q$ \\ [5pt]
+
+		\textsf{UF-MDM} &(Section \ref{sec:uf-mdm_game}) & Forge a probe & \makecell[c]{-} & $\mathbf{c_x}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_{\textsf{Probe}}^\prime, \mathcal{O}_\textsf{auth}^q$ \\ [5pt]
+		
+		\textsf{UF-MST} &(Section \ref{sec:uf-mst_game}) & Forge a probe & \makecell[c]{-} & $ \textsf{esk}, \mathbf{c_x}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_{\textsf{Enroll}}^\prime, \mathcal{O}_\textsf{auth}^q$ \\ [5pt]
+		
+		\textsf{IND-MSV} &(Section \ref{sec:ind-msv_game}) & Identify \textsf{User} 
 			& \makecell[l]{ $\textsf{csk}, \mathbf{c_x}, \{\mathbf{c_y}\}_{i=1}^t$, \\ $\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}$ } 
 			& \makecell[l]{ $ \textsf{csk}, \mathbf{c_x}, \{\mathbf{c_y}\}_{i=1}^t$, \\ $\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}, \mathcal{O}_{\textsf{Probe}}^{\textsf{samp}} $ } \\
 
@@ -835,9 +842,9 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{IND} game in algorith
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\textsf{KeyGen}}(\cdot, \cdot)$: On input $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$, it outputs $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^{(b)} )$
+	\item $\mathcal{O}_{\textsf{KeyGen}}(\cdot, \cdot)$: On input pair $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$, it outputs $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^{(b)} )$.
 
-	\item $\mathcal{O}_{\textsf{Enc}}(\cdot, \cdot)$: On input pair $(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$, it outputs $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^{(b)} )$
+	\item $\mathcal{O}_{\textsf{Enc}}(\cdot, \cdot)$: On input pair $(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$, it outputs $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^{(b)} )$.
 
 \end{itemize}
 
