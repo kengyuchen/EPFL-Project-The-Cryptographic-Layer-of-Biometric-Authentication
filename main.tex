@@ -220,7 +220,13 @@ A key distribution service distributes keys for them. In practice, this model ap
 
 \end{itemize}
 
-The Device-of-User model is analogous to the use case presented in \cite{cryptoeprint:2023/481}. In their model, a user possesses a personal device, such as a smartphone or laptop, and a secure hardware device that runs an initial setup and stores all the keys, which corresponds to our \textsf{KDS}. On enrollemnt and authentication, the user inputs biometric templates onto the device, which corresponds to our \textsf{Scanner}. Subsequently, the device transmits the template to the secure hardware for the enrollment or probing processes, which are equivalent to our \textsf{Device}. In addition, they incorporate a two-factor authentication mechanism. The secure hardware also executes a digital signature scheme and sign the probe message on authentication.
+The Device-of-User model, when instantiated by an fh-IPFE scheme (Section \ref{sec:fh-IPFE-instantiation}), is analogous to the use case presented in \cite{cryptoeprint:2023/481}.
+In their model, a user possesses a personal device, such as a smartphone or laptop, and a secure hardware device that runs an initial setup and stores all the keys, which corresponds to our \textsf{KDS}.
+On enrollemnt and authentication, the user inputs biometric templates onto the device, which corresponds to our \textsf{Scanner}.
+Subsequently, the device transmits the template to the secure hardware for the enrollment or probing processes, which are equivalent to our \textsf{Device}.
+In addition, they incorporate a two-factor authentication mechanism.
+The secure hardware also executes a digital signature scheme and sign the probe message on authentication.
+
 
 \input{tikz/dou_model.tex}
 
@@ -562,7 +568,7 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 	\Adv^{\textsf{UF-MSC}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
 \]
 
-Note that if $\textsf{csk}$ is an empty or public string, the the scheme cannot achieve UF-MSC security when the false positive rate is not negligible, as the adversary can run the $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot)$ over $q$ times to boost the false positive rates.
+Note that if $\textsf{csk}$ is an empty or public string, then the scheme cannot achieve UF-MSC security when the false positive rate is not negligible, as the adversary can run the $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot)$ over $q$ times to boost the false positive rates.
 Also note that in the Device-of-Domain model, the probe oracle $\mathcal{O}_\textsf{Probe}$ is assumed to be public, so the adversary is asked to return some $\mathbf{\tilde{z}}$ that is not returned by the probe oracle.
 
 For the rest of this report, if the scheme and the family distribution are clear from context, we omit the subscript and write the game as $\textsf{UF-MSC}(\mathcal{A})$. This abbreviation also holds for all other games.
