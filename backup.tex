@@ -432,6 +432,295 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 \]
 
 %-------------------
+% Comment
+\iffalse
+
+
+\subsection{Unforgeability against Malicious Scanner (UF-MSC)}
+\label{sec:uf-msc_game}
+
+In the game of Unforgeability against Malicious Scanner, we model the ability of a malicious \textsf{Scanner} in the Device-of-User model who has access to \textsf{Server}'s database of registered enrollments and tries to impersonate \textsf{User}. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ and oracles $\mathcal{O}_{\mathcal{B}}$ and $\mathcal{O}_\textsf{auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game \textsf{UF-MSC} is defined in Algorithm \ref{alg:uf-msc_game}.
+
+\begin{figure}[h]
+\centering
+	\begin{minipage}[t]{0.6\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF-MSC}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:uf-msc_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+		
+		\State In Device-of-User model:
+		
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
+
+		\State In Device-of-Domain model:
+		
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
+		
+		\If{ $\mathbf{\tilde{z}}$ equals to any output of $\mathcal{O}_\textsf{Probe}$ }
+		
+		\State \Return $\bot$
+		
+		\EndIf
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+%\caption{The \textsf{UF-MSC} Game (Left) and $\textsf{UF-MSC}^\prime$ Game (Right)}
+\label{fig:uf-msc_game}
+\end{figure}
+
+
+The given oracle is defined as follows:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\mathcal{B}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}$.
+
+	\item $\mathcal{O}_\textsf{auth}^{q}(\textsf{csk}, \cdot, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}$, it outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}} ) )$.
+\end{itemize}
+
+
+To consider potential false positives of biometrics match, we consider the plain $\textsf{UF}$ game in Algorithm \ref{alg:uf_game}, in which the adversary has only public information.
+
+\begin{figure}[H]
+\centering
+	\begin{minipage}[t]{0.5\linewidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
+	\label{alg:uf_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State In Device-of-User model:
+		
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{auth}^q}()$
+
+		\State In Device-of-Domain model:
+
+		\State \hspace{\algorithmicindent} $\mathbf{\tilde{z}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{auth}^q}()$
+		
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+\label{fig:uf_game}
+\end{figure}
+
+Note that in Device-of-Domain model, a probe oracle is given to the adversary.
+
+\begin{itemize}
+	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$.
+\end{itemize}
+
+We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MSC} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{UF-MSC}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MSC}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious scanner (UF-MSC)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF-MSC}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
+\]
+
+Note that if $\textsf{csk}$ is an empty or public string, then the scheme cannot achieve UF-MSC security when the false positive rate is not negligible, as the adversary can run the $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot)$ over $q$ times to boost the false positive rates.
+Also note that in the Device-of-Domain model, the probe oracle $\mathcal{O}_\textsf{Probe}$ is assumed to be public, so the adversary is asked to return some $\mathbf{\tilde{z}}$ that is not returned by the probe oracle.
+
+For the rest of this report, if the scheme and the family distribution are clear from context, we omit the subscript and write the game as $\textsf{UF-MSC}(\mathcal{A})$. This abbreviation also holds for all other games.
+
+
+%-------------------
+
+\subsection{Unforgeability against Malicious Device (UF-MDV)}
+\label{sec:uf-mdv_game}
+
+In the game of Unforgeability against Malicious Device, we model the ability of a malicious \textsf{Device} who has access to \textsf{Server}'s database of registered enrollments and tries to impersonate \textsf{User}.
+The adversary $\mathcal{A}$ is given the keys $\textsf{esk}, \textsf{psk}$ (only \textsf{psk} in Device-of-Domain model), enrollment message $\mathbf{c_x}$, and oracle $\mathcal{O}_\textsf{auth}^q$ and tries to find a valid probe message $\mathbf{\tilde{z}}$.
+The whole game \textsf{UF-MDV} is defined in Algorithm \ref{alg:uf-mdv_game}. 
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.5\linewidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF-MDV}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:uf-mdv_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State In Device-of-User model:
+		
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{auth}^q } (\textsf{esk}, \textsf{psk}, \mathbf{c_x} )$
+
+		\State In Device-of-Domain model:
+		
+		\State \hspace{\algorithmicindent} ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{auth}^q } ( \textsf{psk}, \mathbf{c_x} )$
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+%\caption{The \textsf{UF-MDV} Game (Left) and $\textsf{UF-MDV}^\prime$ Game (Right)}
+\label{fig:uf-mdv_game}
+\end{figure}
+
+
+We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MDV} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{UF-MDV}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MDV}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[{\textsf{UF}}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious device (UF-MDV)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF-MDV}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
+\]
+
+%-------------------
+
+
+\subsection{Unforgeability against Malicious Domain (UF-MDM)}
+\label{sec:uf-mdm_game}
+
+In the game of Unforgeability against Malicious Domain, we model the ability of a malicious \textsf{Domain} in the Device-of-Domain model who tries to access an honest \textsf{Domain} through a \textsf{User} who has enrolled in both of them.
+The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$ of the honest \textsf{Domain} and oracles $\mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Probe}^\prime$, and $ \mathcal{O}_\textsf{auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$.
+The whole game \textsf{UF-MDM} is defined in Algorithm \ref{alg:uf-mdm_game}.
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.5\linewidth}
+	\begin{algorithm}[H]
+	\caption{${\textsf{UF-MDM}}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:uf-mdm_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Probe}^\prime, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x} )$
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\label{fig:uf-mdm_game}
+\end{figure}
+
+The $\mathcal{O}_\textsf{Probe}^\prime$ oracle is to model the ability that the malicious \textsf{Domain} can let \textsf{User} probe with a contrived key.
+
+\begin{itemize}
+
+	\item $\mathcal{O}_\textsf{Probe}^\prime (\cdot)$: On input $\textsf{psk}^\prime$, it first samples $\mathbf{y}^\prime \getsdollar \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Probe}(\textsf{psk}^\prime, \mathbf{y}^\prime)$.
+
+\end{itemize}
+
+We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MDM} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{UF-MDM}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MDM}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious domain (UF-MDM)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF-MDM}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
+\]
+
+
+%-------------------
+
+\subsection{Unforgeability against Malicious Station (UF-MST)}
+\label{sec:uf-mst_game}
+
+In the game of Unforgeability against Malicious Station, we model the ability of a malicious \textsf{Station} in the Device-of-Domain model who tries to impersonate \textsf{User}.
+The adversary $\mathcal{A}$ is given the enrollment key $\textsf{esk}$, enrollment message $\mathbf{c_x}$, and oracles $\mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Enroll}^\prime$, and $ \mathcal{O}_\textsf{auth}^q$, and it tries to find a valid probe message $\mathbf{\tilde{z}}$.
+The whole game \textsf{UF-MST} is defined in Algorithm \ref{alg:uf-mst_game}. 
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.5\linewidth}
+	\begin{algorithm}[H]
+	\caption{${\textsf{UF-MST}}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:uf-mst_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_\textsf{Probe}, \mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{auth}^q } ( \textsf{esk} \mathbf{c_x} )$
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\label{fig:uf-mst_game}
+\end{figure}
+
+The $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$ oracle is to model the ability that the malicious \textsf{Station} can let \textsf{User} enroll with a contrived key.
+
+\begin{itemize}
+
+	\item $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, it first samples $\mathbf{x}^\prime \getsdollar \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{x}^\prime)$.
+
+\end{itemize}
+
+We define the advantage of an adversary $\mathcal{A}$ in the \textsf{UF-MST} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{UF-MST}}_{\Pi, \mathbb{B}, \mathcal{A}} := \Pr[{\textsf{UF-MST}}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] -
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{unforgeable against malicious station (UF-MST)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF-MST}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
+\]
+
+
+%-------------------
+
+\fi
 
 %\input{analysis.tex}
 
