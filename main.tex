@@ -415,13 +415,17 @@ By the correctness of the relational hash scheme $\textsf{RH}$, we have (except 
 \section{Security Games}
 \label{sec:security_game}
 
-From now on, we consider a family of biometric distributions $\mathbb{B}$. Removing a person $\mathcal{B}$ from $\mathbb{B}$ is written as $\mathbb{B} \setminus \mathcal{B}$.
-We presume that $\mathbb{B}$ has an excessively large size for an adversary to enumerate. To model the knowledge about the biometric distributions, we offer an oracle $\mathcal{O}_\textsf{samp}(\cdot)$ to all adversaries in this section.
+To rigorously analyze the security of an authentication scheme, we simulate biometric distributions of users by assuming the existence of a family $\mathbb{B}$ of distributions. We require that all distributions in $\mathbb{B}$ are efficiently samplable and has an excessively large size for a PPT adversary to enumerate. We then provide interfaces for all algorithms to interact with $\mathbb{B}$.
 
 \begin{itemize}
+
+	\item $\textsf{BioSamp}()$: Generate a random distribution $\mathcal{B}$ of $\mathbb{B}$. By this we mean providing either parameters of an efficiently samplable distribution or a PPT algorithm as the sampler. For simplicity, we write $\mathcal{B} \gets \textsf{BioSamp}()$ as $\mathcal{B} \getsdollar \mathbb{B}$.
+	
+	\item $\textsf{BioDelete}(\mathcal{B})$: Delete $\mathcal{B}$ from $\mathbb{B}$. Consequently, no further access to $\textsf{BioSamp}$ can derive $\mathcal{B}$. For simplicity, we write $\textsf{BioDelete}(\mathcal{B})$ as $\mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$.
+
 	\item $\mathcal{O}_\textsf{samp}(\cdot)$: On input an index $i$,
 	\begin{itemize}
-		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ and then outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ by $\textsf{BioSamp}$ and then outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
 		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
 	\end{itemize}
 \end{itemize}
@@ -727,14 +731,14 @@ An authentication scheme $\Pi$ associated with a family of distributions $\mathb
 \section{Security Analysis}
 \label{sec:security_analysis}
 
-Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{IND} game in algorithm \ref{alg:ind-fh-IPFE}.
+Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{fh-IND} game in algorithm \ref{alg:ind-fh-IPFE}.
 
 \begin{figure}[h]
 \centering
 
 	\begin{minipage}[t]{0.4\textwidth}
 	\begin{algorithm}[H]
-	\caption{$\textsf{IND}_{\textsf{FE}}(\mathcal{A})$}
+	\caption{$\textsf{fh-IND}_{\textsf{FE}}(\mathcal{A})$}
 	\label{alg:ind-fh-IPFE}
 	\begin{algorithmic}[1]
 		\State $b \getsdollar \{0, 1\}$
@@ -763,7 +767,7 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{IND} game in algorith
 
 \begin{definition}[Admissible Adversary]
 
-	Let $\mathcal{A}$ be an adversary in an \textsf{IND} game, and let $ (\mathbf{x}_1^{(0)}, \mathbf{x}_1^{(1)}), \cdots, (\mathbf{x}_{Q_K}^{(0)}, \mathbf{x}_{Q_K}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{KeyGen}}$ and $(\mathbf{y}_1^{(0)}, \mathbf{y}_1^{(1)}), \cdots, (\mathbf{y}_{Q_E}^{(0)}, \mathbf{y}_{Q_E}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{Enc}}$.
+	Let $\mathcal{A}$ be an adversary in an \textsf{fh-IND} game, and let $ (\mathbf{x}_1^{(0)}, \mathbf{x}_1^{(1)}), \cdots, (\mathbf{x}_{Q_K}^{(0)}, \mathbf{x}_{Q_K}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{KeyGen}}$ and $(\mathbf{y}_1^{(0)}, \mathbf{y}_1^{(1)}), \cdots, (\mathbf{y}_{Q_E}^{(0)}, \mathbf{y}_{Q_E}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{Enc}}$.
 	We say $\mathcal{A}$ is \emph{admissible} if $\forall i \in [Q_K], \forall j \in [Q_E]$,
 \[
 	{\mathbf{x}^{(0)}_{i}}^T \mathbf{y}^{(0)}_{j} = {\mathbf{x}^{(1)}_{i}}^T \mathbf{y}^{(1)}_{j}
@@ -773,22 +777,22 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{IND} game in algorith
 
 
 
-\begin{definition}[IND Security]
+\begin{definition}[fh-IND Security]
 
-	An fh-IPFE scheme \textsf{FE} is called IND secure if for any admissible adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the IND game in Algorithm \ref{alg:ind-fh-IPFE} is
+	An fh-IPFE scheme \textsf{FE} is called fh-IND secure if for any admissible adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the fh-IND game in Algorithm \ref{alg:ind-fh-IPFE} is
 
 \[
-	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{IND}} := \left| \Pr[\textsf{IND}_{\textsf{FE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
+	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{fh-IND}} := \left| \Pr[\textsf{fh-IND}_{\textsf{FE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
 \]
 
 \end{definition}
 
 
-\subsection{IND Security and UF-LoB Security}
+\subsection{fh-IND Security and UF-LoB Security}
 \label{sec:ind-uf-lob}
 
 Let $\Pi$ be the authentication scheme instantiated by an fh-IPFE scheme \textsf{FE} as in Section \ref{sec:fh-IPFE-instantiation}.
-We see a relation between the IND security of \textsf{FE} and the UF-LoB security of $\Pi$.
+We see a relation between the fh-IND security of \textsf{FE} and the UF-LoB security of $\Pi$.
 To show this, first we define a middle game for UF-LoB security in Algorithm \ref{alg:uf-lob-star_game}. The difference is that the adversary $\mathcal{A}$ has no access to $\mathcal{O}_\mathcal{B}$.
 
 \begin{figure}[h]
@@ -824,7 +828,7 @@ To show this, first we define a middle game for UF-LoB security in Algorithm \re
 \begin{theorem}
 \label{thm:ind-uf-lob1}
 
-	For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}$ in the \textsf{UF-LoB} game where the auxiliary information \textsf{option} is either nothing or the oracle $\mathcal{O}_{\textsf{Enroll}}$, there exists an adversary $\mathcal{A}^*$ in the $\textsf{UF-LoB}^*$ game such that
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure, then $\forall \mathcal{A}$ in the \textsf{UF-LoB} game where the auxiliary information \textsf{option} is either nothing or the oracle $\mathcal{O}_{\textsf{Enroll}}$, there exists an adversary $\mathcal{A}^*$ in the $\textsf{UF-LoB}^*$ game such that
 	\[
 		\Pr[\textsf{UF-LoB}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] - \Pr[\textsf{UF-LoB}^*_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}^*) \to 1] = \negl.
 	\]
@@ -834,7 +838,7 @@ To show this, first we define a middle game for UF-LoB security in Algorithm \re
 
 \begin{proof}
 \label{proof:ind-uf-lob1}
-	We only prove the case when $\textsf{option}$ includes the oracle $\mathcal{O}_{\textsf{Enroll}}$. The proof can be directly applied when $\textsf{option}$ is empty. Given an adversary $\mathcal{A}$ in the \textsf{UF-LoB} game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-lob1_game} which plays the \textsf{IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates each oracle in the following way.
+	We only prove the case when $\textsf{option}$ includes the oracle $\mathcal{O}_{\textsf{Enroll}}$. The proof can be directly applied when $\textsf{option}$ is empty. Given an adversary $\mathcal{A}$ in the \textsf{UF-LoB} game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-lob1_game} which plays the \textsf{fh-IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates each oracle in the following way.
 
 \begin{itemize}
 	\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{R}$.
@@ -843,7 +847,7 @@ To show this, first we define a middle game for UF-LoB security in Algorithm \re
 
 	\item $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$: This is simulated by calling $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$.
 
-	\item $\mathcal{O}_{\textsf{Enroll}}( \textsf{esk}, \mathbf{x}^\prime )$: This is simulated by $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^\prime, \mathbf{x}^\prime)$ given in the \textsf{IND} game.
+	\item $\mathcal{O}_{\textsf{Enroll}}( \textsf{esk}, \mathbf{x}^\prime )$: This is simulated by $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^\prime, \mathbf{x}^\prime)$ given in the \textsf{fh-IND} game.
 
 \end{itemize}
 	
@@ -891,7 +895,7 @@ If the challenge bit $b = 1$, then $\mathcal{B}^{(1)}$ is never seen by $\mathca
 
 In conclusion,
 \begin{align*}
-	\Pr[\textsf{IND}(\mathcal{R}) \to 1]
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1]
 	&= \Pr[b = 0] \cdot \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 0] \right)  \\
 	&\quad + \Pr[b = 1] \cdot \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 1] \\
 	&= \frac{1}{2} \cdot \left ( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} (1 - \Pr[\textsf{Verify}(s) = 1 \mid b = 0]) \right) \\
@@ -900,10 +904,10 @@ In conclusion,
 	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-LoB}^*(\mathcal{A}^*) \to 1 ] \right)
 \end{align*}
 
-\noindent Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{IND} = \left| \Pr[\textsf{IND}(\mathcal{R}) \to 1 ] - \frac{1}{2} \right| = \negl$,
+\noindent Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1 ] - \frac{1}{2} \right| = \negl$,
 
 \[
-	\Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-LoB}^*(\mathcal{A}^*) \to 1 ] = 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{IND} = \negl.
+	\Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-LoB}^*(\mathcal{A}^*) \to 1 ] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \negl.
 \]
 
 \end{proof}
@@ -940,9 +944,9 @@ For the next theorem, we consider two assumptions for the fh-IPFE scheme \textsf
 \label{thm:ind-uf-lob2}
 
 Given Assumption \ref{assump:ind-uf-lob:simulator} with a negligible $\delta$ and Assumption \ref{assump:ind-uf-lob:decryption} with a negligible $\epsilon$.
-For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}^*$ in the $\textsf{UF-LoB}^*$ game where the auxiliary information $\textsf{option}$ is either nothing or the oracle $\mathcal{O}_{\textsf{Enroll}}$, there exists an adversary $\mathcal{A}^\prime$ in the $\textsf{UF}$ game such that 
+For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure, then $\forall \mathcal{A}^*$ in the $\textsf{UF-LoB}^*$ game where the auxiliary information $\textsf{option}$ is empty, there exists an adversary $\mathcal{A}^\prime$ in the $\textsf{UF}$ game such that 
 \[
-	\Pr[\textsf{UF-LoB}^*_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1] = \negl.
+	\Pr[\textsf{UF-LoB}^*_{\Pi, \mathbb{B}}(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1] = \negl.
 \]
 
 \end{theorem}
@@ -950,14 +954,13 @@ For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\f
 
 \begin{proof}
 \label{proof:ind-uf-lob2}
-	We only prove the case when \textsf{option} includes the oracle $\mathcal{O}_{\textsf{Enroll}}$ since the case when $\textsf{option}$ is empty directly follows the result. Given an adversary $\mathcal{A}^*$ in the $\textsf{UF-LoB}^*$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-lob2_game} which plays the \textsf{IND} game. $\mathcal{R}$ runs $\mathcal{A}^*$ and simulates each oracle in the following way.
+
+Given an adversary $\mathcal{A}^*$ in the $\textsf{UF-LoB}^*$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction-ind-uf-lob2_game} which plays the \textsf{fh-IND} game. $\mathcal{R}$ runs $\mathcal{A}^*$ and simulates each oracle in the following way.
 
 \begin{itemize}
 	\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{R}$.
 	
 	\item $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$: This is simulated by calling $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$.
-
-	\item $\mathcal{O}_{\textsf{Enroll}}( \textsf{esk}, \mathbf{x}^\prime )$: This is simulated by $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^\prime, \mathbf{x}^\prime)$ given in the \textsf{IND} game.
 
 \end{itemize}
 
@@ -980,7 +983,7 @@ For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\f
 		
 		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:reduction-ind-uf-lob2_game:c}
 
-		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}^*}^{\mathcal{O}_{\textsf{samp}}, \mathcal{O}_\textsf{auth}^q, \mathcal{O}_{\textsf{Enroll}}} ( \mathbf{c})$
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}^*}^{\mathcal{O}_{\textsf{samp}}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c})$
 
 		\State $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{x})$
 
@@ -1010,23 +1013,23 @@ If the challenge bit $b = 0$, then $\mathcal{R}$ perfectly simulates a $\textsf{
 
 In conclusion,
 \begin{align*}
-	\Pr[\textsf{IND}(\mathcal{R}) \to 1] 
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
 	&= \Pr[b = 0] \cdot \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 0] \right) \\
 	&\quad + \Pr[b = 1] \cdot \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 1] \\
 	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] - \Pr[\textsf{Verify}(s) = 1 \mid b = 1] \right) \\
 	&\geq \frac{1}{2} + \frac{1}{4} \left( (1-\epsilon) \cdot \Pr[\textsf{UF-LoB}^*(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] - \delta \right)
 \end{align*}
 
-\noindent Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{IND} = \left| \Pr[\textsf{IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right| = \negl$, $\epsilon = \negl$, and $\delta = \negl$,
+\noindent Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right| = \negl$, $\epsilon = \negl$, and $\delta = \negl$,
 \[
-	\Pr[\textsf{UF-LoB}^*(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{IND} + \epsilon + \delta = \negl.
+	\Pr[\textsf{UF-LoB}^*(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \epsilon + \delta = \negl.
 \]
 
 \end{proof}
 
 \begin{corollary}
 Given Assumption \ref{assump:ind-uf-lob:simulator} with a negligible $\delta$ and Assumption \ref{assump:ind-uf-lob:decryption} with a negligible $\epsilon$.
-	For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}$ in the $\textsf{UF-LoB}$ game where the auxiliary information $\textsf{option}$ is either nothing or the oracle $\mathcal{O}_{\textsf{Enroll}}$, there exists an adversary $\mathcal{A}^\prime$ in the $\textsf{UF}$ game such that
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure, then $\forall \mathcal{A}$ in the $\textsf{UF-LoB}$ game where the auxiliary information $\textsf{option}$ is empty, there exists an adversary $\mathcal{A}^\prime$ in the $\textsf{UF}$ game such that
 \[
 	\Pr[\textsf{UF-LoB}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] - \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1] = \negl.
 \]
@@ -1038,20 +1041,20 @@ As a result, $\Adv_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}}^{\textsf{UF-L
 
 Given an adversary $\mathcal{A}$ in the \textsf{UF-LoB} game, from Theorem \ref{thm:ind-uf-lob1}, we know there exists a reduction $\mathcal{R}_1$ and an adversary $\mathcal{A}^*$ such that
 \[
-	\Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-LoB}^*(\mathcal{A}^*) \to 1 ] = 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}_1}^\textsf{IND}
+	\Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-LoB}^*(\mathcal{A}^*) \to 1 ] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}_1}^\textsf{fh-IND}
 \]
 
 With $\mathcal{A}^*$, from Theorem \ref{thm:ind-uf-lob2}, we know there exists a reduction $\mathcal{R}_2$ and an adversary $\mathcal{A}^\prime$ such that 
 \[
-	\Pr[\textsf{UF-LoB}^*(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}_2}^\textsf{IND} + \epsilon + \delta.
+	\Pr[\textsf{UF-LoB}^*(\mathcal{A}^*) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}_2}^\textsf{fh-IND} + \epsilon + \delta.
 \]
 
 Hence,
 \[
-	\Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \left( \Adv_{\textsf{FE}, \mathcal{R}_1}^\textsf{IND} + \Adv_{\textsf{FE}, \mathcal{R}_2}^\textsf{IND} \right) + \epsilon + \delta
+	\Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] \leq 4 \cdot \left( \Adv_{\textsf{FE}, \mathcal{R}_1}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{R}_2}^\textsf{fh-IND} \right) + \epsilon + \delta
 \]
 
-Since \textsf{FE} is \textsf{IND} secure and both $\epsilon$ and $\delta$ are negligible,
+Since \textsf{FE} is \textsf{fh-IND} secure and both $\epsilon$ and $\delta$ are negligible,
 \[
 	\Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1] - \Pr[\textsf{UF}(\mathcal{A}^\prime) \to 1] = \negl.
 \]
@@ -1065,19 +1068,143 @@ Since \textsf{FE} is \textsf{IND} secure and both $\epsilon$ and $\delta$ are ne
 
 \end{proof}
 
-% Comment
-\iffalse
-\begin{theorem}
 
-For any distribution family $\mathbb{B}$, if \textsf{FE} is IND secure, then $\forall \mathcal{A}$ in the \textsf{UF-LoB} game where the auxiliary information $\textsf{option}$ includes $\mathcal{O}_\textsf{Probe}$,
-	\[
-		\Pr[\textsf{UF-LoB}_{\Pi, \mathbb{B}, \textsf{O}_{\textsf{Probe}}}(\mathcal{A}) \to 1] - \Pr[\textsf{UF-LoB}^*_{\Pi, \mathbb{B}, \textsf{O}_{\textsf{Probe}}}(\mathcal{A}^*) \to 1] = \negl.
-	\]
-	where $\mathcal{A}^*$ is an adversary in the $\textsf{UF-LoB}^*$ game which runs $\mathcal{A}$ and simulates oracle $\mathcal{O}_{\mathcal{B}}$ by $\mathcal{O}_{\sf samp}(i^*)$ for some index $i^*$ that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\sf samp}(\cdot)$.
+For $\textsf{option}$ that includes $\mathcal{O}_{\textsf{Probe}}$, we first note that the output of $\textsf{encodeEnroll}$ in Section \ref{sec:fh-IPFE-instantiation} has a special structure. For any $d \in \Z_q$, there exists a vector $\mathbf{y} = (0, 0, \cdots, 0, d, 0)$ such that $\mathbf{x}\mathbf{y}^T = d$ for any $\mathbf{x} \getsdollar \textsf{encodeEnroll}()$.
+
+
+\begin{theorem}
+\label{thm:ind-uf-lob3}
+
+For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure, then $\forall \mathcal{A}$ in the \textsf{UF-LoB} game where the auxiliary information $\textsf{option}$ includes $\mathcal{O}_\textsf{Probe}$, there exists an adversary $\mathcal{A}^*$ in a $\textsf{UF-LoB}^*$ game such that
+\[
+	\Pr[\textsf{UF-LoB}_{\Pi, \mathbb{B}, \textsf{O}_{\textsf{Probe}}}(\mathcal{A}) \to 1] - \Pr[\textsf{UF-LoB}^*_{\Pi, \mathbb{B}, \textsf{O}_{\textsf{Probe}} }(\mathcal{A}^* ) \to 1] = \negl.
+\]	
 
 \end{theorem}
-\fi
-% Comment End
+
+
+\begin{proof}
+\label{proof:ind-uf-lob3}
+
+Given an adversary $\mathcal{A}$ in the \textsf{UF-LoB} game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:reduction1-ind-uf-lob3_game} which plays the \textsf{fh-IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates each oracle in the following way.
+
+\begin{itemize}
+	\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{R}$.
+	
+	\item $\mathcal{O}_{\mathcal{B}}$: This is simulated by the oracle $\mathcal{O}_{\mathcal{B}^{(0)}}$
+
+	\item $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$: This is simulated by calling $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$.
+
+	\item $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{y}^\prime )$: It first computes $d \gets \mathbf{x}^{(0)}{\mathbf{y}^\prime}^T$ and lets $\mathbf{y}^{\prime\prime} \gets (0, 0, \cdots, 0, d, 0)$ such that $\mathbf{x}^{(1)}{\mathbf{y}^{\prime\prime}}^T = d$. Next, it calls $\mathcal{O}_{\textsf{Enc}}(\mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}})$, which is given by the \textsf{fh-IND} game, and returns the result.
+
+\end{itemize}
+
+\noindent Note that $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\mathbf{x}^{(0)}{\mathbf{y}^\prime}^T = \mathbf{x}^{(1)}{\mathbf{y}^{\prime\prime}}^T$. Hence, $\mathcal{R}$ is an admissible adversary.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:reduction1-ind-uf-lob3_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$
+
+		\State $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$
+
+		\State $\mathbf{x}^{(0)} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+
+		\State $\mathbf{x}^{(1)} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+
+		\State $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\textsf{samp}}, \mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_\textsf{auth}^q, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c_x})$
+
+		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\If{$\textsf{Verify}(s) = 1$} \label{alg:reduction1-ind-uf-lob3_game:verify}
+			\State \Return $\tilde{b} = 0$
+		\Else
+			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
+		\EndIf
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\label{fig:reduction1-ind-uf-lob3_game}
+\end{figure}
+
+If the challenge bit $b = 0$, then $\mathcal{R}$ perfectly simulates a \textsf{UF-LoB} game for $\mathcal{A}$. Therefore, the probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:reduction1-ind-uf-lob3_game:verify} is $\Pr[\textsf{UF-LoB}(\mathcal{A}) \to 1]$.
+
+	For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^*$ in Algorithm \ref{alg:adv-ind-uf-lob3_game} in the $\textsf{UF-LoB}^*$ game. The adversary $\mathcal{A}^*$ runs $\mathcal{A}$ and simulates each oracle in the following way.
+
+\begin{itemize}
+	\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{A}$.
+	
+	\item $\mathcal{O}_{\mathcal{B}}$: This is simulated by the oracle $\mathcal{O}_{\textsf{samp}}(i^*)$, where $i^*$ is an index that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\textsf{samp}}$.
+
+	\item $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$: This is simulated by calling $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$.
+
+	\item $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{y}^\prime )$: It first computes $d \gets \mathbf{x}^{(*)}{\mathbf{y}^\prime}^T$ and let $\mathbf{y}^{\prime\prime} \gets (0, 0, \cdots, 0, d, 0)$. Next, it calls $\mathcal{O}_{\textsf{Probe}} (\textsf{psk}, \mathbf{y}^{\prime\prime} )$ , which is given by the $\textsf{UF-LoB}^*$ game, and returns the result.
+
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{${\mathcal{A}^*}^{\mathcal{O}_\textsf{samp}, \mathcal{O}_\textsf{auth}^q, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c_x}) $}
+	\label{alg:adv-ind-uf-lob3_game}
+	\begin{algorithmic}[1]
+		\State $\mathbf{x}^{(*)} \gets \textsf{encodeEnroll}^{ \mathcal{O}_\textsf{samp}(i^*)} ()$ 
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\textsf{samp}}, \mathcal{O}_{\textsf{samp}}(i^*), \mathcal{O}_\textsf{auth}^q, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c_x})$
+
+		\State \Return ${\mathbf{\tilde{z}}}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\label{fig:adv-ind-uf-lob3_game}
+\end{figure}
+
+Now, if the challenge bit $b = 1$, then $\mathcal{R}$ perfectly simulates $\mathcal{A}^*$ in the $\textsf{UF-LoB}^*$ game.
+The probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:reduction1-ind-uf-lob3_game:verify} is $\Pr[ \textsf{UF-LoB}_{\mathcal{O}_\textsf{Probe}}^*(\mathcal{A}^*) \to 1 ]$.
+Similar to the proof of Theorem \ref{thm:ind-uf-lob1}, we derive
+\[
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1]
+	= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF-LoB}_{\mathcal{O}_\textsf{Probe}}(\mathcal{A}) \to 1] - \Pr[ \textsf{UF-LoB}_{\mathcal{O}_\textsf{Probe}}^*(\mathcal{A}^*) \to 1 ] \right)
+\]
+
+Therefore,
+
+\[
+	\Pr[\textsf{UF-LoB}_{\Pi, \mathbb{B}, \textsf{O}_{\textsf{Probe}}}(\mathcal{A}) \to 1] - \Pr[\textsf{UF-LoB}^*_{\Pi, \mathbb{B}, \textsf{O}_{\textsf{Probe}} }(\mathcal{A}^* ) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \negl.
+\]	
+
+
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %-------------------
 %% Backup File
