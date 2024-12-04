@@ -1,0 +1,181 @@
+
+\subsection{Unforgeability against Leakage of Biometrics (UF-LoB)}
+\label{sec:uf-lob_game}
+
+In the game of Unforgeability against Leakage of Biometrics, we model the ability of an adversary who has access to \textsf{User}'s biometrics and tries to impersonate \textsf{User}. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$, oracles $\mathcal{O}_\mathcal{B}$ and $\mathcal{O}_\textsf{auth}^q$, and auxiliary information \textsf{option}, which depends on our threat model. The adversary tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game \textsf{UF-LoB} is defined in Algorithm \ref{alg:uf-lob_game}.
+
+\begin{figure}[h]
+\centering
+	\begin{minipage}[t]{0.6\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF-LoB}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$}
+	\label{alg:uf-lob_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+		
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\textsf{samp}}, \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x}, \textsf{option} )$
+
+		\If{ $\mathbf{\tilde{z}}$ equals to any output of $\mathcal{O}_\textsf{Probe}$ }
+		
+		\State \Return $\bot$
+		
+		\EndIf
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\label{fig:uf-lob_game}
+\end{figure}
+
+
+The given oracle is defined as follows:
+
+\begin{itemize}
+	\item $\mathcal{O}_{\mathcal{B}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}$.
+
+	\item $\mathcal{O}_\textsf{auth}^{q}(\textsf{csk}, \cdot, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}$, it outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}} ) )$.
+\end{itemize}
+
+The auxiliary information \textsf{option} can be nothing or include $\textsf{esk}$ or the following oracles:
+
+\begin{itemize}
+
+	\item $\mathcal{O}_\textsf{Enroll}(\textsf{esk}, \cdot)$: On input $\mathbf{x}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}, \mathbf{x}^\prime)$.
+
+	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$. 
+\end{itemize}
+
+To avoid trivial attacks, if the probe oracle $\mathcal{O}_\textsf{Probe}$ is given, the adversary is asked to return some $\mathbf{\tilde{z}}$ that is not returned by the probe oracle.
+
+To consider potential false positives of biometrics match, we consider the plain $\textsf{UF}$ game in Algorithm \ref{alg:uf_game}, in which the adversary has only public information.
+
+\begin{figure}[H]
+\centering
+	\begin{minipage}[t]{0.5\linewidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
+	\label{alg:uf_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{samp}, \mathcal{O}_\textsf{log}^q }()$
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+\label{fig:uf_game}
+\end{figure}
+
+\begin{itemize}
+
+	\item $\mathcal{O}_\textsf{log}^{q}(\textsf{csk}, \mathbf{c_x}, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{z}$, it outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{z} ) )$.
+
+\end{itemize}
+
+We define the advantage of an adversary $\mathcal{A}$ with $\textsf{option}$ in the \textsf{UF-LoB} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{UF-LoB}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[{\textsf{UF-LoB}}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] -
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{\textsf{option}-unforgeable against leakage of biometrics (UF-LoB)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF-LoB}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
+\]
+
+Note that if $\textsf{csk}$ is an empty or public string, then the scheme cannot achieve UF-LoB security when the false positive rate is not negligible, as the adversary can run the $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot)$ over $q$ times to boost the false positive rates.
+
+For the rest of this report, if the scheme, the family distribution, and the auxiliary information $\textsf{option}$ are clear from context, we omit the subscript and write the game as $\textsf{UF-LoB}(\mathcal{A})$. This abbreviation also holds for all other games.
+
+
+%-------------------
+
+
+\subsection{Unforgeability against Leakage of Keys (UF-LoK)}
+\label{sec:uf-lok_game}
+
+In the game of Unforgeability against Leakage of Keys, we model the ability of an adversary who has access to keys and tries to impersonate \textsf{User}. The adversary $\mathcal{A}$ is given the enrollment message $\mathbf{c_x}$, oracles $\mathcal{O}_\textsf{auth}^q$, and auxiliary information \textsf{option}, which depends on our threat model. The adversary tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game \textsf{UF-LoK} is defined in Algorithm \ref{alg:uf-lok_game}.
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.8\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF-LoK}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$}
+	\label{alg:uf-lok_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\For{$i = 1$ to $L$}
+
+			\State $\textsf{esk}_i, \textsf{psk}_i, \textsf{csk}_i \gets \textsf{Setup}(1^\lambda)$ \Comment{Keys for Domain $i \in [L]$}
+		
+		\EndFor
+
+		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}_1, \mathbf{x})$
+		
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\textsf{samp}}, \mathcal{O}_\textsf{auth}^q } ( \mathbf{c_x}, \textsf{option} )$
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}_1, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\label{fig:uf-lok_game}
+\end{figure}
+
+
+The auxiliary information \textsf{option} can be nothing or include $\textsf{esk}_1$, $\mathcal{O}_\textsf{Enroll}(\textsf{esk}_1, \cdot)$, $\textsf{psk}_1$, $\mathcal{O}_\textsf{Probe}(\textsf{psk}_1, \cdot)$, $\textsf{csk}_1$, or the following oracles.
+
+\begin{itemize}
+	
+	\item $\mathcal{O}_\textsf{Enroll}^{(i)}(\textsf{esk}_i, \cdot)$: On input $\mathbf{x}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}_i, \mathbf{x}^\prime)$.
+
+	\item $\mathcal{O}_\textsf{Probe}^{(i)}(\textsf{psk}_i, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}_i, \mathbf{y}^\prime)$. 
+	
+	\item $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, it first samples $\mathbf{x}^\prime \getsdollar \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{x}^\prime)$.
+
+	\item $\mathcal{O}_\textsf{Probe}^\prime (\cdot)$: On input $\textsf{psk}^\prime$, it first samples $\mathbf{y}^\prime \getsdollar \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Probe}(\textsf{psk}^\prime, \mathbf{y}^\prime)$. This oracle and $\textsf{psk}_1$ should not be given at the same time. 
+
+\end{itemize}
+
+To consider potential false positives of biometrics match, we also consider the plain $\textsf{UF}$ game in Algorithm \ref{alg:uf_game}, in which the adversary has only public information.
+
+We define the advantage of an adversary $\mathcal{A}$ with $\textsf{option}$ in the \textsf{UF-LoK} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{UF-LoK}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[{\textsf{UF-LoK}}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] -
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+\]
+
+An authentication scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ is called \emph{\textsf{option}-unforgeable against leakage of keys (UF-LoK)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF-LoK}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
+\]
+
+
+%-------------------
