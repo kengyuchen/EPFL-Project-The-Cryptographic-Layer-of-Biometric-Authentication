@@ -478,7 +478,7 @@ In Table \ref{table:security_games}, we list a summary of the adversary in each 
 \subsection{Unforgeability}
 \label{sec:uf_game}
 
-To describe the unforgeability of an authentication scheme, we model the ability of an adversary who tries to impersonate \textsf{User}. The adversary $\mathcal{A}$ is given the sampling oracle $\mathcal{O}_\textsf{samp}$ and auxiliary information \textsf{option}, which depends on our threat model. The adversary tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ is defined in Algorithm \ref{alg:uf_game}.
+To describe the unforgeability of an authentication scheme, we model the ability of an adversary who tries to impersonate \textsf{User}. The adversary $\mathcal{A}$ is given auxiliary information \textsf{option} that depends on our threat model. The adversary tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ is defined in Algorithm \ref{alg:uf_game}.
 
 \begin{figure}[h]
 \centering
@@ -492,17 +492,11 @@ To describe the unforgeability of an authentication scheme, we model the ability
 
 		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
 		
-		\For{$i = 1$ to $L$}
-
-			\State $\textsf{esk}_i, \textsf{psk}_i, \textsf{csk}_i \gets \textsf{Setup}(1^\lambda)$ \Comment{Keys for Domain $i \in [L]$}
-		
-		\EndFor
-
 		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
 		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 		
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{ \mathcal{O}_{\textsf{samp}} } ( \textsf{option} )$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A} ( \textsf{option} )$
 
 		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
@@ -514,7 +508,7 @@ To describe the unforgeability of an authentication scheme, we model the ability
 \label{fig:uf_game}
 \end{figure}
 
-The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{esk}_i, \textsf{psk}_i$ for $i \in [L]$ or the following oracles:
+The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}$ or the following oracles:
 
 \begin{itemize}
 
@@ -524,13 +518,9 @@ The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x
 
 	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$. If this oracle and $\mathcal{O}_{\mathcal{B}}$ are given at the same time, we require the adversary to return some $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$.
 	
-	\item $\mathcal{O}_\textsf{log}^{q}(\textsf{csk}, \mathbf{c_x}, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{z}$, it outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{z} ) )$. We omit $q$ in the superscript when we allow unbounded number of queries. 
+	\item $\mathcal{O}_\textsf{log}^{q}(\textsf{csk}, \mathbf{c_x}, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{z}$, it first computes $\mathbf{c_z} \gets \textsf{Probe}(\textsf{psk}, \mathbf{z})$ and outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_z} ) )$. We omit $q$ in the superscript when we allow unbounded number of queries. 
 
 	\item $\mathcal{O}_\textsf{auth}^{q}(\textsf{csk}, \cdot, \cdot)$: This is a resource-limited oracle. If it has been queried over $q$ times in total, it aborts. Otherwise, on input $\mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}$, it outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}} ) )$. We omit $q$ in the superscript when we allow unbounded number of queries. 
-	
-	\item $\mathcal{O}_\textsf{Enroll}^{(i)}(\textsf{esk}_i, \cdot)$: On input $\mathbf{x}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}_i, \mathbf{x}^\prime)$.
-
-	\item $\mathcal{O}_\textsf{Probe}^{(i)}(\textsf{psk}_i, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}_i, \mathbf{y}^\prime)$. 
 	
 	\item $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, it first samples $\mathbf{x}^\prime \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{x}^\prime)$.
 
@@ -538,7 +528,7 @@ The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x
 	
 \end{itemize}
 
-If $\textsf{option}$ does not include $\mathcal{O}_\textsf{Probe}$, we define the advantage of an adversary $\mathcal{A}$ with $\textsf{option}$ in the \textsf{UF} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+If $\textsf{option}$ does not include $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, we define the advantage of an adversary $\mathcal{A}$ with $\textsf{option}$ in the \textsf{UF} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
 	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1]
 \]
@@ -560,7 +550,7 @@ When $\textsf{option}$ includes $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, 
 
 		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 
-		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{samp}, \mathcal{O}_\textsf{log}^q }()$
+		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{log}^q }()$
 
 		\State $\mathbf{\tilde{c_z}} \gets \textsf{Probe}(\textsf{psk}, \mathbf{\tilde{z}})$
 
@@ -777,6 +767,21 @@ We also define the \textsf{RUF} game in algorithm \ref{alg:ruf-fh-IPFE} for a re
 \end{definition}
 
 
+We note that by adding a sEUF-CMA signature scheme $\textsf{Sig} = ( \textsf{KeyGen}, \textsf{Sign}, \textsf{Verify} )$, an \textsf{fh-IPFE} scheme can be upgraded to an RUF secure scheme. In a bit more detail,
+
+\begin{itemize}
+
+	\item $\textsf{FE.Setup}$ also runs $\textsf{Sig.KeyGen}(1^\lambda)$ and generates the signature secret key $\textsf{sk}_{\textsf{Sig}}$ and the verification public key $ \textsf{pk}_{\textsf{Sig}}$. Let $\textsf{sk}_{\textsf{Sig}}$ be part of $\textsf{msk}$ and $\textsf{pk}_{\textsf{Sig}}$ be part of $\textsf{pp}$.
+
+	\item $\textsf{FE.Enc}$ signs the encryption by $\textsf{sk}_{\textsf{Sig}}$.
+
+	\item $\textsf{FE.Dec}$ outputs the decryption if the verification succeeds. Otherwise, it outputs $\bot$.
+
+\end{itemize}
+
+If the adversary manage to find a $\mathbf{\tilde{z}}$ that is not equal to any output of $\mathcal{O}_\textsf{Enc}^\prime$ and $\textsf{FE.Dec}$ on input $\mathbf{\tilde{z}}$ does not return $\bot$, the adversary is able to forge a valid signagure.
+
+
 %-------------------
 
 
@@ -797,9 +802,9 @@ Let $\Pi$ be the authentication scheme instantiated by an fh-IPFE scheme \textsf
 Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-uf-OB-Enroll} which plays the \textsf{fh-IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates each oracle in the following way.
 
 \begin{itemize}
-	\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{R}$.
+	%\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{R}$.
 
-	\item $\mathcal{O}_\mathcal{B}$: This is simulated by the distribution $\mathcal{B}$ generated in Line \ref{alg:red:ind-uf-OB-Enroll:B}.
+	%\item $\mathcal{O}_\mathcal{B}$: This is simulated by the distribution $\mathcal{B}$ generated in Line \ref{alg:red:ind-uf-OB-Enroll:B}.
 	
 	\item $\mathcal{O}_{\textsf{auth}} (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$: This is simulated by calling $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$.
 
@@ -825,7 +830,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 		
 		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:red:ind-uf-OB-Enroll:c}
 
-		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_{\textsf{samp}}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{auth}, \mathcal{O}_\textsf{Enroll} } ( \mathbf{c})$
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{auth}, \mathcal{O}_\textsf{Enroll} } ( \mathbf{c})$ \label{alg:red:ind-uf-OB-Enroll:A}
 
 		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
 
@@ -843,12 +848,12 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 
 	If the challenge bit $b = 0$, then $\mathcal{R}$ perfectly simulates a $\textsf{UF}_{\textsf{option}}$ game for $\mathcal{A}$. Therefore, the probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:red:ind-uf-OB-Enroll:verify} is $\Pr[\textsf{UF}_{\textsf{option}}(\mathcal{A}) \to 1]$.
 
-	For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-uf-OB-Enroll} in the $\textsf{RUF}$ game. $\mathcal{A}^\prime$ runs $\mathcal{A}$ and simulates each oracle in the following way. 
+	For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-uf-OB-Enroll} in the $\textsf{RUF}$ game. $\mathcal{A}^\prime$ runs Line \ref{alg:red:ind-uf-OB-Enroll:B} and \ref{alg:red:ind-uf-OB-Enroll:A} of $\mathcal{R}$ and simulates each oracle in the following way. 
 
 \begin{itemize}
-	\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{A}^\prime$.
+	%\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{A}^\prime$.
 	
-	\item $\mathcal{O}_{\mathcal{B}}$: This is simulated by the oracle $\mathcal{O}_{\textsf{samp}}(i^*)$, where $i^*$ is an index that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\textsf{samp}}$.
+	%\item $\mathcal{O}_{\mathcal{B}}$: This is simulated by the oracle $\mathcal{O}_{\textsf{samp}}(i^*)$, where $i^*$ is an index that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\textsf{samp}}$.
 
 	\item $\mathcal{O}_{\textsf{auth}} (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$: This is simulated by calling $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$.
 
@@ -863,8 +868,9 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 	\caption{${\mathcal{A}^\prime}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \mathcal{O}^\prime_{\textsf{Enc}} }(\textsf{pp}, \mathbf{c})$}
 	\label{alg:adv:ind-uf-OB-Enroll}
 	\begin{algorithmic}[1]
-
-		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\textsf{samp}}, \mathcal{O}_\textsf{samp}(i^*), \mathcal{O}_\textsf{auth}, \mathcal{O}_\textsf{KeyGen}^\prime } ( \mathbf{c})$
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ 
+		
+		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}, \mathcal{O}_\textsf{KeyGen}^\prime } ( \mathbf{c})$
 
 		\State \Return $\mathbf{\tilde{z}}$
 	\end{algorithmic}
@@ -913,9 +919,9 @@ Hence, we can ignore the false positive rate $\sup_{\text{PPT } \mathcal{A}^\pri
 Consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-uf-OB-Probe} which plays the \textsf{fh-IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates each oracle in the following way.
 
 \begin{itemize}
-	\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{R}$.
+	%\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{R}$.
 	
-	\item $\mathcal{O}_{\mathcal{B}}$: This is simulated by the distribution $\mathcal{B}$ generated in Line \ref{alg:red:ind-uf-OB-Probe:B}.
+	%\item $\mathcal{O}_{\mathcal{B}}$: This is simulated by the distribution $\mathcal{B}$ generated in Line \ref{alg:red:ind-uf-OB-Probe:B}.
 
 	\item $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$: This is simulated by calling $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$.
 
@@ -942,7 +948,7 @@ Consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-uf-
 
 		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\textsf{samp}}, \mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c})$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{auth}^q, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c})$
 
 		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_\textsf{Probe}$}
 
@@ -969,9 +975,9 @@ If the challenge bit $b = 0$, then $\mathcal{R}$ perfectly simulates a $\textsf{
 For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-uf-OB-Probe} in the $\textsf{RUF}$ game. $\mathcal{A}^\prime$ runs $\mathcal{A}$ and simulates each oracle in the following way.
 
 \begin{itemize}
-	\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{A}^\prime$.
+	%\item $\mathcal{O}_{\textsf{samp}}(i)$: This is sampled by $\mathcal{O}_{\textsf{samp}}(i)$ of $\mathcal{A}^\prime$.
 	
-	\item $\mathcal{O}_{\mathcal{B}}$: This is simulated by the oracle $\mathcal{O}_{\textsf{samp}}(i^*)$, where $i^*$ is an index that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\textsf{samp}}$.
+	%\item $\mathcal{O}_{\mathcal{B}}$: This is simulated by the oracle $\mathcal{O}_{\textsf{samp}}(i^*)$, where $i^*$ is an index that is never queried by $\mathcal{A}$ in $\mathcal{O}_{\textsf{samp}}$.
 
 	\item $\mathcal{O}_{\textsf{auth}}^q (\textsf{csk}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}})$: This is simulated by calling $\textsf{Verify}( \textsf{FE.Dec}(\textsf{pp}, \mathbf{\tilde{c_x}}, \mathbf{\tilde{c_y}}) )$.
 
@@ -988,7 +994,9 @@ For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^
 	\caption{$ {\mathcal{A}^\prime}^{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \mathcal{O}^\prime_{\textsf{Enc}} } (\textsf{pp}, \mathbf{c}) $}
 	\label{alg:adv:ind-uf-OB-Probe}
 	\begin{algorithmic}[1]
-		\State $\mathbf{x}^{(*)} \gets \textsf{encodeEnroll}^{ \mathcal{O}_\textsf{samp}(i^*)} ()$
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Probe:B}
+		
+		\State $\mathbf{x}^{(*)} \gets \textsf{encodeEnroll}^{ \mathcal{O}_{\mathcal{B}} } ()$
 
 		\State Sample $k+2$ linearly independent vectors $\{ \mathbf{e}^{(i)} \}_{i=1}^{k+2}$.
 
@@ -1056,7 +1064,7 @@ Let $\mathcal{A}^\prime$ play a tweaked $\textsf{RUF}_\textsf{FE}^{\tau^2}$ game
 	\Pr[\textsf{RUF}_\textsf{FE}^{\tau^2}(\mathcal{A}^\prime) \to 1] \geq \Pr[V = 1] - \frac{k+2}{q^{k+2}-1}.
 \]
 
-\noindent Combining both results from Equation \ref{equ:ind-uf-OB-Probe:1} and Equation \ref{equ:ind-uf-OB-Probe:2}, we derive
+\noindent Combining both results from Equation \ref{equ:ind-uf-OB-Probe:1} and \ref{equ:ind-uf-OB-Probe:2}, we derive
 \[
 	\Pr[\textsf{Verify}(s) = 1 \mid b = 1] \leq \Pr[V = 1] + \frac{1}{q^{k+2}} \leq \Pr[\textsf{RUF}_\textsf{FE}^{\tau^2}(\mathcal{A}^\prime) \to 1] + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}}.
 \]
@@ -1182,7 +1190,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\text
 		
 		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(1)})$ 
 
-		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} ( \mathbf{c})$
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} (\textsf{pp}, \mathbf{c})$
 
 		\State $\mathbf{c}^{(0)} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(0)})$ 
 		
