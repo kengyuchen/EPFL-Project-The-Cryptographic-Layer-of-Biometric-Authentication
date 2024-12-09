@@ -426,8 +426,8 @@ To rigorously analyze the security of an authentication scheme, we simulate biom
 
 	\item $\mathcal{O}_\textsf{samp}(\cdot)$: On input an index $i$,
 	\begin{itemize}
-		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ by $\textsf{BioSamp}$ and then outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
-		\item If $i$ has been queried before, it outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}_i$.
+		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ by $\textsf{BioSamp}$ and then outputs a biometric template sampled from the distribution $\mathcal{B}_i$, denoted by $\mathbf{b} \getsdollar \mathcal{B}_i$.
+		\item If $i$ has been queried before, it outputs a biometric template sampled from the distribution $\mathcal{B}_i$, denoted by $\mathbf{b} \getsdollar \mathcal{B}_i$.
 	\end{itemize}
 \end{itemize}
 
@@ -1077,12 +1077,177 @@ Finally, similar to the proof of Theorem \ref{thm:ind-uf-OB-Enroll}, we derive
 \end{proof}
 
 
-
-
+%-------------------
 \newpage
 
+\section{Rough Ideas}
+
+Define the $\textsf{RUF}^\mathcal{O}$ game in algorithm \ref{alg:oracle-ruf-fh-IPFE} for a real number $\gamma$.
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.55\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A})$}
+	\label{alg:oracle-ruf-fh-IPFE}
+	\begin{algorithmic}[1]
+		\State $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$ \label{alg:ruf-fh-IPFE:r}
+
+		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+
+		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\mathcal{O}} ( \textsf{pp}, \mathbf{c} )$
+
+		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}^\prime_{\textsf{Enc}}$ }
+			
+			\State \Return $0$
+		
+		\EndIf
+
+		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\State \Return $1_{s \leq \gamma}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
+
+The oracle $\mathcal{O}$ can be nothing or includes the following options based on the threat model.
+
+\begin{itemize}
+
+	\item $\mathcal{O}^\prime_{\textsf{KeyGen}}(\cdot)$: On input $\mathbf{x}^\prime$, it outputs $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^\prime)$.
+	
+	\item $\mathcal{O}^\prime_{\textsf{Enc}}(\cdot)$: On input $\mathbf{y}^\prime$, it outputs $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^\prime)$. The adversary is required to return $\mathbf{\tilde{z}}$ that is not equal to any output of this oracle.
+\end{itemize}
 
 
+\begin{definition}[RUF Security]
+
+	An fh-IPFE scheme \textsf{FE} is called $\mathcal{O}$-RUF secure for a real number $\gamma$ if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the \textsf{RUF} game in Algorithm \ref{alg:ruf-fh-IPFE} is
+
+\[
+	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \mathcal{O}, \gamma} := \Pr[\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ] = \negl.
+\]
+
+\end{definition}
+
+\begin{theorem}[Theorem \ref{thm:ind-uf-OB-Enroll}]
+	Let $\textsf{option} = \{ \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{auth}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF secure for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-unforgeable. 
+\end{theorem}
+
+
+\begin{theorem}[Theorem \ref{thm:ind-uf-OB-Probe}]
+	Let $\textsf{option} = \{\mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{auth}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure and $\mathcal{O}^\prime_{\textsf{Enc}}(\cdot)$-RUF secure for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-unforgeable. 
+\end{theorem}
+
+
+
+
+\begin{assumption}
+\label{assump}
+Let $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$. Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns when $\mathbf{z}$ corresponds to a \emph{nonzero} vector $\mathbf{v} \in \mathbb{F}^k$. That is, assume that for any $\mathbf{z}$, there can only be two possibilities.
+
+\begin{itemize}
+	\item There exists a vector $\mathbf{v} \in \mathbb{F}^k, \mathbf{v} \neq \mathbf{0}$ such that for any $\mathbf{x} \in \mathbb{F}^k$ and $ \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \mathbf{x}\mathbf{v}^T$.
+
+	\item For any $\mathbf{x} \in \mathbb{F}^k$ and $ \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) \to \bot$.
+
+\end{itemize}
+Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the input of $\textsf{FE.Enc}$.
+\end{assumption}
+
+\begin{theorem}
+	Given Assumption \ref{assump}. If \textsf{FE} is fh-IND secure, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF secure for any $\gamma < \|\mathbb{F}\|$. 
+\end{theorem}
+
+\begin{proof}
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}$ game for any $\gamma < \|\mathbb{F}\|$, consider the reduction adversary $\mathcal{R}$. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by $\mathcal{O}_\textsf{KeyGen}(\mathbf{x}^\prime, \mathbf{x}^\prime)$.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:red:ind-uf-OB-Enroll}
+	\begin{algorithmic}[1]
+		\State $\mathbf{r}^{(0)} \getsdollar \mathbb{F}^{k+2}$
+		
+		\State $\mathbf{r}^{(1)} \getsdollar \mathbb{F}^{k+2}$
+		
+		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(1)})$ 
+
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} ( \mathbf{c})$
+
+		\State $\mathbf{c}^{(0)} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(0)})$ 
+		
+		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}^{(0)}, \mathbf{\tilde{z}} )$
+		
+		\If{$s \leq \gamma$} \label{alg:red:ind-ruf:verify}
+			\State \Return $\tilde{b} = 0$
+		\Else
+			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
+		\EndIf
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+If $s \neq \bot$, by Assumption \ref{assump}, let $\mathbf{\tilde{z}}$ correspond to a vector $\mathbf{\tilde{v}}$.
+
+If the challenge bit $b = 0$, then the probability that $s \leq \gamma$ in Line \ref{alg:red:ind-ruf:verify} is
+\begin{align*}
+	Pr[ s \leq \gamma \mid b = 0 ]
+	&= \Pr[s \neq \bot \mid b = 0] \cdot \Pr[ s \leq \gamma \mid b = 0 \wedge s \neq \bot] \\
+	&= \Pr[s \neq \bot \mid b = 0] \cdot \Pr[ \mathbf{r}^{(0)} \mathbf{\tilde{v}}^T \leq \gamma \mid b = 0 \wedge s \neq \bot] \\
+	&= \Pr[s \neq \bot \mid b = 0] \cdot \Pr[ \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \leq \gamma \mid b = 0 \wedge s \neq \bot] 
+\end{align*}
+By Assumption \ref{assump}, $s = \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}^{(0)}, \mathbf{\tilde{z}} ) \neq \bot$ if and only if $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \neq \bot$ and independet of $b$. Hence,
+\[
+	Pr[ s \leq \gamma \mid b = 0 ] = \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]
+\]
+
+If the challenge bit $b = 1$,
+\begin{align*}
+	Pr[ s \leq \gamma \mid b = 1 ]
+	&= \Pr[s \neq \bot \mid b = 1] \cdot \Pr[ s \leq \gamma \mid b = 1 \wedge s \neq \bot] \\
+	&= \Pr[s \neq \bot \mid b = 1] \cdot \Pr[ \mathbf{r}^{(0)} \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s \neq \bot]
+\end{align*}
+Note that $\mathbf{r}^{(0)}$ is independent of $\mathbf{\tilde{z}}$ and thus $\mathbf{\tilde{v}}$, so $\Pr[\mathbf{r}^{(0)} \mathbf{\tilde{v}}^T \leq \gamma] = \frac{\gamma}{\| \mathbb{F} \|}$ and
+\[
+	Pr[ s \leq \gamma \mid b = 1 ] = \Pr[s \neq \bot \mid b = 1] \cdot \frac{\gamma}{\| \mathbb{F} \|}
+\]
+Again, by Assumption \ref{assump}, $s \neq \bot$ if and only if $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \neq \bot$. Hence,
+\begin{align*}
+	Pr[ s \leq \gamma \mid b = 1 ] 
+	&= \Pr[\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \neq \bot \mid b = 1] \cdot \frac{\gamma}{\| \mathbb{F} \|} \\
+	& \geq \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] \cdot \frac{\gamma}{\| \mathbb{F} \|}
+\end{align*}
+
+In conclusion,
+\begin{align*}
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
+	&= \Pr[b = 0] \cdot \left( \Pr[s \leq \gamma \mid b = 0] + \frac{1}{2} \Pr[s > \gamma \mid b = 0] \right) \\
+	&\quad + \Pr[b = 1] \cdot \frac{1}{2} \Pr[s > \gamma \mid b = 1] \\
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[s \leq \gamma \mid b = 0] - \Pr[s \leq \gamma \mid b = 1] \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] - \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] \cdot \frac{\gamma}{\| \mathbb{F} \|} \right) \\
+	&=\frac{1}{2} + \frac{1}{4} \left( 1 - \frac{\gamma}{\| \mathbb{F} \|} \right) \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]  \right)
+\end{align*}
+
+\noindent Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ is negligible,
+\[
+	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]  \leq 4 \cdot \left( \frac{ \| \mathbb{F} \|}{\| \mathbb{F} \| - \gamma}\right) \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND}  = \negl.
+\]
+
+\end{proof}
+\newpage
 
 
 
