@@ -68,7 +68,7 @@ We introduce three types of inner product functional encryption schemes: functio
 	
 		\item $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
 	
-		\item $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$.
+		\item $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$ or an error symbol $\bot$.
 	
 	\end{itemize}
 	
@@ -296,7 +296,7 @@ By the correctness of the functional encryption scheme $\sf FE$, we have
 which is the square of the Euclidean distance between two templates $\mathbf{b}$ and $\mathbf{b}^\prime$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}^\prime$ are close enough such that $\|\mathbf{b} - \mathbf{b}^\prime\| \leq \tau$, the scheme results in $r = 1$, a successful authentication.
 
 
-Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either one of $\textsf{esk}$, $\textsf{psk}$, or a probe oracle $\textsf{Probe}(\textsf{psk}, \cdot )$ can probe some $\mathbf{y}^{\prime} \in \mathbf{F}^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about $\mathbf{x}$. Even if the adversary can only sample random ciphertexts $\mathbf{c_{y}}$ without knowing $\mathbf{y}$, if the field size $q$ is not large enough, one can find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T \leq \tau$ to impersonate the user by sampling many times offline.
+Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either one of $\textsf{esk}$, $\textsf{psk}$, or a probe oracle $\textsf{Probe}(\textsf{psk}, \cdot )$ can probe some $\mathbf{y}^{\prime} \in \Z_q^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about $\mathbf{x}$. Even if the adversary can only sample random ciphertexts $\mathbf{c_{y}}$ without knowing $\mathbf{y}$, if the field size $q$ is not large enough, one can find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T \leq \tau$ to impersonate the user by sampling many times offline.
 
 
 Therefore, \textsf{Server} must store $\mathbf{c_x}$ securely, to avoid such an attack from an adversary who can access the probe oracle; \textsf{Device} must protect its probe function, to avoid such an attack from a malicious \textsf{Server}. 
@@ -384,7 +384,7 @@ Let $\textsf{RH} = (\textsf{RH.KeyGen}, \textsf{RH.Hash}_1, \textsf{RH.Hash}_2, 
 	R = \{ (\mathbf{x}, \mathbf{y}) \mid \textsf{HD}(\mathbf{x}, \mathbf{y}) \leq \tau \wedge \mathbf{x}, \mathbf{y} \in \{0,1\}^k \}
 \]
 Note that here we ignore the third parameter $Z$.
-Following \cite{cryptoeprint:2023/481} and \cite{cryptoeprint:2014/394}, we can instantiate a biometric authentication scheme using $\textsf{RH}$.  Let the biometric distribution $\mathcal{B} \subseteq \{0,1\}^k$.
+Following \cite{cryptoeprint:2014/394}, we can instantiate a biometric authentication scheme using $\textsf{RH}$.  Let the biometric distribution $\mathcal{B} \subseteq \{0,1\}^k$.
 
 \begin{itemize}
 
@@ -423,6 +423,7 @@ To rigorously analyze the security of an authentication scheme, we simulate biom
 	\item $\textsf{BioSamp}()$: Generate a random distribution $\mathcal{B}$ of $\mathbb{B}$. By this we mean providing either parameters of an efficiently samplable distribution or a PPT algorithm as the sampler. For simplicity, we write $\mathcal{B} \gets \textsf{BioSamp}()$ as $\mathcal{B} \getsdollar \mathbb{B}$.
 	
 	\item $\textsf{BioDelete}(\mathcal{B})$: Delete $\mathcal{B}$ from $\mathbb{B}$. Consequently, no further access to $\textsf{BioSamp}$ can derive $\mathcal{B}$. For simplicity, we write $\textsf{BioDelete}(\mathcal{B})$ as $\mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$.
+	\item $\textsf{TempSamp}(\mathcal{B})$: Let $\mathcal{B}$ be a biometric distribution in $\mathbb{B}$. This algorithm samples a biometric template from $\mathcal{B}$. For simplicity, we write $\mathbf{b} \gets \textsf{TempSamp}(\mathcal{B})$ as $\mathbf{b} \getsdollar \mathcal{B}$.
 
 	\item $\mathcal{O}_\textsf{samp}(\cdot)$: On input an index $i$,
 	\begin{itemize}
@@ -482,7 +483,7 @@ To describe the unforgeability of an authentication scheme, we model the ability
 
 \begin{figure}[h]
 \centering
-	\begin{minipage}[t]{0.8\linewidth}
+	\begin{minipage}[t]{0.5\linewidth}
 	\centering
 	\begin{algorithm}[H]
 	\caption{$\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$}
@@ -565,8 +566,8 @@ When $\textsf{option}$ includes $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, 
 
 The advantage of an adversary $\mathcal{A}$ is defined as
 \[
-	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] -
-	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1].
+	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \max\{ \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] -
+	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1], 0 \}.
 \]
 
 An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{\textsf{option}-unforgeable} (\textsf{option}-UF) if for any PPT adversary $\mathcal{A}$,
@@ -574,9 +575,103 @@ An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distribu
 	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
 \]
 
-Note that if a \textsf{UF} game adversary can simulate a $\textsf{UF}^\prime$ game and $\textsf{csk}$ is empty or public, the scheme cannot achieve UF security when the false positive rate is not negligible, as the adversary can run $\textsf{Verify}( \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \cdot) )$ over $q$ times to boost the false positive rates.
 
 For the rest of this report, if the scheme, the family distribution, and the auxiliary information $\textsf{option}$ are clear from context, we omit the subscript and write the game as $\textsf{UF}(\mathcal{A})$. This abbreviation also holds for all other games.
+
+
+%-------------------
+
+
+\subsection{Choice of \textsf{option} and True/False Positive Rates}
+
+In this section, we detail possibilities of the auxiliary information $\textsf{option}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game and rule out trivial attacks. We use the instantiation in Section \ref{sec:fh-IPFE-instantiation} as an example to illustrate.
+
+For a biometric distribution $\mathcal{B} \in \mathbb{B}$ and $\mathbf{b} \getsdollar \mathcal{B}$, define the \emph{true positive rates} \textsf{TP}.
+\begin{gather*}
+	\textsf{TP}(\mathcal{B}, \mathbf{b}) := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathbf{b}^\prime \getsdollar \mathcal{B}] \\
+	\textsf{TP}(\mathcal{B}) := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathbf{b}, \mathbf{b}^\prime \getsdollar \mathcal{B}] = \mathbb{E}_{\mathbf{b} \getsdollar \mathcal{B}}[\textsf{TP}(\mathcal{B}, \mathbf{b})] \\
+	\textsf{TP} := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau:\mathcal{B} \getsdollar \mathbb{B}, \mathbf{b}, \mathbf{b}^\prime \getsdollar \mathcal{B}] = \mathbb{E}_{\mathcal{B}\getsdollar \mathbb{B}}[\textsf{TP}(\mathcal{B})] 
+\end{gather*}
+We also define \emph{false positive rates} \textsf{FP}.
+\begin{gather*}
+	\textsf{FP}(\mathbf{b}) := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathcal{B}^\prime \getsdollar \mathbb{B}, \mathbf{b}^\prime \getsdollar \mathcal{B}^\prime] \\
+	\textsf{FP}(\mathcal{B}) := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathbf{b} \getsdollar \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B}, \mathbf{b}^\prime \getsdollar \mathcal{B}^\prime] = \mathbb{E}_{\mathbf{b} \getsdollar \mathcal{B}}[\textsf{FP}(\mathbf{b})] \\
+	\textsf{FP} := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B}, \mathbf{b} \getsdollar \mathcal{B}, \mathbf{b}^\prime \getsdollar \mathcal{B}^\prime] = \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{FP}(\mathcal{B})]
+\end{gather*}
+Ideally, we hope $\textsf{TP}$ to be close to $1$ and \textsf{FP} to be negligible for any $\mathcal{B}$. However, due to the nature of biometrics, $\textsf{FP}$ can be non-negligible.
+The use of plain $\textsf{UF}^\prime$ game is to prevent an \textsf{UF} game adversary from leveraging a non-negligible \textsf{FP}.
+If $\textsf{option}$ includes $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can enjoy a winning rate of $\textsf{FP}$.
+\begin{figure}[h]
+\centering
+	\begin{minipage}[t]{0.6\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{A}(\textsf{psk})$ ( or $\mathcal{A}^{\mathcal{O}_\textsf{Probe}}$ ) }
+	\label{alg:adv:FP}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B}^\prime \getsdollar \mathbb{B}$
+		
+		\State $\mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime }}()$
+
+		\State $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{y})$ \Comment{or $\mathbf{c_y} \gets \mathcal{O}_\textsf{Probe}(\mathbf{y})$ }
+
+		\State \Return $\mathbf{c_y}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+We note that an $\textsf{UF}^\prime$ adversary can have the same winning probability by returning $\mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$. 
+Moreover, to capture the circumstance when everyone, including the adversary, can try to log in, we provide the oracle $\mathcal{O}_\textsf{log}^q$, which can boost the winning probability of an $\textsf{UF}^\prime$ adversary to around $q \cdot \textsf{FP}$ if $\textsf{FP}(\mathbf{b})$ is small in general.
+\[
+\mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}, \mathbf{b} \getsdollar \mathcal{B}}[ 1 - (1 - \textsf{FP}(\mathbf{b}))^q ] \approx \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}, \mathbf{b} \getsdollar \mathcal{B}}[ q \cdot \textsf{FP}(\mathbf{b}) ] = q \cdot \textsf{FP}
+\]
+The scheme is considered secure when no \textsf{UF} adveraries can acquire a non-negligible advantage over this baseline.
+
+
+If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}, and therefore we rule out the case when $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary from returning what $\mathcal{O}_\textsf{Probe}$ returns when $\textsf{option}$ includes both $\mathcal{O}_\textsf{Probe}$ and $\mathcal{O}_\mathcal{B}$.
+
+If \textsf{option} includes $\textsf{csk}, \mathbf{c_x}$, and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$, the scheme cannot achieve UF security when \textsf{FP} is not negligible. An adversary can run $\mathbf{\tilde{z}} \gets \mathcal{A}$ for $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} and $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}})$ to check if the answer is valid. By repeating this procedure $\poly$ times, its winning probability can be boosted to around $\poly \cdot \textsf{FP}$
+
+If $\textsf{option}$ includes $\mathcal{O}_{\textsf{Enroll}}^\prime$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$, the adversary in Algorithm \ref{alg:adv:FP2} can win with a probability
+\[
+	\Pr[ \| \mathbf{b}^{(0)} - \mathbf{b}^\prime \| \leq \tau \mid  \| \mathbf{b}^{(1)} - \mathbf{b}^\prime \| \leq \tau]
+\]
+where $\mathbf{b}^{(0)}, \mathbf{b}^{(1)} \getsdollar \mathcal{B}$ and $\mathbf{b}^\prime \getsdollar \mathcal{B}^\prime$. This value is in general not negligible. The expected number of repetitions is $\mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}\left[\frac{1}{\textsf{FP}(\mathcal{B})} \right]$. If $\textsf{FP}(\mathcal{B})$ is non-negligible, the adversary can return the answer in expected polynomial time. A similar adversary also exists when $\textsf{option}$ includes $\mathcal{O}_{\textsf{Probe}}^\prime$ and $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$.
+ 
+\begin{figure}[h]
+\centering
+	\begin{minipage}[t]{0.6\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime}(\textsf{psk})$ (or  $\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{Probe}}$ ) }
+	\label{alg:adv:FP2}
+	\begin{algorithmic}[1]
+		\State $\textsf{esk}^\prime, \textsf{psk}^\prime, \textsf{csk}^\prime \gets \textsf{Setup}(1^\lambda)$
+
+		\Repeat
+		
+			\State $\mathcal{B}^\prime \getsdollar \mathbb{B}$
+		
+			\State $\mathbf{y}^\prime \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime }}()$ 
+
+			\State $\mathbf{c_y}^\prime \gets \textsf{Probe}(\textsf{psk}^\prime, \mathbf{y}^\prime)$
+
+			\State $\mathbf{c_x}^\prime \gets \mathcal{O}_\textsf{Enroll}^\prime (\textsf{esk}^\prime)$
+
+		\Until{ $\textsf{Verify}(\textsf{Compare}(\textsf{csk}^\prime, \mathbf{c_x}^\prime, \mathbf{c_y}^\prime )) = 1$ }
+
+		\State $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$  \Comment{ or $\mathbf{c_y} \gets \mathcal{O}_\textsf{Probe}(\mathbf{y}^\prime)$ } 
+
+		\State \Return $\mathbf{c_y}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+
 
 
 %-------------------
@@ -1083,6 +1178,157 @@ Finally, similar to the proof of Theorem \ref{thm:ind-uf-OB-Enroll}, we derive
 \]
 
 \end{proof}
+
+
+For the IND-MSV security, we first consider the following assumption on the biometric distribution family $\mathbb{B}$.
+
+
+\begin{definition}
+For any distribution $\mathcal{B} \in \mathbb{B}$ and an integer $t$, define the distribution $\mathcal{D}_\mathcal{B}(t)$ as
+\[
+	\mathcal{D}_\mathcal{B}(t) = \left( \| \mathbf{b} - \mathbf{b}^{(1)} \|, \| \mathbf{b} - \mathbf{b}^{(2)} \|, \cdots, \| \mathbf{b} - \mathbf{b}^{(t)} \| \right)
+\]
+where $\mathbf{b}, \mathbf{b}^{(1)} \cdots, \mathbf{b}^{(t)} \getsdollar \mathcal{B}$.
+
+\end{definition}
+
+\begin{assumption}
+\label{assump:equal_distance}
+Let $t$ be an integer. Assume that for any two distributions $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$ in the biometric distribution family $\mathbb{B}$, $\mathcal{D}_{ \mathcal{B}^{(0)} }(t)$ and $\mathcal{D}_{ \mathcal{B}^{(1)} }(t)$ are the same. 
+
+\end{assumption}
+
+Note that when $\Pi$ is instantiated by an fh-IPFE scheme as in Section \ref{sec:fh-IPFE-instantiation}, computational indistinguishability between $\mathcal{D}_{ \mathcal{B}^{(0)} }(t)$ and $\mathcal{D}_{ \mathcal{B}^{(1)} }(t)$ is a necessary condition to achieve IND-MSV security because
+\[
+	\left( \sqrt{ \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}^{(1)}) }, \cdots, \sqrt{ \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}^{(t)}) } \right) = \mathcal{D}_{ \mathcal{B}^{(b)} }(t)
+\]
+where $b$ is the challenge bit.
+
+
+
+
+\begin{theorem}
+For any distribution family $\mathbb{B}$ satisfying Assumption \ref{assump:equal_distance} and having a true positive rate $\textsf{TP} > \frac{1}{\poly}$, if \textsf{FE} is fh-IND secure, then $\Pi$ is IND-MSV secure.
+
+\end{theorem}
+
+
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the $\textsf{IND-MSV}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-ind-msv} which plays the \textsf{fh-IND} game by running $\mathcal{A}$.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:red:ind-ind-msv}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$ \label{alg:red:ind-ind-msv:B0}
+		
+		\State $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$ \label{alg:red:ind-ind-msv:B1}
+
+		\State $\mathbf{x}^{(0)} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+		
+		\State $\mathbf{x}^{(1)} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+		
+		\State $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ \label{alg:red:ind-ind-msv:cx}
+
+		\For{$i = 1$ to $t$}
+			
+			\State $\mathbf{y}^{(0)} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+
+			\Repeat 
+
+			\State $\mathbf{y}^{(1)} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+
+			\Until{ $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ } \label{alg:red:ind-ind-msv:while}
+
+				%\State $\mathbf{y}^{(1)} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+
+			%\EndWhile
+
+			\State $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$ \label{alg:red:ind-ind-msv:cy}
+
+		\EndFor
+
+		\State $\tilde{b} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}} } (\textsf{pp}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$ \label{alg:red:ind-ind-msv:A}
+
+		\State \Return $\tilde{b}$
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+\noindent Note that $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^{(0)}, {\mathbf{y}^{(1)}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\mathbf{x}^{(0)}{\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)}{\mathbf{y}^{(1)}}^T$. Hence, $\mathcal{R}$ is an admissible adversary.
+
+The probability that Line \ref{alg:red:ind-ind-msv:while} is satisfied is
+\begin{align*}
+	\Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = \mathcal{D}_{\mathcal{B}^{(1)}}(1)] 
+	&\geq \sum_{i=0}^\tau \Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = i]^2 \qquad \text{(Assumption \ref{assump:equal_distance})} \\
+	&\geq \frac{1}{\tau + 1} \cdot \left( \sum_{i=0}^\tau \Pr[\mathcal{D}_{\mathcal{B}^{(0)}}=i] \right)^2 \\
+	&= \frac{1}{\tau + 1} \cdot \Pr[ \| \mathbf{b} - \mathbf{b}^\prime \| \leq \tau: \mathbf{b}, \mathbf{b}^\prime \getsdollar \mathcal{B}^{(0)}] \\
+	&= \frac{\textsf{TP}(\mathcal{B}^{(0)})}{\tau + 1} = \frac{\textsf{TP}}{\tau + 1} \qquad \text{(Assumption \ref{assump:equal_distance})} 
+\end{align*}
+The expected number of repetitions is bounded above by $\frac{\tau + 1}{ \textsf{TP} }$. Moreover, the probability that it is satisfied within $T$ repetitions is at least
+\[
+	1 - (1 - \frac{\textsf{TP}}{\tau + 1})^T \geq 1 - e^{-T \cdot \frac{\textsf{TP}}{\tau + 1}}
+\]
+We can reach a $1 - \negl.$ probability that the loop will end within $T$ times by setting a polynomial-size $T$.
+
+Now, we show that $\mathcal{R}$ perfectly simulate an \textsf{IND-MSV} game for $\mathcal{A}$. If the challenge bit $b$ of the \textsf{fh-IND} game is $0$, $\mathbf{c_x}$ and $\mathbf{c_y}^{(i)}$ for all $i \in [t]$ are generated from $\mathcal{B}^{(0)}$ and have the same distributions as the inputs for an adversary in \textsf{IND-MSV} game.
+If the challenge bit $b$ is $1$, we show that distributions of $\mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t$ also follow the same distribution given Assumption \ref{assump:equal_distance}.
+
+Let $\mathbf{X}^{(0)}$ and $\mathbf{X}^{(1)}$ be the distribution of $\{ \mathbf{x}^{(0)} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}} \}$ and $\{ \mathbf{x}^{(1)} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}} \}$, respectively.
+Let $\{ \mathbf{Y}^{(0)}_i \}_{i = 1}^t$ and $\{ \mathbf{Y}^{(1)}_i \}_{i = 1}^t$ be $t$ identical and independent distributions of $\{ \mathbf{y}^{(0)} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}} \}$ and $\{ \mathbf{y}^{(1)} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}} \}$, respectively.
+Let $\mathbf{Y}^\prime_i$ be the distribution of $\mathbf{y}^{(1)}$ derived after the loop in Line \ref{alg:red:ind-ind-msv:while} in the $i$-th iteration.
+For any $\{ d_i \}_{i=1}^t, d_i > 0$,
+\begin{align*}
+\Pr \left[ \bigwedge_{i=1}^t \mathbf{X}^{(0)} {\mathbf{Y}^{(0)}_i}^T = d_i^2 \right] 
+&= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(0)}}(t) = (d_1, \cdots, d_t) \right] \\
+&= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(1)}}(t) = (d_1, \cdots, d_t) \right] = \Pr \left[ \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right]
+\end{align*}
+
+Hence, for any $\mathbf{x}$ and $\{ \mathbf{y}_i \}_{i=1}^t$,
+\begin{align*}
+	& \Pr [\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^\prime_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^\prime_t = \mathbf{y}_t] \\
+	&= \sum_{d_1, \cdots, d_t} \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right] \\
+	&\quad \times \Pr \left[\bigwedge_{i=1}^t \mathbf{X}^{(0)} {\mathbf{Y}_i^{(0)}}^T = d_i^2 \right] \\
+	&= \sum_{d_1, \cdots, d_t} \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right] \\
+	&\quad \times \Pr \left[\bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}_i^{(1)}}^T = d_i^2 \right] = \Pr[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t ]
+\end{align*}
+
+\noindent which implies $\mathcal{R}$ also perfectly simulate an \textsf{IND-MSV} game for A when the challenge bit $b = 1$.
+
+In conclusion, 
+\[
+	\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \Adv_{\Pi, \mathbb{B}, \mathcal{A}}^\textsf{IND-MSV} = \negl.
+\]
+which holds for all adversaries $\mathcal{A}$ in the \textsf{IND-MSV} game. This implies the IND-MSV security of $\Pi$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{proof}
+
 
 
 %-------------------
