@@ -72,7 +72,7 @@ We introduce three types of inner product functional encryption schemes: functio
 	
 	\end{itemize}
 	
-	\noindent \textbf{Correctness}: The fh-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\noindent \textbf{Correctness}: An fh-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 	\[
 		\textsf{FE.Dec}( \textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}), \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \in \mathbb{F}.
 	\]
@@ -97,7 +97,7 @@ Instantiation using an fh-IPFE scheme is given in Section \ref{sec:fh-IPFE-insta
 	
 	\end{itemize}
 	
-	\noindent \textbf{Correctness}: The 2i-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{sk}, \textsf{ek}_1, \textsf{ek}_2) \gets \textsf{FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, and $\mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\noindent \textbf{Correctness}: A 2i-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{sk}, \textsf{ek}_1, \textsf{ek}_2) \gets \textsf{FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, and $\mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 
 	\[
 		\textsf{FE.Dec}(\textsf{FE.KeyGen}(\textsf{sk},  \mathbf{A}), \textsf{FE.Enc}(\textsf{ek}_1, \mathbf{x}), \textsf{FE.Enc}(\textsf{ek}_2, \mathbf{y}) ) = \mathbf{x} \mathbf{A} \mathbf{y}^T \in \mathbb{F}.
@@ -123,7 +123,7 @@ Instantiation using a 2i-IPFE is given in Section \ref{sec:2i-IPFE-instantiation
 	
 	\end{itemize}
 	
-	\noindent \textbf{Correctness}: The 2c-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{sk}, \textsf{ek}_1, \textsf{ek}_2) \gets \textsf{FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, label $\ell$, and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\noindent \textbf{Correctness}: A 2c-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{sk}, \textsf{ek}_1, \textsf{ek}_2) \gets \textsf{FE.Setup}(1^\lambda), \mathbf{A} \in \mathbb{F}^{k \times k}$, label $\ell$, and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
 	\[
 		\textsf{FE.Dec}(\textsf{FE.KeyGen}(\textsf{sk},  \mathbf{A}), \textsf{FE.Enc}(\ell, \textsf{ek}_1, \mathbf{x}), \textsf{FE.Enc}(\ell, \textsf{ek}_2, \mathbf{y}) ) = \mathbf{x} \mathbf{A} \mathbf{y}^T \in \mathbb{F}.
 	\]
@@ -150,7 +150,7 @@ We also consider an instantiation using a relational hash scheme.
 
 	\end{itemize}
 
-	\noindent \textbf{Correctness}: The relational hash scheme \textsf{RH} is \emph{correct} if $\forall \mathbf{x}, \mathbf{y}, \mathbf{z} \in X_\lambda \times Y_\lambda \times Z_\lambda$,
+	\noindent \textbf{Correctness}: A relational hash scheme \textsf{RH} is \emph{correct} if $\forall \mathbf{x}, \mathbf{y}, \mathbf{z} \in X_\lambda \times Y_\lambda \times Z_\lambda$,
 	\[
 		\Pr \left [
 			\begin{aligned} 
@@ -195,7 +195,22 @@ In general, an authentication shceme $\Pi$ associated with a family of biometric
 
 \end{itemize}
 
-\noindent 
+\noindent We also consider a deterministic algorithm $\textsf{BioCompare}$ for authentication correctness.
+
+\begin{itemize}
+
+	\item $\textsf{BioCompare}(\mathbf{x}, \mathbf{y}) \to s$: Given two encoded vectors $\mathbf{x}$ and $\mathbf{y}$, it outputs a score $s$. 
+
+\end{itemize}
+
+\noindent \textbf{Correctness}: An authenticaion scheme $\Pi$ is \emph{correct} if for any biometric distributions $\mathcal{B}$ and $\mathcal{B}^\prime$, let $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$, $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, , $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$, $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{y})$. Then
+	\[
+		\Pr \left [
+			\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}) = \textsf{BioCompare}(\mathbf{x}, \mathbf{y})
+		\right ] = 1 - \negl.
+	\]
+
+
 We discuss two usage models that employs the authentication scheme $\Pi$.
 
 
@@ -425,13 +440,9 @@ To rigorously analyze the security of an authentication scheme, we simulate biom
 	\item $\textsf{BioSamp}()$: Generate a random distribution $\mathcal{B}$ of $\mathbb{B}$. By this we mean providing either parameters of an efficiently samplable distribution or a PPT algorithm as the sampler. For simplicity, we write $\mathcal{B} \gets \textsf{BioSamp}()$ as $\mathcal{B} \getsdollar \mathbb{B}$.
 	
 	\item $\textsf{BioDelete}(\mathcal{B})$: Delete $\mathcal{B}$ from $\mathbb{B}$. Consequently, no further access to $\textsf{BioSamp}$ can derive $\mathcal{B}$. For simplicity, we write $\textsf{BioDelete}(\mathcal{B})$ as $\mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$.
+
 	\item $\textsf{TempSamp}(\mathcal{B})$: Let $\mathcal{B}$ be a biometric distribution in $\mathbb{B}$. This algorithm samples a biometric template from $\mathcal{B}$. For simplicity, we write $\mathbf{b} \gets \textsf{TempSamp}(\mathcal{B})$ as $\mathbf{b} \getsdollar \mathcal{B}$.
 
-	\item $\mathcal{O}_\textsf{samp}(\cdot)$: On input an index $i$,
-	\begin{itemize}
-		\item If $i$ was not queried before, it first samples a biometric distribution $\mathcal{B}_i \in \mathbb{B}$ by $\textsf{BioSamp}$ and then outputs a biometric template sampled from the distribution $\mathcal{B}_i$, denoted by $\mathbf{b} \getsdollar \mathcal{B}_i$.
-		\item If $i$ has been queried before, it outputs a biometric template sampled from the distribution $\mathcal{B}_i$, denoted by $\mathbf{b} \getsdollar \mathcal{B}_i$.
-	\end{itemize}
 \end{itemize}
 
 
@@ -440,11 +451,11 @@ To rigorously analyze the security of an authentication scheme, we simulate biom
 \subsection{Unforgeability}
 \label{sec:uf_game}
 
-To describe the unforgeability of an authentication scheme, we model the ability of an adversary who tries to impersonate \textsf{User}. The adversary $\mathcal{A}$ is given auxiliary information \textsf{option} that depends on our threat model. The adversary tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ is defined in Algorithm \ref{alg:uf_game}.
+To describe the unforgeability of an authentication scheme, we model the ability of an adversary who tries to impersonate a user. The adversary $\mathcal{A}$ is given auxiliary information \textsf{option} that depends on our threat model and tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ is defined in Algorithm \ref{alg:uf_game}.
 
 \begin{figure}[h]
 \centering
-	\begin{minipage}[t]{0.5\linewidth}
+	\begin{minipage}[t]{0.6\linewidth}
 	\centering
 	\begin{algorithm}[H]
 	\caption{$\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$}
@@ -459,6 +470,12 @@ To describe the unforgeability of an authentication scheme, we model the ability
 		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
 		
 		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A} ( \textsf{option} )$
+ 
+		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_{\textsf{Probe}}$ }
+			
+			\State \Return $0$
+		
+		\EndIf
 
 		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
@@ -478,9 +495,9 @@ The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x
 	
 	\item $\mathcal{O}_\textsf{Enroll}(\textsf{esk}, \cdot)$: On input $\mathbf{x}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}, \mathbf{x}^\prime)$.
 
-	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$. If this oracle and $\mathcal{O}_{\mathcal{B}}$ are given at the same time, we require the adversary to return some $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$.
+	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{y}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$. If this oracle is given, we require the adversary to return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$.
 	
-	\item $\mathcal{O}_\textsf{log}^{Q}(\textsf{csk}, \mathbf{c_x}, \cdot)$: This is a resource-limited oracle. If it has been queried over $Q$ times in total, it aborts. Otherwise, on input $\mathbf{z}$, it first computes $\mathbf{c_z} \gets \textsf{Probe}(\textsf{psk}, \textsf{encodeProbe}(\mathbf{z}))$ and outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_z} ) )$. We omit $Q$ in the superscript when we allow unbounded number of queries. 
+	\item $\mathcal{O}_\textsf{log}(\textsf{csk}, \mathbf{c_x}, \cdot)$: On input $\mathbf{z}$, it first computes $\mathbf{c_z} \gets \textsf{Probe}(\textsf{psk}, \textsf{encodeProbe}(\mathbf{z}))$ and outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_z} ) )$.
 	
 	\item $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, it first samples $\mathbf{x}^\prime \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{x}^\prime)$.
 
@@ -488,45 +505,9 @@ The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x
 	
 \end{itemize}
 
-If $\textsf{option}$ does not include $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, or if $\textsf{option}$ includes $\mathcal{O}_\mathcal{B}$, we define the advantage of an adversary $\mathcal{A}$ with $\textsf{option}$ in the \textsf{UF} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions as
 \[
 	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1]
-\]
-
-When $\textsf{option}$ includes $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$, to consider potential non-negligible false positive rates of biometrics match, we define the plain $\textsf{UF}^\prime$ game in Algorithm \ref{alg:plain-uf_game}, where the adversary has only $\mathcal{O}_\textsf{log}^{Q}$ and tries to find a vector $\mathbf{\tilde{z}}$ close to $\mathbf{x}$.
-
-\begin{figure}[H]
-\centering
-	\begin{minipage}[t]{0.5\linewidth}
-	\begin{algorithm}[H]
-	\caption{$\textsf{UF}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime)$}
-	\label{alg:plain-uf_game}
-	\begin{algorithmic}[1]
-		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
-
-		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
-
-		\State $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
-
-		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{x})$
-
-		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\prime \mathcal{O}_\textsf{log}^Q }()$
-
-		\State $\mathbf{\tilde{c_z}} \gets \textsf{Probe}(\textsf{psk}, \textsf{encodeProbe}(\mathbf{\tilde{z}}))$
-
-		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{c_z}} )$
-
-		\State \Return $\textsf{Verify}(s)$
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-\label{fig:plain-uf_game}
-\end{figure}
-
-The advantage of an adversary $\mathcal{A}$ is defined as
-\[
-	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \max\{ \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] -
-	\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1], 0 \}.
 \]
 
 An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{\textsf{option}-unforgeable} (\textsf{option}-UF) if for any PPT adversary $\mathcal{A}$,
@@ -544,23 +525,103 @@ For the rest of this project, if the scheme, the family distribution, and the au
 \subsection{Choice of \textsf{option} and True/False Positive Rates}
 \label{sec:choice-of-option}
 
-In this section, we detail possibilities of the auxiliary information $\textsf{option}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game and rule out trivial attacks. We use the instantiation in Section \ref{sec:fh-IPFE-instantiation} as an example to illustrate.
+In this section, we detail possibilities of the auxiliary information $\textsf{option}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game and rule out trivial attacks.
 
-For a biometric distribution $\mathcal{B} \in \mathbb{B}$ and $\mathbf{b} \getsdollar \mathcal{B}$, define the \emph{true positive rates} \textsf{TP}.
-\begin{gather*}
-	\textsf{TP}(\mathcal{B}, \mathbf{b}) := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathbf{b}^\prime \getsdollar \mathcal{B}] \\
-	\textsf{TP}(\mathcal{B}) := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathbf{b}, \mathbf{b}^\prime \getsdollar \mathcal{B}] = \mathbb{E}_{\mathbf{b} \getsdollar \mathcal{B}}[\textsf{TP}(\mathcal{B}, \mathbf{b})] \\
-	\textsf{TP} := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau:\mathcal{B} \getsdollar \mathbb{B}, \mathbf{b}, \mathbf{b}^\prime \getsdollar \mathcal{B}] = \mathbb{E}_{\mathcal{B}\getsdollar \mathbb{B}}[\textsf{TP}(\mathcal{B})] 
-\end{gather*}
-We also define \emph{false positive rates} \textsf{FP}.
-\begin{gather*}
-	\textsf{FP}(\mathbf{b}) := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathcal{B}^\prime \getsdollar \mathbb{B}, \mathbf{b}^\prime \getsdollar \mathcal{B}^\prime] \\
-	\textsf{FP}(\mathcal{B}) := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathbf{b} \getsdollar \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B}, \mathbf{b}^\prime \getsdollar \mathcal{B}^\prime] = \mathbb{E}_{\mathbf{b} \getsdollar \mathcal{B}}[\textsf{FP}(\mathbf{b})] \\
-	\textsf{FP} := \Pr[ \| \mathbf{b} - \mathbf{b}^\prime\| \leq \tau: \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B}, \mathbf{b} \getsdollar \mathcal{B}, \mathbf{b}^\prime \getsdollar \mathcal{B}^\prime] = \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{FP}(\mathcal{B})]
-\end{gather*}
-Ideally, we hope $\textsf{TP}$ to be close to $1$ and \textsf{FP} to be negligible for any $\mathcal{B}$. However, due to the nature of biometrics, $\textsf{FP}$ can be non-negligible.
-The use of plain $\textsf{UF}^\prime$ game is to prevent an \textsf{UF} game adversary from leveraging a non-negligible \textsf{FP}.
-If $\textsf{option}$ includes $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can enjoy a winning rate of $\textsf{FP}$.
+For a biometric distribution $\mathcal{B} \in \mathbb{B}$ and $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}()$, define the \emph{true positive rates} \textsf{TP}.
+\begin{align*}
+	\textsf{TP}(\mathcal{B}, \mathbf{x}) 
+	:&= \Pr[ \mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_\mathcal{B}}(): \textsf{Verify}(\textsf{BioCompare}(\mathbf{x}, \mathbf{y} )) = 1 ] \\
+	\textsf{TP}(\mathcal{B}) 
+	:&= \Pr \left[ 
+		\begin{aligned}	
+			& \mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}() \\
+			& \mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_\mathcal{B}}()
+		\end{aligned}
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{x}, \mathbf{y})) = 1 \right] \\
+	&= \mathbb{E}_{ \mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}() }[\textsf{TP}(\mathcal{B}, \mathbf{x})] \\
+	\textsf{TP} 
+	:&= \Pr \left[
+		\begin{aligned}
+			& \mathcal{B} \getsdollar \mathbb{B} \\
+			& \mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B} }() \\
+			& \mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_\mathcal{B} }()
+		\end{aligned}
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{x}, \mathbf{y} )) = 1 \right] \\
+	&= \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{TP}(\mathcal{B})] 
+\end{align*}
+For a biometric distribution $\mathcal{B} \in \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ and $\mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}()$, we also define the \emph{false positive rates} \textsf{FP}.
+\begin{align*}
+	\textsf{FP}(\mathbf{x}) 
+	:&= \Pr \left[ 
+		\begin{aligned}
+			& \mathcal{B}^\prime \getsdollar \mathbb{B} \\
+			& \mathbf{y}^\prime \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()
+		\end{aligned}
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{x}, \mathbf{y})) = 1 \right] \\
+	\textsf{FP}(\mathcal{B}) 
+	:&= \Pr \left[ 
+		\begin{aligned}
+			& \mathcal{B}^\prime \getsdollar \mathbb{B} \\
+			& \mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B} }() \\
+			& \mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
+		\end{aligned}
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{x}, \mathbf{y})) = 1 \right] \\
+	&= \mathbb{E}_{ \mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}() }[\textsf{FP}(\mathbf{x})] \\
+	\textsf{FP} 
+	:&= \Pr \left[
+		\begin{aligned}
+			& \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B} \\
+			& \mathbf{x} \gets \textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B} }() \\
+			& \mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
+		\end{aligned}
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{x}, \mathbf{y})) = 1 \right] \\
+	&= \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{FP}(\mathcal{B})]
+\end{align*}
+Ideally, we hope $\textsf{TP}$ to be close to $1$ and \textsf{FP} to be negligible for any $\mathcal{B}$. However, due to the nature of biometrics, $\textsf{FP}$ can be non-negligible. In the design of \textsf{UF} game, we need to prevent a trivial attack that leverages \textsf{TP} or \textsf{FP} when it is non-negligible.
+
+If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}. Therefore, we rule out the case that $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary from returning what $\mathcal{O}_\textsf{Probe}$ returns.
+
+%If $\textsf{option}$ includes $\mathcal{O}_{\textsf{Enroll}}^\prime$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, and if we place no restriction on an \textsf{UF} game adversary's answer, the adversary in Algorithm \ref{alg:adv:FP2} can win with a probability
+%\[
+	%\Pr[ \textsf{Verify}( \textsf{BioCompare}(\mathbf{x}^{(0)}, \mathbf{y}) ) = 1 \mid \textsf{Verify}( \textsf{BioCompare}(\mathbf{x}^{(1)}, \mathbf{y}) ) = 1]
+%\]
+%where $\mathbf{x}^{(0)}, \mathbf{x}^{(1)}$ are generated from $\textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}()$ and $\mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}() $.
+%This value is in general not negligible.
+%The expected number of repetitions is $\mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}\left[\frac{1}{\textsf{FP}(\mathcal{B})} \right]$. If $\textsf{FP}(\mathcal{B})$ is non-negligible, the adversary can return the answer in an expected polynomial time. A similar adversary also exists when $\textsf{option}$ includes $\mathcal{O}_{\textsf{Probe}}^\prime$ and $\mathcal{O}_\textsf{Probe}$.
+
+If \textsf{option} has only $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can still enjoy a winning rate $\textsf{FP}$, if we do not place any restriction on the adversary's answer. Therefore, we only consider $\textsf{psk}$ in \textsf{option} when \textsf{FP} is non-negligible, and we restrict the adversary's answer when $\mathcal{O}_\textsf{Probe}$ is given.
+ 
+%\begin{figure}[h]
+%\centering
+	%\begin{minipage}[t]{0.6\linewidth}
+	%\centering
+	%\begin{algorithm}[H]
+	%\caption{$\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime}(\textsf{psk})$ (or  $\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{Probe}}$ ) }
+	%\label{alg:adv:FP2}
+	%\begin{algorithmic}[1]
+		%\State $\textsf{esk}^\prime, \textsf{psk}^\prime, \textsf{csk}^\prime \gets \textsf{Setup}(1^\lambda)$
+
+		%\Repeat
+		
+			%\State $\mathcal{B}^\prime \getsdollar \mathbb{B}$
+		
+			%\State $\mathbf{y}^\prime \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime }}()$ 
+
+			%\State $\mathbf{c_y}^\prime \gets \textsf{Probe}(\textsf{psk}^\prime, \mathbf{y}^\prime)$
+
+			%\State $\mathbf{c_x}^\prime \gets \mathcal{O}_\textsf{Enroll}^\prime (\textsf{esk}^\prime)$
+
+		%\Until{ $\textsf{Verify}(\textsf{Compare}(\textsf{csk}^\prime, \mathbf{c_x}^\prime, \mathbf{c_y}^\prime )) = 1$ }
+
+		%\State $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$  \Comment{ or $\mathbf{c_y} \gets \mathcal{O}_\textsf{Probe}(\mathbf{y}^\prime)$ } 
+
+		%\State \Return $\mathbf{c_y}$
+	%\end{algorithmic}
+	%\end{algorithm}
+	%\end{minipage}
+	
+%\end{figure}
+
 \begin{figure}[h]
 \centering
 	\begin{minipage}[t]{0.6\linewidth}
@@ -582,55 +643,6 @@ If $\textsf{option}$ includes $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$ but
 	
 \end{figure}
 
-We note that an $\textsf{UF}^\prime$ adversary can have the same winning probability by returning $\mathbf{b}^\prime \getsdollar \mathcal{B}^\prime$. 
-Moreover, to capture the circumstance when everyone, including the adversary, can try to log in, we provide the oracle $\mathcal{O}_\textsf{log}^Q$, which can boost the winning probability of an $\textsf{UF}^\prime$ adversary to around $Q \cdot \textsf{FP}$ if $\textsf{FP}(\mathbf{b})$ is small in general.
-\[
-\mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}, \mathbf{b} \getsdollar \mathcal{B}}[ 1 - (1 - \textsf{FP}(\mathbf{b}))^Q ] \approx \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}, \mathbf{b} \getsdollar \mathcal{B}}[ Q \cdot \textsf{FP}(\mathbf{b}) ] = Q \cdot \textsf{FP}
-\]
-The scheme is considered secure when no \textsf{UF} adveraries can acquire a non-negligible advantage over this baseline.
-
-
-If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}, and therefore we rule out the case when $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary from returning what $\mathcal{O}_\textsf{Probe}$ returns when $\textsf{option}$ includes both $\mathcal{O}_\textsf{Probe}$ and $\mathcal{O}_\mathcal{B}$.
-
-If \textsf{option} includes $\textsf{csk}, \mathbf{c_x}$, and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$, the scheme cannot achieve UF security when \textsf{FP} is not negligible. An adversary can run $\mathbf{\tilde{z}} \gets \mathcal{A}$ for $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} and $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}})$ to check if the answer is valid. By repeating this procedure $\poly$ times, its winning probability can be boosted to around $\poly \cdot \textsf{FP}$
-
-If $\textsf{option}$ includes $\mathcal{O}_{\textsf{Enroll}}^\prime$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$, the adversary in Algorithm \ref{alg:adv:FP2} can win with a probability
-\[
-	\Pr[ \| \mathbf{b}^{(0)} - \mathbf{b}^\prime \| \leq \tau \mid  \| \mathbf{b}^{(1)} - \mathbf{b}^\prime \| \leq \tau]
-\]
-where $\mathbf{b}^{(0)}, \mathbf{b}^{(1)} \getsdollar \mathcal{B}$ and $\mathbf{b}^\prime \getsdollar \mathcal{B}^\prime$. This value is in general not negligible.
-The expected number of repetitions is $\mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}\left[\frac{1}{\textsf{FP}(\mathcal{B})} \right]$. If $\textsf{FP}(\mathcal{B})$ is non-negligible, the adversary can return the answer in an expected polynomial time. A similar adversary also exists when $\textsf{option}$ includes $\mathcal{O}_{\textsf{Probe}}^\prime$ and $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$.
- 
-\begin{figure}[h]
-\centering
-	\begin{minipage}[t]{0.6\linewidth}
-	\centering
-	\begin{algorithm}[H]
-	\caption{$\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime}(\textsf{psk})$ (or  $\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{Probe}}$ ) }
-	\label{alg:adv:FP2}
-	\begin{algorithmic}[1]
-		\State $\textsf{esk}^\prime, \textsf{psk}^\prime, \textsf{csk}^\prime \gets \textsf{Setup}(1^\lambda)$
-
-		\Repeat
-		
-			\State $\mathcal{B}^\prime \getsdollar \mathbb{B}$
-		
-			\State $\mathbf{y}^\prime \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime }}()$ 
-
-			\State $\mathbf{c_y}^\prime \gets \textsf{Probe}(\textsf{psk}^\prime, \mathbf{y}^\prime)$
-
-			\State $\mathbf{c_x}^\prime \gets \mathcal{O}_\textsf{Enroll}^\prime (\textsf{esk}^\prime)$
-
-		\Until{ $\textsf{Verify}(\textsf{Compare}(\textsf{csk}^\prime, \mathbf{c_x}^\prime, \mathbf{c_y}^\prime )) = 1$ }
-
-		\State $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$  \Comment{ or $\mathbf{c_y} \gets \mathcal{O}_\textsf{Probe}(\mathbf{y}^\prime)$ } 
-
-		\State \Return $\mathbf{c_y}$
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-	
-\end{figure}
 
 
 
@@ -641,12 +653,12 @@ The expected number of repetitions is $\mathbb{E}_{\mathcal{B} \getsdollar \math
 \subsection{Indistinguishable against Malicious Server (IND-MSV)}
 \label{sec:ind-msv_game}
 
-In the game of Indistinguishable against Malicious Server, we model the ability of a malicious \textsf{Server} who tries to identify the user. The adversary $\mathcal{A}$ is given oracles to two biometric distributions $\mathcal{B}^{(0)}, \mathcal{B}^{(1)}$, the comparison key $\textsf{csk}$, an enrollment message $\mathbf{c_x}$, and a list of $t$ probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$ . It tries to guess from either $\mathcal{B}^{(0)}$ or $ \mathcal{B}^{(1)}$ these messages are generated. The whole game is defined in Algorithm \ref{alg:ind-msv_game}.
+In the game of indistinguishability against a malicious server, we model the ability of an authentication server who tries to identify the user. The adversary $\mathcal{A}$ is given oracles to two biometric distributions $\mathcal{B}^{(0)}$ and $ \mathcal{B}^{(1)}$, the comparison key $\textsf{csk}$, an enrollment message $\mathbf{c_x}$, and a list of $t$ probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$ . It tries to guess from either $\mathcal{B}^{(0)}$ or $ \mathcal{B}^{(1)}$ these messages are generated. The whole game is defined in Algorithm \ref{alg:ind-msv_game}.
 
 \begin{figure}[h]
 \centering
 
-	\begin{minipage}[t]{0.6\textwidth}
+	\begin{minipage}[t]{0.55\textwidth}
 	\begin{algorithm}[H]
 	\caption{$\textsf{IND-MSV}_{\Pi, \mathbb{B}}(\mathcal{A})$}
 	\label{alg:ind-msv_game}
@@ -771,6 +783,7 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{fh-IND} game \cite{cr
 
 \end{definition}
 
+\noindent We note that the constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are fh-IND secure.
 
 We also define the \textsf{RUF} game in Algorithm \ref{alg:ruf-fh-IPFE} for a real number $\gamma$.
 
@@ -824,8 +837,7 @@ We also define the \textsf{RUF} game in Algorithm \ref{alg:ruf-fh-IPFE} for a re
 
 \end{definition}
 
-
-We note that by adding a sEUF-CMA signature scheme $\textsf{Sig} = ( \textsf{KeyGen}, \textsf{Sign}, \textsf{Verify} )$, an \textsf{fh-IPFE} scheme can be upgraded to an RUF secure scheme. In a bit more detail,
+We note that by adding a sEUF-CMA signature scheme $\textsf{Sig} = ( \textsf{KeyGen}, \textsf{Sign}, \textsf{Verify} )$, an fh-IPFE scheme can be upgraded to an RUF secure scheme. In a bit more detail, given any fh-IPFE \textsf{FE}, we construct the new scheme in the following way.
 
 \begin{itemize}
 
@@ -837,7 +849,7 @@ We note that by adding a sEUF-CMA signature scheme $\textsf{Sig} = ( \textsf{Key
 
 \end{itemize}
 
-If the adversary manage to find a $\mathbf{\tilde{z}}$ that is not equal to any output of $\mathcal{O}_\textsf{Enc}^\prime$ and $\textsf{FE.Dec}$ on input $\mathbf{\tilde{z}}$ does not return $\bot$, the adversary is able to forge a valid signagure.
+If the adversary manages to find a $\mathbf{\tilde{z}}$ that is not equal to any output of $\mathcal{O}_\textsf{Enc}^\prime$ and $\textsf{FE.Dec}$ on input $\mathbf{\tilde{z}}$ does not return $\bot$, the adversary is able to forge a valid signagure.
 
 
 %-------------------
@@ -915,7 +927,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 
 \end{figure}
 
-Now, if the challenge bit $b = 1$, then $\mathcal{R}$ perfectly simulates $\mathcal{A}^\prime$ in the $\textsf{RUF}$ game. The probability that $\textsf{Verify}(s) = 1$, which is equivalent to $s \leq \tau^2$, in Line \ref{alg:red:ind-uf-OB-Enroll:verify} is $\Pr[\textsf{RUF}^{\tau^2}_{\textsf{FE}}(\mathcal{A}) \to 1 ]$
+Now, if the challenge bit $b = 1$, then $\mathcal{R}$ perfectly simulates $\mathcal{A}^\prime$ in the $\textsf{RUF}$ game. The probability that $\textsf{Verify}(s) = 1$, which is equivalent to $s \leq \tau^2$, in Line \ref{alg:red:ind-uf-OB-Enroll:verify} is $\Pr[\textsf{RUF}^{\tau^2}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$
 
 In conclusion, since $\gamma \geq \tau^2$,
 \begin{align*}
@@ -923,13 +935,13 @@ In conclusion, since $\gamma \geq \tau^2$,
 	&= \Pr[b = 0] \cdot \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 0] \right) \\
 	&\quad + \Pr[b = 1] \cdot \frac{1}{2} \Pr[\textsf{Verify}(s) = 0 \mid b = 1] \\
 	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] - \Pr[\textsf{Verify}(s) = 1 \mid b = 1] \right) \\
-	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_{\textsf{option}}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\tau^2}_{\textsf{FE}}(\mathcal{A}) \to 1 ] \right) \\
-	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ] \right)
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_{\textsf{option}}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\tau^2}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right)
 \end{align*}
 
-\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \gamma} = \Pr[\textsf{RUF}^\gamma_{\textsf{FE}}(\mathcal{A}) \to 1 ]$ are negligilbe,
+\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \gamma} = \Pr[\textsf{RUF}^\gamma_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ are negligilbe,
 \[
-	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \gamma} = \negl.
+	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \gamma} = \negl.
 \]
 
 \end{proof}
@@ -1097,18 +1109,18 @@ Finally, similar to the proof of Theorem \ref{thm:ind-uf-OB-Enroll}, we derive
 	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}_\textsf{FE}^{\gamma}(\mathcal{A}^\prime) \to 1] - \frac{k+2}{q^{k+2}-1} - \frac{1}{q^{k+2}} \right) \\
 \end{align*}
 
-\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \gamma} = \Pr[\textsf{RUF}^\gamma_{\textsf{FE}}(\mathcal{A}) \to 1 ]$ are negligible,
+\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \gamma} = \Pr[\textsf{RUF}^\gamma_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ are negligible,
 \[
-	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \gamma} + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}} = \negl.
+	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \gamma} + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}} = \negl.
 \]
 
 \end{proof}
 
-Unfortunately, for the instantiation in Section \ref{sec:fh-IPFE-instantiation}, we cannot achieve UF security when the adversary has $\mathcal{O}_\textsf{Probe}$ but no $\mathcal{O}_\mathcal{B}$; that is, the adversary can return what $\mathcal{O}_\textsf{Probe}$ returns as its answer. The adversary can simply ask $\mathbf{c} \gets \mathcal{O}_\textsf{Probe}(\mathbf{0})$ and return $\mathbf{c}$. While in some fh-IPFE constructions \cite{cryptoeprint:2015/1255, cryptoeprint:2016/440}, $\textsf{FE.Enc}$ disallows a zero input vector, the adversary can still ask $\mathbf{c} \gets \mathcal{O}_\textsf{Probe}(\mathbf{v})$, where $\mathbf{v} = (0, \cdots, 0, 1, 0)$ has only a single $1$ in the $k+1$-th coefficient, and win the game with probability $1$. The same results also hold for $\textsf{option}$ that includes $\textsf{esk}$ or $\textsf{psk}$ since they are equal to $\textsf{msk}$ and allow the adversary to run $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{v})$ for any vector $\mathbf{v}$. We state this result formally in the following theorem.
+Unfortunately, for the instantiation in Section \ref{sec:fh-IPFE-instantiation}, we cannot achieve UF security when the adversary has \textsf{psk}, even if the false positive rate is negligible. The adversary can simply ask $\mathbf{c} \gets \textsf{Probe}(\textsf{psk}, \mathbf{0})$ and return $\mathbf{c}$. While in some fh-IPFE constructions \cite{cryptoeprint:2015/1255, cryptoeprint:2016/440}, $\textsf{FE.Enc}$ disallows a zero input vector, the adversary can still ask $\mathbf{c} \gets \textsf{Probe}(\textsf{psk}, \mathbf{v})$, where $\mathbf{v} = (0, \cdots, 0, 1, 0)$ has only a single $1$ in the $k+1$-th coefficient, and win the game with probability $1$. The same results also hold for $\textsf{option}$ that includes $\textsf{esk}$ since both $\textsf{psk}$ and $\textsf{esk}$ are equal to $\textsf{msk}$ and allow the adversary to run $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{v})$ for any vector $\mathbf{v}$. We state this result formally in the following theorem.
 
 \begin{theorem}
 
-Let $\textsf{option} = \{ \mathcal{O}_\textsf{Probe} \}$ (or $\{\textsf{esk}\}$, $\{\textsf{psk}\}$). For any distribution family $\mathbb{B}$ and functional encryption $\textsf{FE}$, $\Pi$ is not \textsf{option}-unforgeable.
+Let $\textsf{option}$ include $\textsf{esk}$ or $\textsf{psk}$. For any distribution family $\mathbb{B}$ and functional encryption $\textsf{FE}$, $\Pi$ is not \textsf{option}-unforgeable.
 
 \end{theorem}
 
@@ -1300,7 +1312,7 @@ Let $\textsf{option} = \{\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}\
 
 \end{theorem}
 
-In \cite{cryptoeprint:2014/394}, the authors construct an $\textsf{RH}$ that is unforgeable for the uniform distribution over $\{0, 1\}^k$, under the hardness of some computational problem. Note that we need to provide knowledge of $\mathbb{B}$ in the distribution $\mathcal{X}$.
+In \cite{cryptoeprint:2014/394}, the authors construct an $\textsf{RH}$ that is unforgeable for the uniform distribution over $\{0, 1\}^k$, under the hardness of some computational problems. Note that we need to provide knowledge of $\mathbb{B}$ in the distribution $\mathcal{X}$.
 
 \begin{proof}
 
@@ -1324,7 +1336,7 @@ The \textsf{option}-UF security is thus guaranteed by the unforgeability of \tex
 As we mentioned in Section \ref{sec:choice-of-option}, an adversary with \textsf{psk} can enjoy a winning rate of the false positive rate \textsf{FP} of $\mathbb{B}$. Theorem \ref{thm:rh:uf-uf-cx} thus implies that if $\textsf{FP}$ is not negligible, there does not exist an \textsf{RH} that is unforgeable for the distribution $\{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \getsdollar \mathbb{B} \mid \mathbb{B} \}$.
 
 
-Note that since $\textsf{esk}, \textsf{psk}$, and $ \textsf{csk}$ are all public in this instantiation, it is meaningless to discuss $\mathcal{O}_\textsf{Enroll}, \mathcal{O}_\textsf{Probe}$, or $\mathcal{O}_\textsf{log}^Q$. In addition, for $\textsf{option}$ that includes $\mathcal{O}_\mathcal{B}$ or $\mathcal{O}_\textsf{Probe}^\prime$, as discussed in Section \ref{sec:choice-of-option}, we cannot achieve \textsf{option}-UF security since $\textsf{psk}$ is public in this instantiation.
+Note that since $\textsf{esk}, \textsf{psk}$, and $ \textsf{csk}$ are all public in this instantiation, it is meaningless to discuss $\mathcal{O}_\textsf{Enroll}, \mathcal{O}_\textsf{Probe}$, or $\mathcal{O}_\textsf{log}$. In addition, for $\textsf{option}$ that includes $\mathcal{O}_\mathcal{B}$ or $\mathcal{O}_\textsf{Probe}^\prime$, as discussed in Section \ref{sec:choice-of-option}, we cannot achieve \textsf{option}-UF security since $\textsf{psk}$ is public in this instantiation.
 
 For \textsf{option} that includes $\mathcal{O}_\textsf{Enroll}^\prime$, we notice that for the \textsf{RH} construction in \cite{cryptoeprint:2014/394}, there exists an invalid $\textsf{pk}^\prime$ such that $\textsf{RH.Hash}_1(\textsf{pk}^\prime, \mathbf{x})$ directly leaks $\mathbf{x}$. By returning $\textsf{RH.Hash}_2( \textsf{pk}, \mathbf{x} )$, one can break the $\textsf{UF}_{\textsf{option}}$ game with probability $1$.
 
@@ -1394,7 +1406,7 @@ Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \fr
 
 \section{Rough Ideas}
 
-Define the $\textsf{RUF}^\mathcal{O}$ game in Algorithm \ref{alg:oracle-ruf-fh-IPFE} for a real number $\gamma$.
+Define the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:oracle-ruf-fh-IPFE} for a real number $\gamma$.
 
 \begin{figure}[h]
 \centering
@@ -1439,7 +1451,7 @@ The oracle $\mathcal{O}$ can be nothing or includes the following options based 
 
 \begin{definition}[RUF Security]
 
-	An fh-IPFE scheme \textsf{FE} is called $\mathcal{O}$-RUF secure for a real number $\gamma$ if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the \textsf{RUF} game in Algorithm \ref{alg:ruf-fh-IPFE} is
+	An fh-IPFE scheme \textsf{FE} is called $\mathcal{O}$-RUF secure for a real number $\gamma$ if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} is
 
 \[
 	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \mathcal{O}, \gamma} := \Pr[\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ] = \negl.
@@ -1477,7 +1489,7 @@ Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the inp
 
 \begin{theorem}
 \label{thm:ind-ruf}
-Given Assumption \ref{assump}. If \textsf{FE} is fh-IND secure, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF secure for any $\gamma \leq \|\mathbb{F}\|$
+Given Assumption \ref{assump}. If \textsf{FE} is fh-IND secure, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF secure for any $\gamma \leq \|\mathbb{F}\|$.
 
 \end{theorem}
 
@@ -1564,21 +1576,6 @@ In conclusion,
 \section{Agenda}
 
 \begin{enumerate}
-
-\item Current $\textsf{UF}^\prime$ game (Algorithm \ref{alg:plain-uf_game}) exist trivial attacks by returning $\mathbf{0}$ vector. Possible workarounds:
-
-\begin{enumerate}
-	\item Let the adversary return $i$, and then use $\mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_\textsf{samp}(i)}()$.
-
-	\item Remove $\textsf{UF}^\prime$ and replace $\sup_{\text{PPT } \mathcal{A}^\prime} \Pr[\textsf{UF}^\prime_{\Pi, \mathbb{B}}(\mathcal{A}^\prime) \to 1]  $ with $q \cdot \textsf{FP}$.
-
-	\item Do nothing. Let it be a problem of the inner-product functional encryption instantiation.
-
-	\item \textbf{(Final) Redefine $\textsf{UF}^\prime$ to encode the output of the adversary.}
-
-\end{enumerate}
-
-\item When $\textsf{UF}$ adversary has both $\mathcal{O}_\mathcal{B}$ and $\mathcal{O}_\textsf{Probe}$, I think we should not consider baseline security $\textsf{UF}^\prime$ in advantage since the adversary cannot return what $\mathcal{O}_\textsf{Probe}$ gives it.
 
 \item If an fh-IPFE scheme \textsf{FE} is fh-IND secure, by our current definition, sampling a $\mathbf{c_v}$ that corresponds to $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{v})$ of a random $\mathbf{v}$ and $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_v})$ always returns is \emph{impossible}. However, it is \emph{possible} \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} if we allow decryption to return $\bot$ on most $\mathbf{x}, \mathbf{y} \in \mathbb{F}^k$.
 \item I looked at some fh-IPFE constructions.
