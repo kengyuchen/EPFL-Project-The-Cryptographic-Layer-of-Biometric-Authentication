@@ -300,17 +300,17 @@ A key distribution service distributes enrollment keys to the enrollment station
 \subsection{Instantiation with an fh-IPFE Scheme}
 \label{sec:fh-IPFE-instantiation}
 
-Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using $\textsf{FE}$ with the distance metric the Euclidean distance. Let the biometric distribution $\mathcal{B} \subseteq [m]^k$, and let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
+Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using $\textsf{FE}$ with the distance metric the Euclidean distance. Let the biometric distribution $\mathcal{B} \subseteq \{0, 1, \cdots, m \}^k$, and let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$ where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
 
 \begin{itemize}
 
 	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$ and outputs $\textsf{esk} \gets (\textsf{msk}, \textsf{pp})$, $\textsf{psk} \gets (\textsf{msk}, \textsf{pp})$ and $\textsf{csk} \gets \textsf{pp}$.
 
-	\item $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$: It outputs a biometric template vector $\mathbf{b} \in [m]^k$. 
+	\item $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$: It outputs a biometric template vector $\mathbf{b} \in \{0, 1, \cdots, m \}^k$. 
 
 	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: On input a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the algorithm first encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. Next, it calls $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
 
-	\item $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$: It outputs a biometric template vector $\mathbf{b}^\prime \in [m]^k$.
+	\item $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$: It outputs a biometric template vector $\mathbf{b}^\prime \in \{0, 1, \cdots, m \}^k$.
 
 	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: On input a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$, the algorithm first encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1^\prime, -2b_2^\prime, \cdots, -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$. Next, it calls $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
 
@@ -806,7 +806,25 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{fh-IND} game \cite{cr
 
 \end{definition}
 
-\noindent We note that the constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are fh-IND secure.
+We note that fh-IND security is a standard notion for an fh-IPFE, and constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are proven fh-IND secure. However, fh-IND security may not be sufficient for the UF security of the instantiation in Section \ref{sec:fh-IPFE-instantiation}. 
+\begin{theorem}
+
+An instantiation $\Pi$ using the construction in \cite{cryptoeprint:2016/440} is not \textsf{option}-unforgeable for any \textsf{option}.
+
+\end{theorem}
+
+\noindent We recall the construction in \cite{cryptoeprint:2016/440} in Appendix \ref{sec:fh-IPFE-construction}.
+
+\begin{proof}
+
+Let $\mathcal{A}$ be a \textsf{UF} game adversary that returns $(K_1, K_2) = (1, (1, \cdots, 1))$. Then, in the decryption,
+\[
+	D_1 = e(g_1, g_2)^{0} = 1 \quad \text{and} \quad D_2 = e(g_1, g_2)^0 = 1
+\]
+As $D_1^0 = D_2$, the decryption returns $0$ and let the adversary win the game with probability $1$.
+
+\end{proof}
+
 
 We also define the \textsf{RUF} game in Algorithm \ref{alg:ruf-fh-IPFE} for a real number $\gamma$.
 
@@ -1619,38 +1637,75 @@ In conclusion,
 \newpage
 
 
-\section{Agenda}
+%-------------------
 
-\begin{enumerate}
+\appendix
 
-\item If an fh-IPFE scheme \textsf{FE} is fh-IND secure, by our current definition, sampling a $\mathbf{c_v}$ that corresponds to $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{v})$ of a random $\mathbf{v}$ and $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_v})$ always returns is \emph{impossible}. However, it is \emph{possible} \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} if we allow decryption to return $\bot$ on most $\mathbf{x}, \mathbf{y} \in \mathbb{F}^k$.
-\item I looked at some fh-IPFE constructions.
+%-------------------
 
-\begin{enumerate}
+\section{Construction in \cite{cryptoeprint:2016/440}}
+\label{sec:fh-IPFE-construction}
 
-	\item In \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440}
-	\begin{itemize}
-		\item The field size $|\mathbb{F}| = |\Z_q| = q$ is of exponential size of $\lambda$.
-		\item The decryption relies on finding $\langle \mathbf{x}, \mathbf{y} \rangle$ from $g^{\langle \mathbf{x}, \mathbf{y} \rangle}$ for a group generator $g$ of order $q$. Discrete logarithm is hard. $\textsf{FE.Dec}$ works only when $\langle \mathbf{x}, \mathbf{y} \rangle$ ranges in a pre-defined polynomial-size set.
-		\item \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24} are fh-IND secure. \cite{cryptoeprint:2016/440} is fh-IND secure in the generic group model.
-		\item One can sample a random ciphertext $\mathbf{c_v}$, but then it is difficult to find any $\mathbf{c_x}$ such that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_v}) \neq \bot$. 
-		\item \cite{cryptoeprint:2015/1255, cryptoeprint:2016/440} are $\mathcal{O}_\textsf{KeyGen}^\prime$-RUF secure by Theorem \ref{thm:fh-IPFE:ind-ruf}.
-	\end{itemize}
+Let $\mathbb{G}_1$ and $\mathbb{G}_2$ be two groups of order a prime number $q$ with generators $g_1$ and $g_2$, respectively. Let $e: \mathbb{G}_1 \times \mathbb{G}_2 \to \mathbb{G}_T$ be a mapping to a target group $\mathbb{G}_T$ also of order $q$. 
 
-	\item In \cite{cryptoeprint:2018/1214, 10.1007/978-3-030-90567-5_33}:
-	\begin{itemize}
-		\item The field size $|\mathbb{F}| = |\Z_q| = q$ is polynomial of $\lambda$
-		\item They prove security in a game that only allows the adversary to call $\mathcal{O}_\textsf{KeyGen}$ once, and it must be before $\mathcal{O}_\textsf{Enc}$.
-		\item They are not fh-IND secure.
-		\item They are also not RUF secure because one can sample random ciphertext $\mathbf{c_v}$.
-	\end{itemize}
-\end{enumerate}
+\begin{definition}[Bilinear asymmetric group \cite{cryptoeprint:2016/440}]
+\label{bilinear-group}
 
-\item In general, I think RUF security cannot be easliy proven without adding a signature.
+A tuple $(\mathbb{G}_1, \mathbb{G}_2, \mathbb{G}_T, q, e)$ is a \emph{bilinear asymmetric group} if the following hold.
 
-\end{enumerate}
+\begin{itemize}
 
+	\item Group operations in $\mathbb{G}_1, \mathbb{G}_2$, and $\mathbb{G}_T$ and mapping $e$ are efficiently computable.
 
+	\item $e$ is bilinear. That is, for $x, y \in \Z_q$, $e(g_1^x, g_2^y) = e(g_1, g_2)^{xy}$.
+
+	\item $e$ is non-degenerate. That is, $e(g_1, g_2) \neq 1$, the identity element of $\mathbb{G}_T$.
+
+\end{itemize}
+
+\end{definition}
+
+For a vector $\mathbf{v} = (v_1, v_2, \cdots, v_n) \in \Z_q^n$ and a group element $g$ in group of order $q$, we write $g^\mathbf{v}$ to denote the vector of group elements $(g^{v_1}, g^{v_2}, \cdots, g^{v_n})$. Moreover, for $k \in \Z_q$ and $\mathbf{v}, \mathbf{w} \in \Z_q^n$, we write $(g^{\mathbf{v}})^k = g^{k \cdot \mathbf{v}}$ and $g^\mathbf{v} \cdot g^\mathbf{w} =  g^{\mathbf{v} + \mathbf{w}}$. Finally, the pairing operation is extended to vectors.
+\[
+	e(g_1^{\mathbf{v}}, g_2{^\mathbf{w}}) = \prod_{i \in [n]} e(g_1^{v_i}, g_2^{w_i}) = e(g_1, g_2)^{\mathbf{v}\mathbf{w}^T}.
+\]
+
+We now recall the fh-IPFE construction $\textsf{FE}$ in \cite{cryptoeprint:2016/440}.
+
+\begin{itemize}
+
+	\item $\textsf{FE.Setup}(1^\lambda)$: Sample an asymmetric bilinear group $(\mathbb{G}_1, \mathbb{G}_2, \mathbb{G}_T, q, e)$ and choose generators $g_1 \in \mathbb{G}_1$ and $g_2 \in \mathbb{G}_2$. Sample $\mathbf{B} \in \mathbb{GL}_n(\Z_q)$ and find $\mathbf{B}^* = \det(\mathbf{B}) \cdot (\mathbf{B}^{-1})^T$. Finally, output the public parameter $\textsf{pp} = (\mathbb{G}_1, \mathbb{G}_2, \mathbb{G}_T, q, e)$ and the master secret key $\textsf{msk} = (\textsf{pp}, g_1, g_2, \mathbf{B}, \mathbf{B}^*)$.
+	
+	\item $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$: Sample $\alpha \getsdollar \Z_q$ and output
+	\[
+		 f_\mathbf{x} = (K_1, K_2) = \left( g_1^{\alpha \cdot \det(\mathbf{B})}, g_1^{\alpha \cdot \mathbf{x} \cdot \mathbf{B}} \right)
+	\]
+	
+	\item $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y})$: Sample $\beta \getsdollar \Z_q$ and output
+	\[
+		 \mathbf{c_y} = (C_1, C_2) = \left( g_2^{\beta}, g_2^{\beta \cdot \mathbf{y} \cdot \mathbf{B}^*} \right)
+	\]
+	
+	\item $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: Parse $f_\mathbf{x} = (K_1, K_2)$ and $\mathbf{c_y} = (C_1, C_2)$ and compute 
+	\[
+		D_1 = e(K_1, C_1) \quad \text{and} \quad D_2 = e(K_2, C_2)
+	\]
+	Solve the discrete logarithm to find $z$ such that $D_1^z = D_2$ and output $z$. If it fails to find such $z$, output $\bot$.
+
+\end{itemize}
+
+\paragraph{Correctness}
+We have
+\[
+	D_1 = e(K_1, C_1) = e(g_1, g_2)^{\alpha \cdot \beta \cdot \det(\mathbf{B})}
+\] and 
+\[
+	D_2 = e(K_2, C_2) = e(g_1, g_2)^{\alpha \cdot \beta \cdot \mathbf{x} \cdot \mathbf{B} \cdot (\mathbf{B}^*)^T \cdot \mathbf{y}^T \cdot } = e(g_1, g_2)^{\alpha \cdot \beta \cdot \det(\mathbf{B}) \cdot \mathbf{x}\mathbf{y}^T }.
+\]
+Therefore, $(D_1)^{\mathbf{x}\mathbf{y}^T} = D_2$.
+
+\paragraph{Remark}
+In this construction, $q$ is exponential to $\lambda$ to achieve security, and decryption relies on some priori knowledge of possible ranges of the inner product $\mathbf{x} \mathbf{y}^T$. For example, for the instantiation in Section \ref{sec:fh-IPFE-instantiation}, we can enumerate $z \in \{0, 1, \cdots, \tau \}$ and return $\bot$ when no valid $z \leq \tau$ such that $D_1^z = D_2$ is found.
 
 
 
