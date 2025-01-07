@@ -1,0 +1,59 @@
+\begin{frame}{Biometric Authentication}
+
+\begin{itemize}
+	\item An \emph{error-tolerant} approach to user verification.
+	\begin{itemize}
+		\item A server verifies identities by comparing the \emph{similarity}, instead of equivalence.
+	\end{itemize}
+	\pause
+
+	\item Unlike password, biometrics reveal personal information and cannot be changed.
+	\pause
+
+	\item Possibly non-negligible false positive/negative rates.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Biometric Authentication}
+
+In this project, we formalize a biometric authenticaion scheme.
+\pause
+
+\begin{itemize}
+
+	\item<2-> We formally define a biometric authenticaion scheme.
+
+	\item<3-> We add a cryptographic layer on top of the authentication scheme to preserve privacy.
+
+	\item<4-> We model two security notions of interest: \emph{unforgeability} and \emph{indistinguishability}
+	\begin{itemize}
+		\item<5-> Unforgeability: An adversary cannot \emph{impersonate} the user.
+		\item<6-> Indistinguishability: The server cannot \emph{recognize} the user.
+	\end{itemize}
+
+	\item<7-> We analyze two instantiations from previous works.
+	\begin{itemize}
+		\item<8-> Function-hiding inner product functional encryption \cite{cryptoeprint:2023/481}.
+		\item<9-> {\color<10>{trans}{Relational hash}} \cite{cryptoeprint:2014/394}.
+	\end{itemize}
+
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}{Notation}
+
+\begin{itemize}
+	\item $\lambda$: the security parameter.
+	
+	\item $\poly$ ($\negl$) denotes a polynomial (negligible) function of $\lambda$.
+
+	\item Sample a value $r$ from a distribution $\mathcal{D}$ (uniformly from a set $S$) is $r \getsdollar \mathcal{D}$ ($r \getsdollar S$).
+
+\end{itemize}
+    
+\end{frame}

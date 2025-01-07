@@ -1,0 +1,94 @@
+\begin{frame}{Family of Biometric Distributions}
+
+Assume there is a family $\mathbb{B}$ of biometric distributions and the following algorithms:
+\pause
+
+\begin{itemize}
+
+	\item $\textsf{BioSamp}()$: Pick a random distribution $\mathcal{B} \in \mathbb{B}$. ($\mathcal{B} \getsdollar \mathbb{B}$)
+	\pause
+
+	\item $\textsf{BioDelete}(\mathcal{B})$: Remove $\mathcal{B}$ from $\mathbb{B}$. ($\mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$).
+	\pause
+
+	\item $\textsf{TempSamp}(\mathcal{B})$: Sample a biometric template $\mathbf{b}$ from $\mathcal{B}$. ($\mathbf{b} \getsdollar \mathcal{B}$)
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Biometric Authentication}
+
+\begin{definition}{Biometric Authentication Scheme}
+
+A \emph{biometric authentication shceme} $\Pi$ associated with $\mathbb{B}$ consists of the following algorithms.
+
+\begin{itemize}
+
+	\item<2-> $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}$: Given oracle $\mathcal{O}_{\mathcal{B}}$, output a biometric template $\mathbf{b}$ for enrollment.
+
+	\item<3-> $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^\prime$: Given oracle $\mathcal{O}_{\mathcal{B}}$, output a biometric template $\mathbf{b}^\prime$ for probe.
+
+	\item<4-> $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to s$: Given two templates $\mathbf{b}$ and $\mathbf{b}^\prime$, output a score $s$.
+
+	\item<5-> $\textsf{Verify}(s) \to r \in \{0,1\}$: Determine whether this is a successful authentication ($r = 1$) or not ($r = 0$).
+
+\end{itemize}
+
+\end{definition}
+
+\visible<2->{
+\begin{itemize}
+	\item $\mathcal{O}_{\mathcal{B}}$: When queried, return a biometric template $\mathbf{b} \getsdollar \mathcal{B}$.
+\end{itemize}
+}
+
+\end{frame}
+
+
+\begin{frame}{Cryptographic Layer}
+
+\pause
+\begin{itemize}
+
+	\item $\textsf{Setup}(1^\lambda) \to \textsf{esk}, \textsf{psk}, \textsf{csk}$: Output the \emph{enrollment secret key $\textsf{esk}$}, \emph{probe secret key $\textsf{psk}$}, and \emph{comparison secret key $\sf csk$}.
+	\pause
+
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b}) \to \mathbf{c_x}$: On input a biometric template $\mathbf{b}$, it encodes it into a vector $\mathbf{x}$ and outputs the enrollment message $\mathbf{c_x}$.
+	\pause
+
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime) \to \mathbf{c_y}$: On input a biometric template $\mathbf{b}^\prime$, it encodes it into a vector $\mathbf{y}$ and outputs the probe message $\mathbf{c_y}$.
+	\pause
+
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Cryptographic Layer}
+
+\begin{block}{Correctness} 
+For any $\mathcal{B}, \mathcal{B}^\prime \in \mathbb{B}$, \pause
+let $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, \pause
+$\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$, \pause
+$\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$, \pause
+$\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$.
+\pause
+Then
+	\[
+		\Pr \left [
+			\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}) = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)
+		\right ] = 1 - \negl.
+	\]
+\end{block}
+
+\end{frame}
+
+
+
+\input{tikz/dou_model}
+
+

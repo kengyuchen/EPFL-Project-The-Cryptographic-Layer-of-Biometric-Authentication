@@ -1,0 +1,51 @@
+\begin{frame}{fh-IND almost implies $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF}
+
+\begin{theorem}
+	If \textsf{FE} is fh-IND, and if the RUF adversary can only return $\mathbf{\tilde{z}}$ that is an encryption of a nonzero vector, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for any $\gamma \leq \|\mathbb{F}\|$.
+\end{theorem}
+
+Given a $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}$ adversary $\mathcal{A}$, consider the following \textsf{fh-IND} adversary:
+\begin{enumerate}
+
+	\item Run $ \mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(1)})$, where $\mathbf{r}^{(0)}, \mathbf{r}^{(1)} \getsdollar \mathbb{F}^k$.
+
+	\item Run $\mathbf{\tilde{z}} \gets \mathbf{A}^{\mathcal{O}_{\textsf{KeyGen}}^\prime}(\textsf{pp}, \mathbf{c})$.
+
+	\item Let $\mathbf{\tilde{z}}$ be encryption of $\mathbf{v} \neq \mathbf{0}$.
+
+	\item Run $ \mathbf{c}_i \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}_i)$, where $\mathbf{r}_i \getsdollar \mathbb{F}^k$.
+
+	\item If $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}_i, \mathbf{\tilde{z}}) \leq \gamma$ for all $i$, return $\tilde{b} = 0$. Otherwise, return $\tilde{b} \getsdollar \{0, 1\}$.
+
+	\item If $b = 0$ and $\mathcal{A}$ wins, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}_i, \mathbf{\tilde{z}}) \leq \gamma$ for all $i$. Otherwise, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}_i, \mathbf{\tilde{z}}) \leq \gamma$ is a random number in $\{0, 1, \cdots, q-1\}$.
+
+\end{enumerate}
+
+
+\end{frame}
+
+
+\begin{frame}{Upgrading \textsf{FE} to RUF $\textsf{FE}^\prime$}
+
+\begin{theorem}
+	Given an sEUF-CMA digital signature scheme \textsf{Sig} and any fh-IPFE $\textsf{FE}$, we can obtain an fh-IPFE $\textsf{FE}^\prime$ that is RUF for any $\gamma$.
+\end{theorem}
+
+\begin{itemize}
+
+	\item<1-> $\textsf{FE}^\prime \textsf{.Setup}(1^\lambda)$: Run $\textsf{FE.Setup}(1^\lambda) \to (\textsf{msk}, \textsf{pp})$ and $\textsf{Sig.KeyGen}(1^\lambda) \to (\textsf{sk}_{\textsf{Sig}}, \textsf{pk}_{\textsf{Sig}} )$. Output $\textsf{msk}^\prime = (\textsf{msk}, \textcolor{red}{\textsf{sk}_{\textsf{Sig}}} )$ and $\textsf{pp}^\prime = (\textsf{pp}, \textcolor{red}{ \textsf{pk}_{\textsf{Sig}} } )$.
+
+	\item<2-> $\textsf{FE}^\prime \textsf{.KeyGen}(\textsf{msk}^\prime, \mathbf{x})$: Run and output $f_{\mathbf{x}} \gets \textsf{FE.Enc}(\textsf{msk}, \mathbf{x})$.
+
+	\item<3-> $\textsf{FE}^\prime \textsf{.Enc}(\textsf{msk}^\prime, \mathbf{y})$: Run $\textsf{FE.Enc}(\textsf{msk}, \mathbf{y}) \to \mathbf{c_y}$ and \textcolor{red}{sign $\mathbf{c_y}$ by $\textsf{Sig.Sign}(\textsf{sk}_{\textsf{Sig}}, \mathbf{c_y}) \to \sigma$}. Output $\mathbf{c_y}^\prime = (\mathbf{c_y}, \sigma)$.
+
+	\item<4-> $\textsf{FE}^\prime \textsf{.Dec}(\textsf{pp}^\prime, f_\mathbf{x}, \mathbf{c_y}^\prime )$: Output $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y})$ if \textcolor{red}{ $\textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \mathbf{c_y}, \sigma ) \to 1$}. Otherwise, output $\bot$.
+
+\end{itemize}
+
+\only<5->{
+	If an adverary can find $\mathbf{\tilde{z}}$ such that $\textsf{FE}^\prime \textsf{.Dec}(\textsf{pp}^\prime, \mathbf{c}, \mathbf{\tilde{z}} ) \neq \bot$, it can forge a signature. 
+}
+\end{frame}
+
+

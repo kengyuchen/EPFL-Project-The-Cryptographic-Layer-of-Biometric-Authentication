@@ -1,0 +1,73 @@
+%%%%%%%%%%%%%%%%%%%%
+
+% Project Name: The Cryptographic Layer of Biometric Authentication
+% Author: Keng-Yu Chen
+
+%%%%%%%%%%%%%%%%%%%%
+
+\input{header.tex}
+
+% Reference
+\usepackage[
+    backend=biber,
+    style=alphabetic,
+    sorting=ynt
+]{biblatex}
+\addbibresource{abbrev3.bib}
+\addbibresource{reference.bib}
+\renewcommand*{\bibfont}{\scriptsize}
+
+%------------------------------------------------------------
+
+\begin{document}
+
+
+%\frame{\titlepage}
+\begin{frame}
+\maketitle
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Table of Contents}
+\tableofcontents[hideothersubsections]
+
+\end{frame}
+
+\section{Introduction}
+
+\include{Contents/introduction}
+
+\section{Formalization}
+
+\include{Contents/formalization}
+
+\section{Security Models}
+
+\include{Contents/security_game}
+
+\section{Security Analysis}
+
+\include{Contents/security_analysis}
+
+\section{Conclusion}
+
+\include{Contents/conclusion}
+
+\section*{Reference}
+
+\include{reference.tex}
+
+
+%\section{Appendix}
+\appendix
+\backupbegin
+
+\section{Appendix - Achievability of RUF Security}
+\hypertarget{sec:appendix-RUF}{}
+\label{sec:appendix-A}
+\include{Contents/Appendix/A.tex}
+
+\backupend
+
+\end{document}

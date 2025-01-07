@@ -1,0 +1,255 @@
+\subsection{Unforgeability}
+
+\begin{frame}{Unforgeability}
+
+Let $\Pi$ be a biometric authentication scheme. For an adversary $\mathcal{A}$, define $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$.
+
+\centerline{
+	\begin{minipage}{.5\textwidth}
+	\begin{block}{ $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$ }
+	\vskip -8pt
+	\begin{algorithm}[H]
+	\algsetup{linenosize=\small}
+	\small
+	\label{alg:uf_game}
+	\begin{algorithmic}[1]
+		\STATE $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\STATE $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+		
+		\STATE $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\STATE $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
+		
+		\STATE ${\mathbf{\tilde{z}}} \gets \mathcal{A} ( \textsf{option} )$
+ 
+		%\IF{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_{\textsf{Probe}}$ }
+			
+			%\RETURN $0$
+		
+		%\ENDIF
+
+		\STATE $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\RETURN $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+
+$\Pi$ is called \emph{\textsf{option}-unforgeable} (\textsf{option}-UF) if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] = \negl.
+\]
+
+\end{frame}
+
+
+\begin{frame}{Possible Choice of \textsf{option}}
+
+\begin{itemize}
+	
+	\item Enrollment message: $\mathbf{c_x}$.
+	\pause
+
+	\item Keys: $\textsf{esk}, \textsf{psk}, \textsf{csk}$.
+	\pause
+
+	\item Oracle $\mathcal{O}_{\mathcal{B}}$.
+	%This oracle and $\textsf{psk}$ should not be given at the same time; otherwise, there exists a trivial attack with a winning rate $\textsf{TP}$ by returning $\textsf{Probe}(\textsf{psk}, \textsf{getProbe}^{ \mathcal{O}_\mathcal{B} }() )$.
+	\pause
+	
+	\item Oracle $\mathcal{O}_{\textsf{Enroll}} (\textsf{esk}, \cdot)$: On input $\mathbf{b}^\prime$, output $\textsf{Enroll}(\textsf{esk}, \mathbf{b}^\prime)$.
+	\pause
+
+	\item Oracle $\mathcal{O}_{\textsf{Probe}} (\textsf{psk}, \cdot)$: On input $\mathbf{b}^\prime$, output $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$.
+	%If this oracle is given, we require the adversary to return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$.
+	
+\end{itemize}
+\medskip
+\pause
+
+Note that some combinations of $\textsf{option}$ induce a winning probability \emph{true positive rate} or \emph{false positive rate}.
+
+\end{frame}
+
+
+\begin{frame}{True/False Positive Rates}
+
+\begin{definition}{True/False Positive Rates}
+
+\begin{align*}
+	\textsf{TP} 
+	:=&\; \Pr \left[
+		\begin{aligned}
+			& \mathcal{B} \getsdollar \mathbb{B} \\
+			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
+			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B} }()
+		\end{aligned}
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \right] \\
+	\\
+	\textsf{FP} 
+	:=&\; \Pr \left[
+		\begin{aligned}
+			& \mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B} \\
+			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
+			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
+		\end{aligned}
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right] \\
+\end{align*}
+\end{definition}
+
+
+\end{frame}
+
+\begin{frame}{Possible Choice of \textsf{option}}
+
+\begin{itemize}
+
+	\item $\textsf{psk}$ and $\mathcal{O}_{\mathcal{B}}$ are not given at the same time.
+
+	\begin{itemize}
+		\item<2-> $\mathcal{A}_1$ has a winning probability $\textsf{TP}$.
+	\end{itemize}
+
+	\item<3-> $\textsf{psk}$ is given only when $\textsf{FP}$ is negligible.
+	\begin{itemize}
+		\item<4-> $\mathcal{A}_2$ has a winning probability $\textsf{FP}$.
+	\end{itemize}
+
+	\item<5-> When $\mathcal{O}_{\textsf{Probe}}$ is given, we forbid the adversary to return an answer of $\mathcal{O}_{\textsf{Probe}}$.
+
+\end{itemize}
+
+\begin{columns}
+
+\visible<2->{
+
+\begin{column}{0.5\textwidth}
+
+	\centerline{
+		\begin{minipage}{.6\textwidth}
+		\begin{block}{ $\mathcal{A}_1^{ \mathcal{O}_{\mathcal{B}} } (\textsf{psk}) $  }
+		\vskip -5pt
+		\begin{algorithm}[H]
+		\begin{algorithmic}[1]
+
+			\STATE $\mathbf{b} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$
+
+			\STATE $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b})$
+			
+			\RETURN $\mathbf{c_y}$
+		\end{algorithmic}
+		\end{algorithm}
+
+		\end{block}
+		\end{minipage}
+	}
+
+\end{column}
+
+}
+
+\visible<4->{
+
+\begin{column}{0.5\textwidth}
+
+	\centerline{
+		\begin{minipage}{.6\textwidth}
+		\begin{block}{ {$\mathcal{A}_2 (\textsf{psk}) $ } }
+		\vskip -5pt
+		\begin{algorithm}[H]
+		\begin{algorithmic}[1]
+			
+			\STATE $\mathcal{B}^\prime \getsdollar \mathbb{B}$.
+
+			\STATE $\mathbf{b}^\prime \gets \textsf{getProbe}^{ \mathcal{O}_{ \mathcal{B}^\prime } }()$
+
+			\STATE $\mathbf{c_y}^\prime \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime )$
+			
+			\RETURN $\mathbf{c_y}^\prime $
+		\end{algorithmic}
+		\end{algorithm}
+
+		\end{block}
+		\end{minipage}
+	}
+
+\end{column}
+
+}
+
+\end{columns}
+
+\end{frame}
+
+
+\subsection{Indistinguishability}
+
+
+\begin{frame}{Indistinguishability}
+
+Let $t$ be an integer. For an adversary $\mathcal{A}$, define $\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$.
+
+\centerline{
+	\begin{minipage}{.5\textwidth}
+	\begin{block}{ $\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$ }
+	\vskip -10pt
+	\begin{algorithm}[H]
+	\algsetup{linenosize=\small}
+	\small
+	\label{alg:ind_game}
+	\begin{algorithmic}[1]
+		\STATE $b \getsdollar \{0, 1\}$
+
+		\STATE $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$
+
+		\STATE $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$
+
+		\STATE $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\STATE $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(b)}}}()$
+
+		\STATE $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
+
+		\FOR{$i = 1$ to $t$}
+
+			\STATE ${\mathbf{b}^\prime}^{(i)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(b)}}}() $
+		
+			\STATE $\mathbf{c_y}^{(i)} \gets \textsf{Probe}( \textsf{psk}, {\mathbf{b}^\prime}^{(i)} )$
+
+		\ENDFOR
+	
+		\STATE $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+
+		\RETURN $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+\end{frame}
+
+
+\begin{frame}{Indistinguishability}
+
+\begin{itemize}
+
+	\item In $\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$, we model the server's knowledge about the user.
+	\pause
+
+	\item $\Pi$ is called \emph{indistinguishable} (IND) if for any PPT adversary $\mathcal{A}$,
+	\[
+		\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}} := \left| \Pr[\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A}) \to 1] - \frac{1}{2} \right| = \negl.
+	\]
+
+\end{itemize}
+
+\end{frame}

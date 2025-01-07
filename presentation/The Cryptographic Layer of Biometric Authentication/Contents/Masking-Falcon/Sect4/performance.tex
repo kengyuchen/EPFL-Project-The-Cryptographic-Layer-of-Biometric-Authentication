@@ -1,0 +1,62 @@
+\begin{frame}{Performance Evaluation on ARM Cortex-M4}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c r r@{\hspace{2pt}}l r@{\hspace{2pt}}l} 
+	
+	\toprule
+
+	\multirow{2}{*}{\textbf{Gadget}} & \multicolumn{5}{c}{\textbf{Cycle}} \\
+	\cline{2-6}
+	& \textbf{Unmasked} & \multicolumn{2}{c}{\textbf{2 Shares}} & \multicolumn{2}{c}{\textbf{3 Shares}} \\
+	
+	\midrule
+
+	{\sf FprMul/SecFprMul}
+	& 308 & 7134 & ($23 \times$)  & 36388 & ($118 \times$)  \\
+
+	\midrule
+
+	{\sf FprAdd/SecFprAdd}
+	& 487 & 17154 & ($35 \times$)  & 48291 & ($99 \times$) \\
+
+	\bottomrule
+
+\medskip
+\end{tabular}
+\caption{Performance evaluation of SecFprMul and SecFprAdd}
+\label{table:performance:overall}
+\end{table}
+
+
+\end{frame}
+
+
+\begin{frame}{Performance Evaluation on Intel-Core i9-12900KF}
+\medskip
+
+We also test the time for signing one message on a general-purpose CPU.
+\medskip
+
+\begin{table}
+\centering
+\begin{tabular}{c r r@{\hspace{2pt}}l r@{\hspace{2pt}}l} 
+	
+	\toprule
+	
+	\textbf{Security Level} & \textbf{Unmasked} & \multicolumn{2}{c}{\textbf{2 Shares}} & \multicolumn{2}{c}{\textbf{3 Shares}} \\
+	
+	\midrule
+	
+	{\sf Falcon-512} & 246.56 & 1905.55 & ($7.7 \times$) & 6137.25 & $(24.9 \times)$  \\
+	{\sf Falcon-1024} & 501.62 & 3819.76 & ($7.6 \times$) & 12287.29 & $(24.5 \times)$ \\
+	
+	\bottomrule
+
+\end{tabular}
+\caption{Time (in microseconds) for signing a message on Intel-Core i9-12900KF CPU.}
+\label{table:performance:sign}
+\end{table}
+
+
+\end{frame}

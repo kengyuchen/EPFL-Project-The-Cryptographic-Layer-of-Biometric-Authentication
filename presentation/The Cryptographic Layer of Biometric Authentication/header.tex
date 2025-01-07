@@ -1,0 +1,195 @@
+%%%%%%%%%%%%%%%%%%%%
+
+% Project Name: The Cryptographic Layer of Biometric Authentication
+% Author: Keng-Yu Chen
+
+%%%%%%%%%%%%%%%%%%%%
+
+% Handout Format
+
+\newif\ifhandout
+
+%\handouttrue
+
+\ifhandout
+\documentclass[handout,xcolor=dvipsnames,aspectratio=169]{beamer}
+\else
+% \documentclass[xcolor=dvipsnames{beamer}
+\documentclass[xcolor=dvipsnames,aspectratio=169]{beamer}
+
+\fi
+
+\usepackage[utf8]{inputenc}
+\usepackage{CJKutf8}
+
+% Include Packages
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=,
+    citecolor=blue
+}
+\usepackage{mathrsfs}
+\usepackage{xcolor}
+\usepackage{amsthm,amsmath,amssymb}
+\usepackage{stmaryrd}
+\usepackage{bm}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{makecell}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{transparent}
+\definecolor{trans}{gray}{0.6}
+
+\newcommand{\backupbegin}{
+   \newcounter{framenumberappendix}
+   \setcounter{framenumberappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \addtocounter{framenumberappendix}{-\value{framenumber}}
+   \addtocounter{framenumber}{\value{framenumberappendix}} 
+}
+
+% \usepackage{algorithm}
+% \usepackage{algpseudocode}
+\usepackage[noend]{algorithmic,algorithm2e}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\newcommand{\blockalgstart}[2]{
+    \begin{minipage}{#1}
+    \begin{block}{#2}
+    \vskip -8pt
+}
+\newcommand{\blockalgend}{
+    \end{block}
+    \end{minipage}
+}
+
+
+% TikZ Setting
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\usetikzlibrary{backgrounds}
+
+\tikzstyle{st-arrow} = [thick,->,>=stealth]
+\tikzstyle{arrow} = [thick,-latex']
+\tikzstyle{darrow} = [thick,latex'-latex']
+
+\tikzstyle{gadget} = [rectangle, rounded corners,
+	minimum width=2cm,
+	minimum height=1cm,
+	text centered,
+	draw=black
+]
+
+\tikzstyle{element} = [rectangle, rounded corners,
+	minimum width=2cm,
+	minimum height=1.2cm,
+	text centered,
+	fill=white!70!black,
+	draw=black
+]
+\pgfdeclarelayer{background layer}
+\pgfdeclarelayer{foreground layer}
+\pgfsetlayers{background layer,main,foreground layer}
+
+
+
+\usetheme{CambridgeUS}
+
+% Set Custom Block Title Size
+\setbeamerfont{block title}{size=\large}
+% Set Custom Color
+
+\newcommand{\maincolor}{BlueGreen!90!black}
+
+\setbeamercolor{palette primary}{fg=black, bg=gray!30!white}
+\setbeamercolor{palette secondary}{fg=black, bg=gray!20!white}
+\setbeamercolor{palette tertiary}{fg=black, bg=\maincolor!50!white}
+
+\setbeamercolor{title}{fg=\maincolor!60!black}
+\setbeamercolor{frametitle}{parent=title}
+\setbeamercolor{block title}{parent=title}
+\setbeamercolor{caption name}{parent=title}
+
+\setbeamercolor{item projected}{bg=\maincolor}
+
+%%begin novalidate
+\newenvironment<>{proposition}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=\maincolor}%
+  \begin{block}#2{#1}}{\end{block}}
+\newenvironment<>{definition}[1]{%
+  \setbeamercolor{block title}{fg=white,bg=\maincolor}%
+  \begin{block}#2{#1}}{\end{block}}
+%%end novalidate
+\colorlet{separation rule}{white}
+
+\makeatletter
+\pgfdeclareverticalshading[lower.bg,upper.bg]{bmb@transition}{200cm}{%
+    color(0pt)=(separation rule); color(2pt)=(separation rule); color(4pt)=(separation rule)}
+\makeatother
+
+
+% Set self-defined words
+
+\DeclareMathOperator*{\argmax}{arg\!\max}
+\DeclareMathOperator*{\argmin}{arg\!\min}
+
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\poly}{\mathsf{poly}}
+\newcommand{\Adv}{\mathbf{Adv}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+
+\newcommand\getsdollar{\mathrel{{\leftarrow}\vcenter{\hbox{\tiny\rmfamily\upshape\$}}}}
+
+
+% Title page configuration
+\title[Biometric Authentication]{The Cryptographic Layer of Biometric Authentication}
+\author[Keng-Yu Chen]{
+Keng-Yu Chen
+}
+\institute{LASEC}
+\date{January 9th, 2025}
+
+%------------------------------------------------------------
+
+\setbeamertemplate{navigation symbols}{}
+
+\AtBeginSection[] % Do nothing for \section*
+{
+\begin{frame}<beamer>
+\frametitle{Table of Contents}
+\tableofcontents[currentsection,hideothersubsections ]
+\end{frame}
+}
+
+\AtBeginSubsection[] % Do nothing for \subsection*
+{
+    \begin{frame}<beamer>
+        \frametitle{Table of Contents}
+        \tableofcontents[currentsection, subsectionstyle=show/shaded/hide]
+    \end{frame}
+}
+
+
+%\includeonly{
+	%Contents/introduction.tex,
+	%Contents/formalization.tex,
+	%Contents/security_game.tex,
+	%Contents/security_analysis.tex,
+	%Contents/conclusion.tex,
+	%./reference.tex
+%}

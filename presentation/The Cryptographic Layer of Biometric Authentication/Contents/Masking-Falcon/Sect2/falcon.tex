@@ -1,0 +1,93 @@
+\begin{frame}{Introduction to \textsc{Falcon}}
+
+\vskip -10pt
+\begin{columns}[T]
+
+	\column{.44\textwidth}
+	\begin{block}{KeyGen}
+		\visible<2->{
+			Secret Key: Short polynomials $f, g, F, G \in \Z[x] / (x^N+1)$ such that $ fG - gF = q$ and
+			\[
+				\mathbf{B} = \left[
+				\begin{array}{c|c}
+					g & -f \\ \hline G & -F
+				\end{array} \right]
+			\]
+		}
+		\vskip -8pt
+
+		\visible<3->{
+			Public Key: Polynomial $h = gf^{-1} \bmod q$ and
+			\[
+				\mathbf{A} = \left[
+				\begin{array}{c|c} 1 & h \end{array} \right]
+			\]
+		
+			Note that
+			\vskip -10pt
+			\[
+				\mathbf{BA}^T = \mathbf{0} \bmod q
+			\]
+				\vskip -20pt
+		}
+	\end{block}
+
+
+	\column{.31\textwidth}
+	\vskip 15pt
+
+	\begin{block}{Sign(${\sf m}$)}
+		\visible<4->{
+			A short signature $\mathbf{s}$ such that
+			\vskip -20pt
+			\[
+				\mathbf{sA}^T = H({\sf r} \| {\sf m}) \bmod q
+			\]
+			\vskip -5pt
+			\begin{itemize}
+				\item $H$: hash function
+				\item $r$: random salt
+			\end{itemize}
+		}
+	\end{block}
+
+%\column{.28\textwidth}
+	\begin{block}{Verify(${\sf m}$, $\mathbf{s}$)}
+		\visible<5->{
+			Check
+			\begin{enumerate}
+				\item $\mathbf{s}$ is short
+				\item $\mathbf{sA}^T = H({\sf r} \| {\sf m}) \bmod q$
+			\end{enumerate}
+		}
+	\end{block}
+
+\end{columns}
+    
+\end{frame}
+
+
+\begin{frame}{Introduction to \textsc{Falcon}}
+
+To find such a short $\mathbf{s}$, one can first
+\pause
+\begin{itemize}
+    \item Compute $c \gets H({\sf r} \| {\sf m})$.
+    \pause
+    \item Find a solution $\mathbf{c} \gets \left[
+		\begin{array}{c|c} c & 0 \end{array}
+		\right]$ such that $\mathbf{c}\mathbf{A}^T = H({\sf r} \| {\sf m}) \bmod q$.
+    \pause
+    \item \textcolor<7->{red}{Compute the pre-image vector $\mathbf{t} \gets \mathbf{c}\mathbf{B}^{-1}$.}
+    \pause
+	\item Apply the nearest plane algorithm (\hyperlink{sec:appendix-nearest-plane}{\color{blue}Appendix – Nearest-Plane Algorithm}) to find a vector $\mathbf{z}$ such that $\mathbf{(t-z)B}$ is short.
+    \pause
+    \item $\mathbf{s} \gets \mathbf{(t-z)B}$. Note that $\mathbf{s}\mathbf{A}^T = H({\sf r} \| {\sf m}) \bmod q$.
+\end{itemize}
+\end{frame}
+
+
+
+
+
+

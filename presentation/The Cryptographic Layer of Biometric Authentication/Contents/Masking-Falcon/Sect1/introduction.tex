@@ -1,0 +1,64 @@
+\begin{frame}{Theoretical and Real-World Security}
+
+\begin{itemize}
+	\item In 2022, the US National Institute of Standards and Technology (NIST) selected four algorithms for its post-quantum cryptography standardization process.
+	\pause
+
+	\item In theory, these algorithms can base their security on problems that are considered still hard given large-scale quantum computing.
+	\pause
+
+	\item In practice, the implementations of these algorithms need side-channel countermeasures.
+	\pause
+
+	\item There exist attacks on \textsc{Falcon} that have not been addressed (until our paper).
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Attacks on \textsc{Falcon}}
+
+\input{tikz/falcon-sign}
+
+\begin{center}
+{\small
+\begin{tabular}{ l | c | c }
+	 & Attack & Countermeasure \\
+
+	\hline
+	
+	\makecell{{\color{red}Pre-image Vector Computation}} & \cite{KA21, TCHES:GMRR22} & \only<2>{\textbf{[This Paper]}} \\
+	
+	\hline
+	
+	\makecell{{\textcolor{black!30!green}{Gaussian Sampler over Lattices}}} & \cite{TCHES:GMRR22, EC:ZLYW23} & \cite{TCHES:GMRR22, EC:ZLYW23} \\ 
+\end{tabular}
+}
+\end{center}
+    
+\end{frame}
+
+
+\begin{frame}{Notation}
+
+Throughout the presentation, we assume
+\pause
+\begin{itemize}
+%    \item $M > N$ are two positive integers and $N = 2^\kappa$ for some integer $\kappa$.
+%    \pause
+%    \item $\phi = x^N + 1$ is a polynomial.
+%    \pause
+%    \item $q$ is a prime number.
+%    \pause
+%    \item Represent a vector $\mathbf{v}$ by a boldface letter, and a matrix $\mathbf{A}$ by a boldface capital letter.
+%    \item For a polynomial $f \in \Z[x] / \phi$, it can be considered as an $N$-by-$N$ matrix.
+    \item For a variable $x$, the $j$th bit of $x$ is written as $x^{(j)}$.
+    \pause
+    \item The $i$th bit to $j$th bit ($j \geq i$) of $x$ is represented by $x^{[j:i]}$.
+    \pause
+    \item A sequence of $n$ variables $(x_1, x_2, \cdots, x_n)$ (e.g. shares of variable $x$) is written as $(x_i)_{1 \leq i \leq n}$, or simply $(x_i)$.
+    \pause
+    \item For a proposition $P$, $\llbracket P \rrbracket = 1$ if and only if $P$ is true and $0$ if otherwise.
+\end{itemize}
+    
+\end{frame}

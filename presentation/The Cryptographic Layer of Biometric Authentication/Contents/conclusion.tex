@@ -1,0 +1,52 @@
+\begin{frame}{Conclusion}
+
+In this project,
+
+\begin{itemize}
+	\item<2-> We provide a framework of a biometric authentication scheme with a cryptographic layer to preserve privacy.
+
+	\item<3-> We define $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game and $\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$ game.
+	\begin{itemize}
+		\item<4-> $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game models the ability of an adversary to impersonate the user.
+		\pause
+		\item<5-> $\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$ game models the ability of the server to recognize the user.
+	\end{itemize}
+
+	\item<6-> We introduce two instantiations using fh-IPFE and {\color<7->{trans}{relational hash}}.
+	\begin{itemize}
+		\item<7-> In the presentation, we focus on fh-IPFE-based instantiation.
+		\item<8-> We introduce \textsf{fh-IND} and \textsf{RUF} security of fh-IPFE.
+		\item<9-> We provide two theorems to achieve \textsf{RUF} security. 
+	\end{itemize}
+
+	\item<10-> We show that how an fh-IPFE-based instantiation can be $\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$-UF, $\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$-UF, and IND.
+
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}{Discussion and Future Work}
+
+\begin{itemize}
+
+	\item<1-> We can consider other two oracles in $\textsf{option}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game:
+	\begin{itemize}
+		\item<2-> $\mathcal{O}_{\textsf{Enroll}}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, first sample $\mathbf{b}^\prime \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and output $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{b}^\prime)$.
+
+		\item<2-> $\mathcal{O}_{\textsf{Probe}}^\prime (\cdot)$: On input $\textsf{psk}^\prime$, first sample $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and output $\textsf{Probe}(\textsf{psk}^\prime, \mathbf{b}^\prime)$.
+	\end{itemize}
+	\visible<3->{This models a scenario when an adversary can set illegal keys to do bad things.}
+
+	\item<4-> Analyses of other instantiations of a biometric authentication scheme.
+	\begin{itemize}
+		\item<5-> Two-input Inner Product Functional Encryption.
+		\item<5-> Fuzzy Extractor.
+		\item<5-> Homomorphic Encryption.
+	\end{itemize}
+	\visible<6->{Some of them have different structures from our framework, such as a challenge-based protocol.}
+
+\end{itemize}
+
+\end{frame}

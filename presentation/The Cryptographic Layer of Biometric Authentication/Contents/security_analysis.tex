@@ -1,0 +1,706 @@
+
+\begin{frame}{Security Analysis}
+
+In this section, we will discuss
+
+\begin{itemize}
+
+	\item Function-hiding inner product functional encryption (fh-IPFE) \cite{cryptoeprint:2016/440}.
+
+	\item An instantiation $\Pi$ using an fh-IPFE \cite{cryptoeprint:2023/481}.
+
+	\item UF and IND security of $\Pi$.
+
+\end{itemize}
+
+In our project, we also discuss an instantiation using \emph{relational hash}.
+
+\end{frame}
+
+
+\subsection{Instantiation using fh-IPFE}
+
+
+\begin{frame}{fh-IPFE}
+
+\begin{definition}{Function-Hiding Inner Product Functional Encryption (adapted from \cite{cryptoeprint:2016/440})}
+	A \emph{function-hiding inner product functional encryption} (fh-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ is composed of PPT algorithms:
+	\begin{itemize}
+	
+		\item<2-> $\textsf{FE.Setup}(1^\lambda)$: Output the public parameter $\textsf{pp}$ and the master secret key $\textsf{msk}$.
+	
+		\item<3-> $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$: On input a vector $\mathbf{x} \in \mathbb{F}^k$, output the decryption key $f_\mathbf{x}$.  
+	
+		\item<4-> $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y})$: On input a vector $\mathbf{y} \in \mathbb{F}^k$, output the ciphertext $\mathbf{c_y}$. 
+	
+		\item<5-> $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y})$: Output a value $z \in \mathbb{F}$ or an error symbol $\bot$.
+	
+	\end{itemize}
+	
+
+\end{definition}
+
+\end{frame}
+
+
+\begin{frame}{fh-IPFE}
+
+\begin{block}{Correctness}
+
+	\textsf{FE} is \emph{correct} if $\forall (\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\[
+		\textsf{FE.Dec}( \textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}), \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \in \mathbb{F}.
+	\]
+
+\end{block}
+
+\end{frame}
+
+
+
+\begin{frame}{Instantiation using fh-IPFE \cite{cryptoeprint:2023/481}}
+
+\begin{itemize}
+	\item<1-> $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$, $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$: Output vectors in $ \{0, 1, \cdots, m \}^k$ for all $\mathcal{B} \in \mathbb{B}$.
+
+	\item<2-> $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to \| \mathbf{b} - \mathbf{b}^\prime\|^2$.
+
+	\item<3-> For a pre-defined real number $\tau \geq 0$,
+	\[
+		\textsf{Verify}(s) \to 
+		\begin{cases} 
+			1 & \text{if } \sqrt{s} \leq \tau \\
+			0 & \text{if } \sqrt{s} > \tau 
+		\end{cases}.
+	\]
+
+	\item<4-> An fh-IPFE $\textsf{FE}$ associated with a field $\mathbb{F} = \mathbb{Z}_q$.
+	\begin{itemize}
+		\item $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Instantiation using fh-IPFE \cite{cryptoeprint:2023/481}}
+
+\begin{itemize}
+
+	\item<1-> $\textsf{Setup}(1^\lambda)$: Run $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$ and output 
+	\begin{itemize}
+		\item $\textsf{esk} \gets (\textsf{msk}, \textsf{pp})$
+		\item $\textsf{psk} \gets (\textsf{msk}, \textsf{pp})$
+		\item $\textsf{csk} \gets \textsf{pp}$
+	\end{itemize}
+
+	\item<2-> $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: On input a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$,
+	\begin{itemize}
+		\item Encode $\mathbf{b}$ as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$.
+		\item Run and output $\mathbf{c_x} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$.
+	\end{itemize}
+
+	\item<3-> $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: On input a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$,
+	\begin{itemize}
+		\item Encode $\mathbf{b}^\prime$ as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1^\prime, -2b_2^\prime, \cdots, -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$.
+		\item Run and output $\mathbf{c_y} \gets \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y})$.
+	\end{itemize}
+
+	\item<4-> $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: Run and output $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y})$.
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Instantiation using fh-IPFE \cite{cryptoeprint:2023/481}}
+
+By the correctness of $\sf FE$,
+\[
+	s = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{y}^T = \sum_{i=1}^k -2b_ib_i^\prime + \|\mathbf{b}\|^2 + \|\mathbf{b}^\prime\|^2 = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
+\]
+which is equal to $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)$.
+\pause
+
+Note that in this instantiation,
+\pause
+
+\begin{itemize}
+	\item $\textsf{esk} = \textsf{psk}$.
+	\pause
+
+	\item $\textsf{csk} = \textsf{pp}$, the public parameter of \textsf{FE}. Therefore, we offer $\textsf{csk}$ for all adversaries.
+
+\end{itemize}
+
+
+\end{frame}
+
+
+\subsection{Security of fh-IPFE}
+
+
+\begin{frame}{fh-IND of fh-IPFE}
+
+Given an fh-IPFE scheme \textsf{FE}, define the \textsf{fh-IND} game \cite{cryptoeprint:2016/440}.
+
+\centerline{
+	\begin{minipage}{.4\textwidth}
+	\begin{block}{ $\textsf{fh-IND}_{\textsf{FE}}(\mathcal{A})$ }
+	\vskip -10pt
+	\begin{algorithm}[H]
+	\label{alg:ind-fh-IPFE}
+	\begin{algorithmic}[1]
+		\STATE $b \getsdollar \{0, 1\}$
+
+		\STATE $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\STATE $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}} ( \textsf{pp} )$
+
+		\RETURN $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\textsf{KeyGen}}(\cdot, \cdot)$: On input pair $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$, output $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^{(b)} )$.
+
+	\item $\mathcal{O}_{\textsf{Enc}}(\cdot, \cdot)$: On input pair $(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$, output $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^{(b)} )$.
+
+\end{itemize}
+\pause
+
+A trivial adversary can ask $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ and $\mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$ such that 
+\[
+	\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T \neq \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T.
+\]
+
+\end{frame}
+
+
+\begin{frame}{fh-IND of fh-IPFE}
+
+\begin{definition}{Admissible Adversary}
+
+	Let $\mathcal{A}$ be an adversary in an \textsf{fh-IND} game, and let $ (\mathbf{x}_1^{(0)}, \mathbf{x}_1^{(1)}), \cdots, (\mathbf{x}_{Q_K}^{(0)}, \mathbf{x}_{Q_K}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{KeyGen}}$ and $(\mathbf{y}_1^{(0)}, \mathbf{y}_1^{(1)}), \cdots, (\mathbf{y}_{Q_E}^{(0)}, \mathbf{y}_{Q_E}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{Enc}}$.\pause \\
+	\medskip
+	We say $\mathcal{A}$ is \emph{admissible} if $\forall i \in [Q_K], \forall j \in [Q_E]$,
+\[
+	{\mathbf{x}^{(0)}_{i}} {\mathbf{y}^{(0)}_{j}}^T = {\mathbf{x}^{(1)}_{i}} {\mathbf{y}^{(1)}_{j}}^T
+\]
+
+\end{definition}
+\pause
+
+\begin{definition}{fh-IND Security}
+
+	\textsf{FE} is called \emph{fh-IND} secure if for any admissible adversary $\mathcal{A}$, 
+	\[
+		\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{fh-IND}} := \left| \Pr[\textsf{fh-IND}_{\textsf{FE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
+	\]
+
+\end{definition}
+
+\end{frame}
+
+
+\begin{frame}{fh-IND Security}
+
+\begin{itemize}
+	
+	\item<1-> fh-IND security is the standard notion of an fh-IPFE scheme.
+	\begin{itemize}
+		\item Constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are proven fh-IND.
+	\end{itemize}
+
+	\item<2-> However, fh-IND security is not sufficient for the UF security of $\Pi$.
+	\begin{itemize}
+		\item We found that instantiation $\Pi$ using \cite{cryptoeprint:2016/440} is not \textsf{option}-unforgeable for any \textsf{option}.
+	\end{itemize}
+
+	\item<3-> For this, we define another extra security notion of \textsf{FE}: \emph{RUF Security}.
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{RUF of fh-IPFE}
+
+Let $\gamma \geq 0$ be a real number and $\mathbb{F} = \Z_q$ for a prime number $q$. Define the \textsf{RUF} game.
+
+\centerline{
+	\begin{minipage}{.4\textwidth}
+	\begin{block}{ $\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A})$ }
+	\vskip -10pt
+	\begin{algorithm}[H]
+	\label{alg:ruf-fh-IPFE}
+	\begin{algorithmic}[1]
+		\STATE $\mathbf{r} \getsdollar \mathbb{F}^{k}$ \label{alg:oracle-ruf-fh-IPFE:r}
+
+		\STATE $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\STATE $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+
+		\STATE $\mathbf{\tilde{z}} \gets \mathcal{A}^{\mathcal{O}} ( \textsf{pp}, \mathbf{c} )$
+
+		\STATE $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\RETURN $1_{s \leq \gamma}$
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+Oracle $\mathcal{O}$ can be nothing or include
+
+\begin{itemize}
+
+	\item $\mathcal{O}^\prime_{\textsf{KeyGen}}(\cdot)$: On input $\mathbf{x}^\prime$, output $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^\prime)$.
+	
+	\item $\mathcal{O}^\prime_{\textsf{Enc}}(\cdot)$: On input $\mathbf{y}^\prime$, output $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^\prime)$. 
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}{RUF of fh-IPFE}
+
+\begin{itemize}
+	\item We forbid the adversary to return $\mathbf{\tilde{z}}$ that is an answer of $\mathcal{O}^\prime_{\textsf{Enc}}(\cdot)$.
+	\begin{itemize}
+		\item Otherwise, returning $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{0})$ wins with probability $1$.
+	\end{itemize}
+
+\end{itemize}
+
+\begin{definition}{RUF Security}
+
+	\textsf{FE} is called $\mathcal{O}$-RUF secure for a real number $\gamma$ if for any adversary $\mathcal{A}$,
+	\[
+		\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \mathcal{O}, \gamma} := \Pr[\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ] = \negl.
+	\]
+
+\noindent We say $\textsf{FE}$ is RUF secure if it is $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \mathcal{O}^\prime_{\textsf{Enc}} \}$-RUF secure.
+
+\end{definition}
+
+\end{frame}
+
+
+\begin{frame}{RUF of fh-IPFE}
+
+\begin{itemize}
+
+	\item<1-> RUF security is a new notion of an fh-IPFE scheme.
+
+	\item<2-> In our project, we provide two theorems to obtain RUF security.
+
+\end{itemize}
+
+\visible<3->{
+	\begin{theorem}
+		If \textsf{FE} is fh-IND, and if the RUF adversary can only return $\mathbf{\tilde{z}}$ that is an encryption of a nonzero vector, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for any $\gamma \leq \|\mathbb{F}\|$.
+	\end{theorem}
+}
+
+\visible<4->{
+	\begin{theorem}
+		Given an sEUF-CMA digital signature scheme \textsf{Sig} and any fh-IPFE $\textsf{FE}$, we can obtain an fh-IPFE $\textsf{FE}^\prime$ that is RUF for any $\gamma$.
+	\end{theorem}
+}
+
+\visible<5->{We provide details in \hyperlink{sec:appendix-RUF}{Appendix - Achievability of RUF Security}.}
+
+\end{frame}
+
+
+\subsection{Security of Instantiation using fh-IPFE}
+
+
+\begin{frame}{Security of Instantiation using fh-IPFE}
+
+For the rest of this section, let $\Pi$ be a biomtric authentication scheme instantiated by an fh-IPFE \textsf{FE}.
+\pause
+In our project, we show
+\pause
+
+\begin{theorem}
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$-UF. 
+\end{theorem}
+\pause
+
+\begin{theorem}
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$-UF. 
+\end{theorem}
+\pause
+
+\begin{theorem}
+	For any distribution family $\mathbb{B}$ satisfying some "reasonable conditions", if \textsf{FE} is fh-IND, then $\Pi$ is IND.
+
+\end{theorem}
+
+\end{frame}
+
+
+\begin{frame}{Security of Instantiation using fh-IPFE}
+
+{\color{trans}{
+For the rest of this section, let $\Pi$ be a biomtric authentication scheme instantiated by an fh-IPFE \textsf{FE}.
+In our project, we show
+}}
+
+\begin{theorem}
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$-UF. 
+\end{theorem}
+
+
+\begin{theorem}
+{\color{trans}{
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$-UF.
+}}
+\end{theorem}
+
+
+\begin{theorem}
+{\color{trans}{
+	For any distribution family $\mathbb{B}$ satisfying some "reasonable conditions", if \textsf{FE} is fh-IND, then $\Pi$ is IND.
+}}
+\end{theorem}
+
+\end{frame}
+
+
+\begin{frame}{$\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$-UF}
+
+\begin{proof}[Proof Sketch]
+
+Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game, we build a reduction adversary $\mathcal{R}$ in the fh-IND game such that:
+
+\begin{itemize}
+	\item<2-> If the challenge bit $b = 0$, $\mathcal{R}$ simulates a $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$ game.
+
+	\item<3-> If the challenge bit $b = 1$, $\mathcal{R}$ simulates a $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime)$ game, for some $\mathcal{A}^\prime$.
+
+	\item<4-> Advantage of $\mathcal{R}$ is bounded by the difference between advantages of $\mathcal{A}$ and $\mathcal{A}^\prime$, and
+	\[
+		\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^{\textsf{fh-IND}} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF},\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma} = \negl.
+	\]
+
+	\item<5-> $\mathcal{O}_{\textsf{Enroll}}$ is "encoding + $\textsf{FE.KeyGen}$". We can simulate $\mathcal{O}_{\textsf{Enroll}}$ by $\mathcal{O}_{\textsf{KeyGen}}$ in fh-IND game and $\mathcal{O}^\prime_{\textsf{KeyGen}}$ in $\textsf{RUF}$ game. 
+	
+	\item<6-> $\mathcal{R}$ never calls $\mathcal{O}_{\textsf{Enc}}$, so it is an admissible adversary.
+
+\end{itemize}
+
+\end{proof}
+
+\end{frame}
+
+
+\begin{frame}
+
+\centerline{
+	\begin{minipage}{.5\textwidth}
+	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
+	\vskip -8pt
+	\begin{algorithm}[H]
+	\label{alg:red:ind-uf-OB-Enroll}
+	\begin{algorithmic}[1]
+		\STATE $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Enroll:B}
+
+		\STATE $\mathbf{b} = (b_1, \cdots, b_k) \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\STATE $\mathbf{x} \gets (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$
+
+		\STATE $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
+		
+		\STATE $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:red:ind-uf-OB-Enroll:c}
+
+		\STATE ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} } ( \mathbf{c}, \textsf{pp})$ \label{alg:red:ind-uf-OB-Enroll:A}
+
+		\STATE $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\IF{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Enroll:verify}
+			\RETURN $\tilde{b} = 0$
+		\ELSE
+			\RETURN $\tilde{b} \getsdollar \{0, 1\}$
+		\ENDIF
+
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+
+\end{frame}
+
+
+
+\begin{frame}{Security of Instantiation using fh-IPFE}
+
+{\color{trans}{
+For the rest of this section, let $\Pi$ be a biomtric authentication scheme instantiated by an fh-IPFE \textsf{FE}.
+In our project, we show
+}}
+
+\begin{theorem}
+{\color{trans}{
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$-UF.
+}}
+\end{theorem}
+
+
+\begin{theorem}
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$-UF.
+\end{theorem}
+
+
+\begin{theorem}
+{\color{trans}{
+	For any distribution family $\mathbb{B}$ satisfying some "reasonable conditions", if \textsf{FE} is fh-IND, then $\Pi$ is IND.
+}}
+\end{theorem}
+
+\end{frame}
+
+
+\begin{frame}{$\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$-UF}
+
+\begin{block}{Proof Sketch.}
+
+Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game, we build a reduction adversary $\mathcal{R}$ in the fh-IND game such that:
+
+\begin{itemize}
+	\item<2-> If the challenge bit $b = 0$, $\mathcal{R}$ simulates a $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$ game.
+
+	\item<2-> If the challenge bit $b = 1$, $\mathcal{R}$ simulates a $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime)$ game, for some $\mathcal{A}^\prime$.
+
+	\item<3-> To let $\mathcal{R}$ be admissible, we cannot directly simulate $\mathcal{O}_{\textsf{Probe}}$ by $\mathcal{O}_{\textsf{Enc}}$.
+	\begin{itemize}
+		\item $\mathcal{R}$ uses $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ to prepare $\mathbf{c}$ for $\mathcal{A}$ and $\mathcal{A}^\prime$.
+	\end{itemize}
+
+	\item<4-> We simulate $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{b}^\prime )$ by
+	\begin{itemize}
+		\item Encode $\mathbf{b}^\prime$ to $\mathbf{y}^\prime = (-2b_1^\prime, \cdots, \allowbreak -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$
+		\item Compute $d \gets \mathbf{x}{\mathbf{y}^\prime}^T$ and find a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r}{\mathbf{y}^{\prime\prime}}^T = d$
+		\item $\mathcal{O}_{\textsf{Enc}}(\mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}})$.
+	\end{itemize}
+
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{}
+
+\begin{proof}[]
+
+\begin{itemize}
+	
+	\item<1-> $\mathcal{R}$ is now admissible, but then we have to simulate the tweaked $\mathcal{O}_{\textsf{Probe}}$ in $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime)$ game.
+
+	\item<2-> Advantage of $\mathcal{R}$ is bounded by the difference between advantages of $\mathcal{A}$ and $\mathcal{A}^\prime$, and
+	\[
+		\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^{\textsf{fh-IND}} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \mathcal{O}^\prime_{\textsf{Enc}}, \gamma} + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}} = \negl.
+	\]
+\end{itemize}
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+
+\centerline{
+	\begin{minipage}{.5\textwidth}
+	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
+	\vskip -8pt
+	\begin{algorithm}[H]
+	\label{alg:red:ind-uf-OB-Probe}
+	\begin{algorithmic}[1]
+		\STATE $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Probe:B}
+
+		\STATE $\mathbf{b} = (b_1, \cdots, b_k) \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\STATE $\mathbf{x} \gets (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$
+
+		\STATE $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
+
+		\STATE $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$
+
+		\STATE ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c}, \textsf{pp})$
+
+		\IF{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_{\textsf{Probe}}$}
+
+			\RETURN $\bot$
+
+		\ENDIF
+
+		\STATE $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\IF{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Probe:verify}
+			\RETURN $\tilde{b} = 0$
+		\ELSE
+			\RETURN $\tilde{b} \getsdollar \{0, 1\}$
+		\ENDIF
+
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+
+\end{frame}
+
+
+\begin{frame}{Security of Instantiation using fh-IPFE}
+
+{\color{trans}{
+For the rest of this section, let $\Pi$ be a biomtric authentication scheme instantiated by an fh-IPFE \textsf{FE}.
+In our project, we show
+}}
+
+\begin{theorem}
+{\color{trans}{
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$-UF.
+}}
+\end{theorem}
+
+
+\begin{theorem}
+{\color{trans}{
+	For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$-UF.
+}}
+\end{theorem}
+
+
+\begin{theorem}
+	For any distribution family $\mathbb{B}$ satisfying some "reasonable conditions", if \textsf{FE} is fh-IND, then $\Pi$ is IND.
+\end{theorem}
+
+\end{frame}
+
+
+\begin{frame}{IND}
+
+\begin{block}{Assumption 1}
+Let $t$ be an integer. Assume that for any distribution $\mathcal{B} \in \mathbb{B}$, the following distribution is identical.
+\[
+	\mathcal{D}_\mathcal{B}(t) := \left( \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^{(1)}), \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^{(2)}), \cdots, \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^{(t)}) \right)
+\]
+where $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$ and $ \mathbf{b}^{(i)} \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B}}()$ for all $i \in [t]$.
+
+\end{block}
+\pause
+
+Note that indistinguishability of $\mathcal{D}_\mathcal{B}(t)$ for $\mathcal{B} \in \mathbb{B}$ is a necessary condition to achieve IND security because
+\[
+	\left( \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(1)}), \cdots, \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(t)}) \right) = \mathcal{D}_\mathcal{B}(t)
+\]
+where $b$ is the challenge bit.
+
+
+\end{frame}
+
+
+\begin{frame}{IND}
+
+\begin{theorem}
+	For any distribution family $\mathbb{B}$ satisfying Assumption 1 and having a true positive rate $\textsf{TP} > \frac{1}{\poly}$, if \textsf{FE} is fh-IND, then $\Pi$ is IND.
+\end{theorem}
+\pause
+
+\begin{proof}[Proof Sketch.]
+
+Given an adversary $\mathcal{A}$ in the $\textsf{IND}_{\Pi, \mathbb{B}}$ game, we build a reduction adversary $\mathcal{R}$ in the fh-IND game such that:
+\pause
+
+\begin{itemize}
+	\item $\mathcal{R}$ first samples $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$.
+	\pause
+
+	\item $\mathcal{R}$ then calls $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$, where $\mathbf{x}^{(0)}$ and $\mathbf{x}^{(1)}$ are created from $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$.
+	\pause
+
+	\item $\mathcal{R}$ prepares $\mathbf{y}^{(0)}$ and $ \mathbf{y}^{(1)}$ from $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$ in a way that, $\mathbf{x}^{(0)}{\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)}{\mathbf{y}^{(1)}}^T$, and calls $\mathbf{c_y} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)} )$.
+	\pause
+
+	\item By Assumption 1, $\mathbf{y}^{(0)}$ and $ \mathbf{y}^{(1)}$ still follow the correct distribution.
+\end{itemize}
+
+\end{proof}
+
+\end{frame}
+
+
+\begin{frame}
+
+
+\centerline{
+	\begin{minipage}{.7\textwidth}
+	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
+	\vskip -8pt
+	
+	\begin{algorithm}[H]
+	\small
+	\label{alg:red:ind-ind}
+	\begin{algorithmic}[1]
+		\STATE $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$ \label{alg:red:ind-ind:B0}
+		
+		\STATE $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$ \label{alg:red:ind-ind:B1}
+
+		\STATE $\mathbf{b}^{(0)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}(), \mathbf{x}^{(0)} \gets (b_1^{(0)}, \cdots, b_k^{(0)}, 1, \|\mathbf{b}^{(0)}\|^2)$
+		
+		\STATE $\mathbf{b}^{(1)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}(), \mathbf{x}^{(1)} \gets (b_1^{(1)}, \cdots, b_k^{(1)}, 1, \|\mathbf{b}^{(1)}\|^2)$
+		
+		\STATE $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ \label{alg:red:ind-ind:cx}
+
+		\FOR{$i = 1$ to $t$}
+			
+			\STATE ${\mathbf{b}^\prime}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+
+			\STATE $\mathbf{y}^{(0)} \gets (-2{b_1^\prime}^{(0)}, \cdots, -2{b_k^\prime}^{(0)}, \| {\mathbf{b}^\prime}^{(0)} \|^2, 1) $
+
+			\REPEAT
+				
+				\STATE ${\mathbf{b}^\prime}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+
+				\STATE $\mathbf{y}^{(1)} \gets (-2{b_1^\prime}^{(1)}, \cdots, -2{b_k^\prime}^{(1)}, \| {\mathbf{b}^\prime}^{(1)} \|^2, 1)$
+
+			\UNTIL{ $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ } \label{alg:red:ind-ind:while}
+			
+			\STATE $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$ \label{alg:red:ind-ind:cy}
+
+		\ENDFOR
+
+		\STATE $\tilde{b} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}} } (\textsf{pp}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$ \label{alg:red:ind-ind:A}
+
+		\RETURN $\tilde{b}$
+
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+
+\end{frame}
