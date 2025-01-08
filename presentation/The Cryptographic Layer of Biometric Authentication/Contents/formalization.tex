@@ -1,17 +1,17 @@
 \begin{frame}{Family of Biometric Distributions}
 
-Assume there is a family $\mathbb{B}$ of biometric distributions and the following algorithms:
+Assume there is a family $\mathbb{B}$ of biometric distributions. $\mathbb{B}$ allows the following operations:
 \pause
 
 \begin{itemize}
 
-	\item $\textsf{BioSamp}()$: Pick a random distribution $\mathcal{B} \in \mathbb{B}$. ($\mathcal{B} \getsdollar \mathbb{B}$)
+	\item $\mathcal{B} \getsdollar \mathbb{B}$: Pick a random distribution $\mathcal{B} \in \mathbb{B}$.
 	\pause
 
-	\item $\textsf{BioDelete}(\mathcal{B})$: Remove $\mathcal{B}$ from $\mathbb{B}$. ($\mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$).
+	\item $\mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$: Remove $\mathcal{B}$ from $\mathbb{B}$.
 	\pause
 
-	\item $\textsf{TempSamp}(\mathcal{B})$: Sample a biometric template $\mathbf{b}$ from $\mathcal{B}$. ($\mathbf{b} \getsdollar \mathcal{B}$)
+	\item $\mathbf{b} \getsdollar \mathcal{B}$: Sample a biometric template $\mathbf{b}$ from $\mathcal{B}$.
 
 \end{itemize}
 
@@ -20,7 +20,7 @@ Assume there is a family $\mathbb{B}$ of biometric distributions and the followi
 
 \begin{frame}{Biometric Authentication}
 
-\begin{definition}{Biometric Authentication Scheme}
+\begin{definition}{Biometric Authentication Scheme (Biometric Layer)}
 
 A \emph{biometric authentication shceme} $\Pi$ associated with $\mathbb{B}$ consists of the following algorithms.
 
@@ -55,13 +55,13 @@ A \emph{biometric authentication shceme} $\Pi$ associated with $\mathbb{B}$ cons
 	\item $\textsf{Setup}(1^\lambda) \to \textsf{esk}, \textsf{psk}, \textsf{csk}$: Output the \emph{enrollment secret key $\textsf{esk}$}, \emph{probe secret key $\textsf{psk}$}, and \emph{comparison secret key $\sf csk$}.
 	\pause
 
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b}) \to \mathbf{c_x}$: On input a biometric template $\mathbf{b}$, it encodes it into a vector $\mathbf{x}$ and outputs the enrollment message $\mathbf{c_x}$.
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b}) \to \mathbf{c_x}$: On input a biometric template $\mathbf{b}$, encode it into a vector $\mathbf{x}$ and output the enrollment message $\mathbf{c_x}$.
 	\pause
 
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime) \to \mathbf{c_y}$: On input a biometric template $\mathbf{b}^\prime$, it encodes it into a vector $\mathbf{y}$ and outputs the probe message $\mathbf{c_y}$.
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime) \to \mathbf{c_y}$: On input a biometric template $\mathbf{b}^\prime$, encode it into a vector $\mathbf{y}$ and output the probe message $\mathbf{c_y}$.
 	\pause
 
-	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)} \to s$: Compare the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and output a score $s$.
 
 \end{itemize}
 
@@ -73,8 +73,8 @@ A \emph{biometric authentication shceme} $\Pi$ associated with $\mathbb{B}$ cons
 \begin{block}{Correctness} 
 For any $\mathcal{B}, \mathcal{B}^\prime \in \mathbb{B}$, \pause
 let $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, \pause
-$\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$, \pause
-$\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$, \pause
+$\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$,
+$\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$,
 $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$.
 \pause
 Then
@@ -89,6 +89,6 @@ Then
 
 
 
-\input{tikz/dou_model}
+\input{Tikz/dou_model}
 
 

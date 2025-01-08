@@ -1,0 +1,149 @@
+
+\begin{frame}{Reduction on proving $\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$-UF}
+
+\centerline{
+	\begin{minipage}{.5\textwidth}
+	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
+	\vskip -8pt
+	\begin{algorithm}[H]
+	\label{alg:red:ind-uf-OB-Enroll}
+	\begin{algorithmic}[1]
+		\STATE $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Enroll:B}
+
+		\STATE $\mathbf{b} = (b_1, \cdots, b_k) \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\STATE $\mathbf{x} \gets (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$
+
+		\STATE $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
+		
+		\STATE $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:red:ind-uf-OB-Enroll:c}
+
+		\STATE ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} } ( \mathbf{c}, \textsf{pp})$ \label{alg:red:ind-uf-OB-Enroll:A}
+
+		\STATE $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\IF{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Enroll:verify}
+			\RETURN $\tilde{b} = 0$
+		\ELSE
+			\RETURN $\tilde{b} \getsdollar \{0, 1\}$
+		\ENDIF
+
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+\end{frame}
+
+
+\begin{frame}{Reduction on proving $\{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$-UF}
+
+\centerline{
+	\begin{minipage}{.5\textwidth}
+	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
+	\vskip -8pt
+	\begin{algorithm}[H]
+	\small
+	\label{alg:red:ind-uf-OB-Probe}
+	\begin{algorithmic}[1]
+		\STATE $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Probe:B}
+
+		\STATE $\mathbf{b} = (b_1, \cdots, b_k) \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\STATE $\mathbf{x} \gets (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$
+
+		\STATE $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
+
+		\STATE $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$
+
+		\STATE ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c}, \textsf{pp})$
+
+		\IF{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_{\textsf{Probe}}$}
+
+			\RETURN $\bot$
+
+		\ENDIF
+
+		\STATE $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\IF{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Probe:verify}
+			\RETURN $\tilde{b} = 0$
+		\ELSE
+			\RETURN $\tilde{b} \getsdollar \{0, 1\}$
+		\ENDIF
+
+	\end{algorithmic}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+
+\end{frame}
+
+
+\begin{frame}{Reduction on proving IND}
+
+
+\centerline{
+	\begin{minipage}{\textwidth}
+	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
+	\vskip -13pt
+	
+	\begin{algorithm}[H]
+	\begin{multicols}{2}
+	\small
+	\label{alg:red:ind-ind}
+	\begin{algorithmic}[1]
+		\STATE $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$ \label{alg:red:ind-ind:B0}
+		
+		\STATE $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$ \label{alg:red:ind-ind:B1}
+
+		\STATE $\mathbf{b}^{(0)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+
+		\STATE $\mathbf{x}^{(0)} \gets (b_1^{(0)}, \cdots, b_k^{(0)}, 1, \|\mathbf{b}^{(0)}\|^2)$
+		
+		\STATE $\mathbf{b}^{(1)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+		
+		\STATE $\mathbf{x}^{(1)} \gets (b_1^{(1)}, \cdots, b_k^{(1)}, 1, \|\mathbf{b}^{(1)}\|^2)$
+		
+		\STATE $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ \label{alg:red:ind-ind:cx}
+
+		\FOR{$i = 1$ to $t$}
+			
+			\STATE ${\mathbf{b}^\prime}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+
+			\STATE $\mathbf{y}^{(0)} \gets (-2{b_1^\prime}^{(0)}, \cdots, -2{b_k^\prime}^{(0)}, \| {\mathbf{b}^\prime}^{(0)} \|^2, 1) $
+
+			\REPEAT
+				
+				\STATE ${\mathbf{b}^\prime}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+
+				\STATE $\mathbf{y}^{(1)} \gets (-2{b_1^\prime}^{(1)}, \cdots, -2{b_k^\prime}^{(1)}, \| {\mathbf{b}^\prime}^{(1)} \|^2, 1)$
+
+			\UNTIL{ $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ } \label{alg:red:ind-ind:while}
+			
+			\STATE $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$ \label{alg:red:ind-ind:cy}
+
+		\ENDFOR
+
+		\STATE $\tilde{b} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}} } (\textsf{pp}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$ \label{alg:red:ind-ind:A}
+
+		\RETURN $\tilde{b}$
+
+	\end{algorithmic}
+	\end{multicols}
+	\end{algorithm}
+
+	\end{block}
+	\end{minipage}
+}
+\medskip
+
+
+\end{frame}

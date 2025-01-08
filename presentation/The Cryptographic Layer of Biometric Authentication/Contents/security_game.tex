@@ -5,12 +5,11 @@
 Let $\Pi$ be a biometric authentication scheme. For an adversary $\mathcal{A}$, define $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$.
 
 \centerline{
-	\begin{minipage}{.5\textwidth}
+	\begin{minipage}{.4\textwidth}
 	\begin{block}{ $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$ }
 	\vskip -8pt
 	\begin{algorithm}[H]
 	\algsetup{linenosize=\small}
-	\small
 	\label{alg:uf_game}
 	\begin{algorithmic}[1]
 		\STATE $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
@@ -40,6 +39,7 @@ Let $\Pi$ be a biometric authentication scheme. For an adversary $\mathcal{A}$, 
 }
 \medskip
 
+\pause
 
 $\Pi$ is called \emph{\textsf{option}-unforgeable} (\textsf{option}-UF) if for any PPT adversary $\mathcal{A}$,
 \[
@@ -80,27 +80,49 @@ Note that some combinations of $\textsf{option}$ induce a winning probability \e
 
 \begin{frame}{True/False Positive Rates}
 
+%\begin{definition}{Rate}
+	%\begin{alignat}{2}
+	%A_{0} & = -\frac{3s_{1} h H L}{E (H+h)} &&= -.62 × 10\,\mathrm{m} \\
+	%B_{0} & = - \frac{3 h H (a_{2}-a_{1}) L}{(H+h)} &&= 2.95 × 10\,\mathrm{m\,K} \\
+	%C_{0} & = \frac{4 L}{E W (H+h)} &&= 1.08\,\mathrm{m\,N}
+	%\end{alignat}
+%\end{definition}
+
+%\begin{definition}{True/False Positive Rates}
+
+%\begin{alignat}{2}
+	%A_{0} & = -\frac{3s_{1} h H L}{E (H+h)} &&= -.62 × 10\,\mathrm{m} \\
+	%%B_{0} & = - \frac{3 h H (a_{2}-a_{1}) L}{(H+h)} &&= 2.95 × 10\,\mathrm{m\,K} \\
+	%\textsf{TP} := & \; \Pr [ &&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 ] \\
+	%%\textsf{TP} := & \; \Pr \left[ &&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \right] \\
+	%%\textsf{FP} := & \; \Pr \left[ &&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \right]
+%\end{alignat}
+
+%\end{definition}
+
 \begin{definition}{True/False Positive Rates}
 
-\begin{align*}
+\begin{alignat*}{2}
 	\textsf{TP} 
-	:=&\; \Pr \left[
+	:=&\; \Pr \vast[ \;
 		\begin{aligned}
 			& \mathcal{B} \getsdollar \mathbb{B} \\
 			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
 			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B} }()
 		\end{aligned}
-		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \right] \\
+		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \vast] \\
 	\\
+	\visible<2->{
 	\textsf{FP} 
-	:=&\; \Pr \left[
+	:=&\; \Pr \vast[
 		\begin{aligned}
-			& \mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B} \\
+			& \mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B} \quad \\
 			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
 			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
 		\end{aligned}
-		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right] \\
-\end{align*}
+		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \vast]
+	}
+\end{alignat*}
 \end{definition}
 
 
@@ -193,7 +215,7 @@ Note that some combinations of $\textsf{option}$ induce a winning probability \e
 
 \begin{frame}{Indistinguishability}
 
-Let $t$ be an integer. For an adversary $\mathcal{A}$, define $\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$.
+Let $t \geq 0$ be an integer. For an adversary $\mathcal{A}$, define $\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$.
 
 \centerline{
 	\begin{minipage}{.5\textwidth}

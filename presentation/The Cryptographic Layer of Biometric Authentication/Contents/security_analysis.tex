@@ -47,9 +47,9 @@ In our project, we also discuss an instantiation using \emph{relational hash}.
 
 \begin{block}{Correctness}
 
-	\textsf{FE} is \emph{correct} if $\forall (\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\textsf{FE} is \emph{correct} if $\forall \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, let $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$, we have
 	\[
-		\textsf{FE.Dec}( \textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}), \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \in \mathbb{F}.
+		\Pr \left[ \textsf{FE.Dec}( \textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}), \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \right] = 1 - \negl.
 	\]
 
 \end{block}
@@ -58,7 +58,7 @@ In our project, we also discuss an instantiation using \emph{relational hash}.
 
 
 
-\begin{frame}{Instantiation using fh-IPFE \cite{cryptoeprint:2023/481}}
+\begin{frame}{Instantiation using fh-IPFE \cite{cryptoeprint:2023/481}: Biometric Layer}
 
 \begin{itemize}
 	\item<1-> $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$, $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$: Output vectors in $ \{0, 1, \cdots, m \}^k$ for all $\mathcal{B} \in \mathbb{B}$.
@@ -74,39 +74,38 @@ In our project, we also discuss an instantiation using \emph{relational hash}.
 		\end{cases}.
 	\]
 
-	\item<4-> An fh-IPFE $\textsf{FE}$ associated with a field $\mathbb{F} = \mathbb{Z}_q$.
-	\begin{itemize}
-		\item $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$.
-	\end{itemize}
 \end{itemize}
 
 \end{frame}
 
 
-\begin{frame}{Instantiation using fh-IPFE \cite{cryptoeprint:2023/481}}
+\begin{frame}{Instantiation using fh-IPFE \cite{cryptoeprint:2023/481}: Cryptographic Layer}
+
+Let $\textsf{FE}$ be associated with a field $\mathbb{F} = \mathbb{Z}_q$, where $q$ is larger than the maximum possible Euclidean distance $m^2 \cdot k$.
+\medskip
 
 \begin{itemize}
 
-	\item<1-> $\textsf{Setup}(1^\lambda)$: Run $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$ and output 
+	\item<2-> $\textsf{Setup}(1^\lambda)$: Run $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$ and output 
 	\begin{itemize}
 		\item $\textsf{esk} \gets (\textsf{msk}, \textsf{pp})$
 		\item $\textsf{psk} \gets (\textsf{msk}, \textsf{pp})$
 		\item $\textsf{csk} \gets \textsf{pp}$
 	\end{itemize}
 
-	\item<2-> $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: On input a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$,
+	\item<3-> $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: On input a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$,
 	\begin{itemize}
 		\item Encode $\mathbf{b}$ as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$.
 		\item Run and output $\mathbf{c_x} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$.
 	\end{itemize}
 
-	\item<3-> $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: On input a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$,
+	\item<4-> $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: On input a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$,
 	\begin{itemize}
 		\item Encode $\mathbf{b}^\prime$ as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1^\prime, -2b_2^\prime, \cdots, -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$.
 		\item Run and output $\mathbf{c_y} \gets \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y})$.
 	\end{itemize}
 
-	\item<4-> $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: Run and output $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y})$.
+	\item<5-> $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: Run and output $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y})$.
 
 \end{itemize}
 
@@ -121,6 +120,7 @@ By the correctness of $\sf FE$,
 \]
 which is equal to $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)$.
 \pause
+\medskip
 
 Note that in this instantiation,
 \pause
@@ -191,7 +191,7 @@ A trivial adversary can ask $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \ma
 	\medskip
 	We say $\mathcal{A}$ is \emph{admissible} if $\forall i \in [Q_K], \forall j \in [Q_E]$,
 \[
-	{\mathbf{x}^{(0)}_{i}} {\mathbf{y}^{(0)}_{j}}^T = {\mathbf{x}^{(1)}_{i}} {\mathbf{y}^{(1)}_{j}}^T
+	{\mathbf{x}^{(0)}_{i}} {\mathbf{y}^{(0)}_{j}}^T = {\mathbf{x}^{(1)}_{i}} {\mathbf{y}^{(1)}_{j}}^T.
 \]
 
 \end{definition}
@@ -220,7 +220,7 @@ A trivial adversary can ask $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \ma
 
 	\item<2-> However, fh-IND security is not sufficient for the UF security of $\Pi$.
 	\begin{itemize}
-		\item We found that instantiation $\Pi$ using \cite{cryptoeprint:2016/440} is not \textsf{option}-unforgeable for any \textsf{option}.
+		\item We found that the instantiation $\Pi$ using \cite{cryptoeprint:2016/440} is not \textsf{option}-UF for any \textsf{option}.
 	\end{itemize}
 
 	\item<3-> For this, we define another extra security notion of \textsf{FE}: \emph{RUF Security}.
@@ -282,6 +282,7 @@ Oracle $\mathcal{O}$ can be nothing or include
 	\end{itemize}
 
 \end{itemize}
+\pause
 
 \begin{definition}{RUF Security}
 
@@ -329,7 +330,7 @@ Oracle $\mathcal{O}$ can be nothing or include
 
 \begin{frame}{Security of Instantiation using fh-IPFE}
 
-For the rest of this section, let $\Pi$ be a biomtric authentication scheme instantiated by an fh-IPFE \textsf{FE}.
+For the rest of this section, let $\Pi$ be a biometric authentication scheme instantiated by an fh-IPFE \textsf{FE}.
 \pause
 In our project, we show
 \pause
@@ -403,47 +404,6 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{o
 \end{itemize}
 
 \end{proof}
-
-\end{frame}
-
-
-\begin{frame}
-
-\centerline{
-	\begin{minipage}{.5\textwidth}
-	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
-	\vskip -8pt
-	\begin{algorithm}[H]
-	\label{alg:red:ind-uf-OB-Enroll}
-	\begin{algorithmic}[1]
-		\STATE $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Enroll:B}
-
-		\STATE $\mathbf{b} = (b_1, \cdots, b_k) \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
-
-		\STATE $\mathbf{x} \gets (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$
-
-		\STATE $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
-		
-		\STATE $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:red:ind-uf-OB-Enroll:c}
-
-		\STATE ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} } ( \mathbf{c}, \textsf{pp})$ \label{alg:red:ind-uf-OB-Enroll:A}
-
-		\STATE $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
-
-		\IF{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Enroll:verify}
-			\RETURN $\tilde{b} = 0$
-		\ELSE
-			\RETURN $\tilde{b} \getsdollar \{0, 1\}$
-		\ENDIF
-
-	\end{algorithmic}
-	\end{algorithm}
-
-	\end{block}
-	\end{minipage}
-}
-\medskip
-
 
 \end{frame}
 
@@ -523,51 +483,6 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{o
 
 \end{frame}
 
-\begin{frame}
-
-\centerline{
-	\begin{minipage}{.5\textwidth}
-	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
-	\vskip -8pt
-	\begin{algorithm}[H]
-	\label{alg:red:ind-uf-OB-Probe}
-	\begin{algorithmic}[1]
-		\STATE $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Probe:B}
-
-		\STATE $\mathbf{b} = (b_1, \cdots, b_k) \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
-
-		\STATE $\mathbf{x} \gets (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$
-
-		\STATE $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
-
-		\STATE $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$
-
-		\STATE ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c}, \textsf{pp})$
-
-		\IF{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_{\textsf{Probe}}$}
-
-			\RETURN $\bot$
-
-		\ENDIF
-
-		\STATE $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
-
-		\IF{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Probe:verify}
-			\RETURN $\tilde{b} = 0$
-		\ELSE
-			\RETURN $\tilde{b} \getsdollar \{0, 1\}$
-		\ENDIF
-
-	\end{algorithmic}
-	\end{algorithm}
-
-	\end{block}
-	\end{minipage}
-}
-\medskip
-
-
-\end{frame}
 
 
 \begin{frame}{Security of Instantiation using fh-IPFE}
@@ -612,7 +527,7 @@ where $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$ and $ \m
 
 Note that indistinguishability of $\mathcal{D}_\mathcal{B}(t)$ for $\mathcal{B} \in \mathbb{B}$ is a necessary condition to achieve IND security because
 \[
-	\left( \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(1)}), \cdots, \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(t)}) \right) = \mathcal{D}_\mathcal{B}(t)
+	\left( \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(1)}), \cdots, \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(t)}) \right) = \mathcal{D}_{\mathcal{B}^{(b)}}(t)
 \]
 where $b$ is the challenge bit.
 
@@ -650,57 +565,3 @@ Given an adversary $\mathcal{A}$ in the $\textsf{IND}_{\Pi, \mathbb{B}}$ game, w
 \end{frame}
 
 
-\begin{frame}
-
-
-\centerline{
-	\begin{minipage}{.7\textwidth}
-	\begin{block}{ $\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$ }
-	\vskip -8pt
-	
-	\begin{algorithm}[H]
-	\small
-	\label{alg:red:ind-ind}
-	\begin{algorithmic}[1]
-		\STATE $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$ \label{alg:red:ind-ind:B0}
-		
-		\STATE $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$ \label{alg:red:ind-ind:B1}
-
-		\STATE $\mathbf{b}^{(0)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}(), \mathbf{x}^{(0)} \gets (b_1^{(0)}, \cdots, b_k^{(0)}, 1, \|\mathbf{b}^{(0)}\|^2)$
-		
-		\STATE $\mathbf{b}^{(1)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}(), \mathbf{x}^{(1)} \gets (b_1^{(1)}, \cdots, b_k^{(1)}, 1, \|\mathbf{b}^{(1)}\|^2)$
-		
-		\STATE $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ \label{alg:red:ind-ind:cx}
-
-		\FOR{$i = 1$ to $t$}
-			
-			\STATE ${\mathbf{b}^\prime}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
-
-			\STATE $\mathbf{y}^{(0)} \gets (-2{b_1^\prime}^{(0)}, \cdots, -2{b_k^\prime}^{(0)}, \| {\mathbf{b}^\prime}^{(0)} \|^2, 1) $
-
-			\REPEAT
-				
-				\STATE ${\mathbf{b}^\prime}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
-
-				\STATE $\mathbf{y}^{(1)} \gets (-2{b_1^\prime}^{(1)}, \cdots, -2{b_k^\prime}^{(1)}, \| {\mathbf{b}^\prime}^{(1)} \|^2, 1)$
-
-			\UNTIL{ $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ } \label{alg:red:ind-ind:while}
-			
-			\STATE $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$ \label{alg:red:ind-ind:cy}
-
-		\ENDFOR
-
-		\STATE $\tilde{b} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}} } (\textsf{pp}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$ \label{alg:red:ind-ind:A}
-
-		\RETURN $\tilde{b}$
-
-	\end{algorithmic}
-	\end{algorithm}
-
-	\end{block}
-	\end{minipage}
-}
-\medskip
-
-
-\end{frame}
