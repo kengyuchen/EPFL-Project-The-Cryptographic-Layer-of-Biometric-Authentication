@@ -5,15 +5,17 @@ In this section, we will discuss
 
 \begin{itemize}
 
-	\item Function-hiding inner product functional encryption (fh-IPFE) \cite{cryptoeprint:2016/440}.
+	\item<2-> Function-hiding inner product functional encryption (fh-IPFE) \cite{cryptoeprint:2016/440}.
 
-	\item An instantiation $\Pi$ using an fh-IPFE \cite{cryptoeprint:2023/481}.
+	\item<3-> An instantiation $\Pi$ using an fh-IPFE \cite{cryptoeprint:2023/481}.
 
-	\item UF and IND security of $\Pi$.
+	\item<4-> UF and IND security of $\Pi$.
 
 \end{itemize}
 
+\visible<5->{
 In our project, we also discuss an instantiation using \emph{relational hash}.
+}
 
 \end{frame}
 
@@ -392,14 +394,13 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{o
 
 	\item<3-> If the challenge bit $b = 1$, $\mathcal{R}$ simulates a $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime)$ game, for some $\mathcal{A}^\prime$.
 
-	\item<4-> Advantage of $\mathcal{R}$ is bounded by the difference between advantages of $\mathcal{A}$ and $\mathcal{A}^\prime$, and
+	\item<4-> Advantage of $\mathcal{R}$ is bounded by the difference between advantages of $\mathcal{A}$ and $\mathcal{A}^\prime$, \visible<5->{and
 	\[
 		\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^{\textsf{fh-IND}} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF},\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma} = \negl.
-	\]
-
-	\item<5-> $\mathcal{O}_{\textsf{Enroll}}$ is "encoding + $\textsf{FE.KeyGen}$". We can simulate $\mathcal{O}_{\textsf{Enroll}}$ by $\mathcal{O}_{\textsf{KeyGen}}$ in fh-IND game and $\mathcal{O}^\prime_{\textsf{KeyGen}}$ in $\textsf{RUF}$ game. 
+	\] \vskip -10pt }
+	\item<6-> $\mathcal{O}_{\textsf{Enroll}}$ is "encoding + $\textsf{FE.KeyGen}$". We can simulate $\mathcal{O}_{\textsf{Enroll}}$ by $\mathcal{O}_{\textsf{KeyGen}}$ in fh-IND game and $\mathcal{O}^\prime_{\textsf{KeyGen}}$ in $\textsf{RUF}$ game. 
 	
-	\item<6-> $\mathcal{R}$ never calls $\mathcal{O}_{\textsf{Enc}}$, so it is an admissible adversary.
+	\item<7-> $\mathcal{R}$ never calls $\mathcal{O}_{\textsf{Enc}}$, so it is an admissible adversary.
 
 \end{itemize}
 
@@ -450,7 +451,8 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{o
 
 	\item<3-> To let $\mathcal{R}$ be admissible, we cannot directly simulate $\mathcal{O}_{\textsf{Probe}}$ by $\mathcal{O}_{\textsf{Enc}}$.
 	\begin{itemize}
-		\item $\mathcal{R}$ uses $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ to prepare $\mathbf{c}$ for $\mathcal{A}$ and $\mathcal{A}^\prime$.
+		\item $\mathcal{R}$ uses $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$, $\mathbf{x}$ from $\mathcal{O}_\mathcal{B}$ and $\mathbf{r} \gets \Z_q^{k+2}$, to prepare $\mathbf{c}$ for $\mathcal{A}$ and $\mathcal{A}^\prime$.
+		\item For any query $\mathcal{O}_{\textsf{Enc}}(\mathbf{y}^\prime, \mathbf{y}^{\prime\prime})$, it must satisfy $\mathbf{x} {\mathbf{y}^\prime}^T = \mathbf{x} {\mathbf{y}^{\prime\prime}}^T$.
 	\end{itemize}
 
 	\item<4-> We simulate $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{b}^\prime )$ by
@@ -472,7 +474,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{o
 
 \begin{itemize}
 	
-	\item<1-> $\mathcal{R}$ is now admissible, but then we have to simulate the tweaked $\mathcal{O}_{\textsf{Probe}}$ in $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime)$ game.
+	\item<1-> $\mathcal{R}$ is now admissible, but then we have to simulate this tweaked $\mathcal{O}_{\textsf{Probe}}$ in $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime)$.
 
 	\item<2-> Advantage of $\mathcal{R}$ is bounded by the difference between advantages of $\mathcal{A}$ and $\mathcal{A}^\prime$, and
 	\[
