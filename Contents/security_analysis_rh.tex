@@ -1,0 +1,139 @@
+%%%%%%%%%%%%%%%%%%%%
+
+% Project Name: Semester Project Fall 2024 for EPFL
+% File: security_analysis_rh.tex
+% Author: Keng-Yu Chen
+
+%%%%%%%%%%%%%%%%%%%%
+
+Let $\Pi$ be an authentication scheme instantiated by a relational hash scheme \textsf{RH} as in Section \ref{sec:rh-instantiation}. We discuss the UF and IND security of $\Pi$ in this section. Note that in this instantiation, $\textsf{esk}, \textsf{psk}, \textsf{csk}$ are all public hash keys $\textsf{pk}$ of \textsf{FE} and assumed to be given to all adversaries.
+
+Given a relational scheme \textsf{RH} for a relation $R \subseteq X \times Y$, we first define the unforgeability \cite{cryptoeprint:2014/394} of \textsf{RH}.
+
+\begin{definition}[Unforgeability]
+
+A relational hash scheme \textsf{RH} is called \emph{unforgeable} for the distribution $\mathcal{X}$ if for any adversary $\mathcal{A}$, the following probability is negligible.
+\[
+	\Pr \left [
+		\begin{aligned} 
+			 &\; \mathbf{x} \getsdollar \mathcal{X} \\
+			 &\; \textsf{pk} \gets \textsf{RH.KeyGen}(1^\lambda) \\
+			 &\; \mathbf{h_x} \gets \textsf{RH.Hash}_1(\textsf{pk}, \mathbf{x}) \\
+			 &\; \mathbf{\tilde{z}} \gets \mathcal{A}(\textsf{pk}, \mathbf{h_x})
+		\end{aligned} :
+		\textsf{RH.Verify}(\textsf{pk}, \mathbf{h_x}, \mathbf{\tilde{z}}) = 1
+		\right ] = \negl.
+\]
+
+\end{definition}
+
+%Note that in \cite{cryptoeprint:2014/394}, the authors proposed an unforgeable relational scheme for the Hamming distance proximity relation $R^\tau$ for any $\tau < k$.
+
+%-------------------
+
+\subsection{UF Security of $\Pi$}
+\label{sec:security_analysis:rh:uf}
+
+We first consider $\textsf{option}$ that includes $\mathbf{c_x}$.
+
+
+\begin{theorem}
+\label{thm:rh:uf-uf-cx}
+
+Let $\textsf{option} = \{\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}\}$. If \textsf{RH} is unforgeable for the distribution
+\[
+	\mathcal{X} = \{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \gets {\sf getEnroll}^{\mathcal{O}_\mathcal{B}}() \mid \mathbb{B} \},
+\]
+then $\Pi$ is $\textsf{option}$-UF. 
+
+\end{theorem}
+
+In \cite{cryptoeprint:2014/394}, the authors construct an $\textsf{RH}$ that is unforgeable for the uniform distribution over $\{0, 1\}^k$, under the hardness of some computational problems. Note that we need to provide knowledge of $\mathbb{B}$ in the distribution $\mathcal{X}$.
+
+\begin{proof}
+
+Recall that the distribution of $\mathbf{c_x}$ in the \textsf{UF} game of the instantiation of Section \ref{sec:rh-instantiation} is
+\[
+	\left \{
+		\begin{aligned} 
+			 & \mathcal{B} \getsdollar \mathbb{B} \\
+			 & \textsf{pk} \gets \textsf{RH.KeyGen}(1^\lambda) \\
+			 & \mathbf{x} = \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() 
+		\end{aligned} :
+		\mathbf{c_x} \gets \textsf{RH.Hash}_1(\textsf{pk}, \mathbf{x})
+	\right \}
+\]
+Also recall that $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )) = \textsf{RH.Verify}(\textsf{pk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$.
+The \textsf{option}-UF security is thus guaranteed by the unforgeability of \textsf{RH}.
+
+\end{proof}
+
+\paragraph{Remark}
+As we mentioned in Section \ref{sec:uf_game}, an adversary with \textsf{psk} can enjoy a winning rate of the false positive rate \textsf{FP} of $\mathbb{B}$. Theorem \ref{thm:rh:uf-uf-cx} thus implies that if $\textsf{FP}$ is not negligible, there does not exist an \textsf{RH} that is unforgeable for the distribution $\{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \gets {\sf getEnroll}^{\mathcal{O}_\mathcal{B}}() \mid \mathbb{B} \}$.
+
+
+Note that since $\textsf{esk}, \textsf{psk}$, and $ \textsf{csk}$ are all public in this instantiation, it is meaningless to discuss $\mathcal{O}_\textsf{Enroll}, \mathcal{O}_\textsf{Probe}$, or $\mathcal{O}_\textsf{log}$. In addition, for $\textsf{option}$ that includes $\mathcal{O}_\mathcal{B}$ or $\mathcal{O}_\textsf{Probe}^\prime$, as discussed in Section \ref{sec:uf_game}, we cannot achieve \textsf{option}-UF security since $\textsf{psk}$ is public in this instantiation.
+
+For \textsf{option} that includes $\mathcal{O}_\textsf{Enroll}^\prime$, we notice that for the \textsf{RH} construction in \cite{cryptoeprint:2014/394}, there exists an invalid $\textsf{pk}^\prime$ such that $\textsf{RH.Hash}_1(\textsf{pk}^\prime, \mathbf{x})$ directly leaks $\mathbf{x}$. By returning $\textsf{RH.Hash}_2( \textsf{pk}, \mathbf{x} )$, one can break the $\textsf{UF}_{\textsf{option}}$ game with probability $1$.
+
+
+%-------------------
+
+\subsection{IND Security of $\Pi$}
+\label{sec:security_analysis:rh:IND}
+
+For the IND security, we have a negative result for $\Pi$.
+
+\begin{theorem}
+
+For any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, and for any relational hash scheme \textsf{RH}, $\Pi$ is not IND for any $t \geq 0$.
+
+\end{theorem}
+
+\begin{proof}
+
+Consider the adversary $\mathcal{A}$ in Algorithm \ref{alg:rh:ind}. When the challenge bit $b = 0$, the probability that $\mathcal{A}$ wins is $\textsf{TP}$. When the challenge bit $b = 1$, the probability that $\mathcal{A}$ wins is $1 - \textsf{FP}$. Now, 
+
+\[
+	\Adv_{\Pi, \mathbb{B}, \mathcal{A}}^{\textsf{IND}} = \left| \Pr[ \textsf{IND}_\Pi(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \left| \frac{1}{2} (\textsf{TP} + 1 - \textsf{FP}) - \frac{1}{2} \right| > \frac{1}{\poly}.
+\]
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.65\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} ( \textsf{csk} = \textsf{pk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$}
+	\label{alg:rh:ind}
+	\begin{algorithmic}[1]
+
+		\State $\mathbf{y}^{(0)} = \mathbf{b}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+		
+		\State $\mathbf{h_y}^{(0)} \gets \textsf{RH.Hash}_2(\textsf{pk}, \mathbf{y}^{(0)})$
+		
+		\If{ $\textsf{RH.Verify}(\textsf{pk}, \mathbf{c_x}, \mathbf{h_y}^{(0)}) = 1$}
+		
+			\State \Return $0$
+		
+		\Else
+			
+			\State \Return $1$
+		
+		\EndIf
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
+
+\end{proof}
+
+We note that this insecurity result holds whenever $\textsf{psk}$ is public. When $\textsf{esk}$ is public, one can also use $\mathbf{c_y}^{(i)}$ to verify from which distribution the chalenge ciphertexts are generated. We write this observation formally in the following theorem.
+
+\begin{theorem}
+
+Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$. If $\textsf{psk}$ is public, $\Pi$ is not IND for any $t \geq 0$. If $\textsf{esk}$ is public, $\Pi$ is not IND for any $t \geq 1$.
+
+\end{theorem}
+
+

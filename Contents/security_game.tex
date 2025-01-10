@@ -1,0 +1,231 @@
+%%%%%%%%%%%%%%%%%%%%
+
+% Project Name: Semester Project Fall 2024 for EPFL
+% File: security_game.tex
+% Author: Keng-Yu Chen
+
+%%%%%%%%%%%%%%%%%%%%
+
+In this section, we discuss two security notions of a biometric authentication scheme: \emph{unforgeability} and \emph{indistinguishability}.
+
+\subsection{Unforgeability}
+\label{sec:uf_game}
+
+To describe the unforgeability of an authentication scheme, we model the ability of an adversary who tries to impersonate a user. The adversary $\mathcal{A}$ is given auxiliary information \textsf{option} that depends on our threat model and tries to find a valid probe message $\mathbf{\tilde{z}}$. The whole game $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ is defined in Algorithm \ref{alg:uf_game}.
+
+\begin{figure}[h]
+\centering
+	\begin{minipage}[t]{0.6\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$}
+	\label{alg:uf_game}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+		
+		\State $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
+		
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A} ( \textsf{option} )$
+ 
+		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_{\textsf{Probe}}$ }
+			
+			\State \Return $0$
+		
+		\EndIf
+
+		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+
+		\State \Return $\textsf{Verify}(s)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\label{fig:uf_game}
+\end{figure}
+
+The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}$ or the following oracles:
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\mathcal{B}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}$. This oracle and $\textsf{psk}$ should not be given at the same time; otherwise, there exists a trivial attack with a winning rate $\textsf{TP}$ by returning $\textsf{Probe}(\textsf{psk}, \textsf{getProbe}^{ \mathcal{O}_\mathcal{B} }() )$.
+	
+	\item $\mathcal{O}_\textsf{Enroll}(\textsf{esk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}, \mathbf{b}^\prime)$.
+
+	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. If this oracle is given, we require the adversary to return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$.
+	
+	\item $\mathcal{O}_\textsf{log}(\textsf{csk}, \mathbf{c_x}, \cdot)$: On input $\mathbf{b}^\prime$, it first computes $\mathbf{c_z} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$ and outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_z} ) )$.
+	
+	\item $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, it first samples $\mathbf{b}^\prime \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{b}^\prime)$. This oracle is only useful when $\textsf{option}$ does not include $\mathcal{O}_{\mathcal{B}}$.
+
+	\item $\mathcal{O}_\textsf{Probe}^\prime (\cdot)$: On input $\textsf{psk}^\prime$, it first samples $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Probe}(\textsf{psk}^\prime, \mathbf{b}^\prime)$. This oracle is only useful when $\textsf{option}$ does not include $\mathcal{O}_{\mathcal{B}}$, and this oracle and $\textsf{psk}$ should not be given at the same time; otherwise, there exists a trivial attack with a winning rate $\textsf{TP}$ by returning $\mathcal{O}_{\textsf{Probe}}^\prime (\textsf{psk})$.
+	
+\end{itemize}
+
+The requirement that the adversary should return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$ is to prevent a trivial attack that leverages \textsf{TP} or \textsf{FP} when it is non-negligible. If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}. Therefore, we rule out the case that $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary to return what $\mathcal{O}_\textsf{Probe}$ returns.
+If \textsf{option} has only $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can still enjoy a winning rate $\textsf{FP}$, if we place no restriction on the adversary's answer. Therefore, we only consider $\textsf{psk}$ in \textsf{option} when \textsf{FP} is non-negligible, and we restrict the adversary's answer when $\mathcal{O}_\textsf{Probe}$ is given.
+
+%If $\textsf{option}$ includes $\mathcal{O}_{\textsf{Enroll}}^\prime$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, and if we place no restriction on an \textsf{UF} game adversary's answer, the adversary in Algorithm \ref{alg:adv:FP2} can win with a probability
+%\[
+	%\Pr[ \textsf{Verify}( \textsf{BioCompare}(\mathbf{x}^{(0)}, \mathbf{y}) ) = 1 \mid \textsf{Verify}( \textsf{BioCompare}(\mathbf{x}^{(1)}, \mathbf{y}) ) = 1]
+%\]
+%where $\mathbf{x}^{(0)}, \mathbf{x}^{(1)}$ are generated from $\textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}()$ and $\mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}() $.
+%This value is in general not negligible.
+%The expected number of repetitions is $\mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}\left[\frac{1}{\textsf{FP}(\mathcal{B})} \right]$. If $\textsf{FP}(\mathcal{B})$ is non-negligible, the adversary can return the answer in an expected polynomial time. A similar adversary also exists when $\textsf{option}$ includes $\mathcal{O}_{\textsf{Probe}}^\prime$ and $\mathcal{O}_\textsf{Probe}$.
+
+ 
+%\begin{figure}[h]
+%\centering
+	%\begin{minipage}[t]{0.6\linewidth}
+	%\centering
+	%\begin{algorithm}[H]
+	%\caption{$\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime}(\textsf{psk})$ (or  $\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{Probe}}$ ) }
+	%\label{alg:adv:FP2}
+	%\begin{algorithmic}[1]
+		%\State $\textsf{esk}^\prime, \textsf{psk}^\prime, \textsf{csk}^\prime \gets \textsf{Setup}(1^\lambda)$
+
+		%\Repeat
+		
+			%\State $\mathcal{B}^\prime \getsdollar \mathbb{B}$
+		
+			%\State $\mathbf{y}^\prime \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime }}()$ 
+
+			%\State $\mathbf{c_y}^\prime \gets \textsf{Probe}(\textsf{psk}^\prime, \mathbf{y}^\prime)$
+
+			%\State $\mathbf{c_x}^\prime \gets \mathcal{O}_\textsf{Enroll}^\prime (\textsf{esk}^\prime)$
+
+		%\Until{ $\textsf{Verify}(\textsf{Compare}(\textsf{csk}^\prime, \mathbf{c_x}^\prime, \mathbf{c_y}^\prime )) = 1$ }
+
+		%\State $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$  \Comment{ or $\mathbf{c_y} \gets \mathcal{O}_\textsf{Probe}(\mathbf{y}^\prime)$ } 
+
+		%\State \Return $\mathbf{c_y}$
+	%\end{algorithmic}
+	%\end{algorithm}
+	%\end{minipage}
+	
+%\end{figure}
+
+\begin{figure}[h]
+\centering
+	\begin{minipage}[t]{0.6\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{A}(\textsf{psk})$ ( or $\mathcal{A}^{\mathcal{O}_\textsf{Probe}}$ ) }
+	\label{alg:adv:FP}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B}^\prime \getsdollar \mathbb{B}$
+		
+		\State $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime }}()$
+
+		\State $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$ \Comment{or $\mathbf{c_y} \gets \mathcal{O}_\textsf{Probe}(\mathbf{b}^\prime)$ }
+
+		\State \Return $\mathbf{c_y}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+
+We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions as
+\[
+	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1]
+\]
+
+An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{\textsf{option}-unforgeable} (\textsf{option}-UF) if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
+\]
+
+For the rest of this work, if the scheme $\Pi$, the family $\mathbb{B}$ of distributions, and the auxiliary information $\textsf{option}$ are clear from context, we omit the subscript and write the game as $\textsf{UF}(\mathcal{A})$. This abbreviation also holds for all other games.
+
+
+%-------------------
+
+
+\subsection{Indistinguishability}
+\label{sec:ind_game}
+
+
+In the game of indistinguishability, we model the ability of an authentication server who tries to identify the user, which describes the privacy leakage of the scheme. The adversary $\mathcal{A}$ is given oracles to two biometric distributions $\mathcal{B}^{(0)}$ and $ \mathcal{B}^{(1)}$, the comparison key $\textsf{csk}$, an enrollment message $\mathbf{c_x}$, and a list of $t$ probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$. It tries to guess from either $\mathcal{B}^{(0)}$ or $ \mathcal{B}^{(1)}$ these messages are generated. The whole game is defined in Algorithm \ref{alg:ind_game}.
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.55\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:ind_game}
+	\begin{algorithmic}[1]
+		\State $b \getsdollar \{0, 1\}$
+
+		\State $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$
+
+		\State $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(b)}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
+
+		\For{$i = 1$ to $t$}
+
+			\State ${\mathbf{b}^\prime}^{(i)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(b)}}}() $
+		
+			\State $\mathbf{c_y}^{(i)} \gets \textsf{Probe}( \textsf{psk}, {\mathbf{b}^\prime}^{(i)} )$
+
+		\EndFor
+
+		%\State In Device-of-User Model:
+		
+			%\State \hspace{\algorithmicindent} $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}} } ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+
+		%\State In Device-of-Domain Model:
+		
+			\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+
+		\State \Return $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+%\caption{The \textsf{IND} Game}
+\label{fig:ind_game}
+\end{figure}
+
+%Note that in Device-of-Domain model, a probe oracle is given to the adversary.
+
+%\begin{itemize}
+
+	%\item $\mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}(\cdot)$: On input an index $i$, it first samples $\mathbf{y}^\prime \getsdollar \textsf{encodeProbe}^{\mathcal{O}_{\textsf{samp}}(i)}$, which uses $\mathcal{O}_{\textsf{samp}}(i)$ to answer biometric queries, and outputs $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime )$. 
+
+%\end{itemize}
+
+%We provide $\mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}(\cdot)$ instead of $\mathcal{O}_{\textsf{Probe}}(\textsf{psk}, \cdot)$. This is to avoid the trivial attack where the adversary probes samples from the oracles $\mathcal{O}_{\mathcal{B}^{(0)}}$ and $\mathcal{O}_{\mathcal{B}^{(1)}}$ and compare the results with $\mathbf{c_x}$.
+
+We define the advantage of an adversary $\mathcal{A}$ in the \textsf{IND} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+\[
+	\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}} := \left |\Pr[\textsf{IND}_{\Pi}(\mathcal{A}) \to 1] - \frac{1}{2} \right|.
+\]
+
+An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{indistinguishable (IND)} if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
+\]
+
+
+Let $\textsf{Sig} = (\textsf{Sig.KeyGen}, \allowbreak \textsf{Sig.Sign}, \textsf{Sig.Verify})$ be an sEUF-CMA digital signature scheme, consider the following authentication scheme. Let $\textsf{esk}$ be empty, $\textsf{psk}$ be the signing secret key $\textsf{sk}_\textsf{Sig}$, and $\textsf{csk}$ be the verification public key $\textsf{pk}_\textsf{Sig}$. Let 
+\begin{gather*}
+	\textsf{Enroll}(\textsf{esk}, \mathbf{b}) \to \mathbf{b}, \quad \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime ) \to (\mathbf{b}^\prime , \sigma = \textsf{Sig.Sign}(\textsf{sk}_\textsf{Sig}, \mathbf{b}^\prime ) ) \\
+	\textsf{Compare}(\textsf{csk}, \mathbf{b}, (\mathbf{b}^\prime, \sigma)) = \begin{cases}
+		\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime ) & \text{if } \textsf{Sig.Verify}(\textsf{pk}_\textsf{Sig}, \mathbf{b}^\prime, \sigma) = 1 \\
+		\bot & \text{if } \textsf{Sig.Verify}(\textsf{pk}_\textsf{Sig}, \mathbf{b}^\prime, \sigma) = 0
+	\end{cases}
+\end{gather*}
+
+An $\textsf{UF}_\textsf{option}$ adversary has to forge a signature $\sigma$ to win the game, so the scheme is $\textsf{option}$-UF for any $\textsf{option}$ that does not include $\textsf{psk}$. However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$. Obviously, this scheme is not IND, and we use this example emphasize the necessity of the game of indistinguishability.
+

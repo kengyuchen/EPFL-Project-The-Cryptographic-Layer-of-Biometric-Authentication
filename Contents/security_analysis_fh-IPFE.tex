@@ -1,0 +1,748 @@
+%%%%%%%%%%%%%%%%%%%%
+
+% Project Name: Semester Project Fall 2024 for EPFL
+% File: security_analysis_fh-IPFE.tex
+% Author: Keng-Yu Chen
+
+%%%%%%%%%%%%%%%%%%%%
+
+Let $\Pi$ be an authentication scheme instantiated by an fh-IPFE scheme \textsf{FE} as in Section \ref{sec:fh-IPFE-instantiation}. We discuss the UF and IND security of $\Pi$ in this section. For this, we first define two security notions of \textsf{FE}.
+
+\subsection{fh-IND Security of \textsf{FE}}
+
+Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{fh-IND} game \cite{cryptoeprint:2016/440} in Algorithm \ref{alg:ind-fh-IPFE}.
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.4\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{fh-IND}_{\textsf{FE}}(\mathcal{A})$}
+	\label{alg:ind-fh-IPFE}
+	\begin{algorithmic}[1]
+		\State $b \getsdollar \{0, 1\}$
+
+		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}} ( \textsf{pp} )$
+
+		\State \Return $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\label{fig:ind-fh-IPFE}
+\end{figure}
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\textsf{KeyGen}}(\cdot, \cdot)$: On input pair $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$, it outputs $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^{(b)} )$.
+
+	\item $\mathcal{O}_{\textsf{Enc}}(\cdot, \cdot)$: On input pair $(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$, it outputs $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^{(b)} )$.
+
+\end{itemize}
+
+\noindent To avoid trivial attacks, we consider \emph{admissible adversaries}.
+
+\begin{definition}[Admissible Adversary]
+
+	Let $\mathcal{A}$ be an adversary in an \textsf{fh-IND} game, and let $ (\mathbf{x}_1^{(0)}, \mathbf{x}_1^{(1)}), \cdots, (\mathbf{x}_{Q_K}^{(0)}, \mathbf{x}_{Q_K}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{KeyGen}}$ and $(\mathbf{y}_1^{(0)}, \mathbf{y}_1^{(1)}), \cdots, (\mathbf{y}_{Q_E}^{(0)}, \mathbf{y}_{Q_E}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{Enc}}$.
+	We say $\mathcal{A}$ is \emph{admissible} if $\forall i \in [Q_K], \forall j \in [Q_E]$,
+\[
+	{\mathbf{x}^{(0)}_{i}} {\mathbf{y}^{(0)}_{j}}^T = {\mathbf{x}^{(1)}_{i}} {\mathbf{y}^{(1)}_{j}}^T
+\]
+
+\end{definition}
+
+
+\begin{definition}[fh-IND Security]
+
+	An fh-IPFE scheme \textsf{FE} is called fh-IND secure if for any admissible adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the $\textsf{fh-IND}$ game in Algorithm \ref{alg:ind-fh-IPFE} is
+
+\[
+	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{fh-IND}} := \left| \Pr[\textsf{fh-IND}_{\textsf{FE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
+\]
+
+\end{definition}
+
+We note that fh-IND security is a standard notion for an fh-IPFE, and constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are proven fh-IND. However, fh-IND security may not be sufficient for the UF security of the instantiation in Section \ref{sec:fh-IPFE-instantiation}. 
+
+\begin{theorem}
+
+An instantiation $\Pi$ using the construction in \cite{cryptoeprint:2016/440} is not \textsf{option}-UF for any \textsf{option}.
+
+\end{theorem}
+
+\noindent We recall the construction in \cite{cryptoeprint:2016/440} in Appendix \ref{sec:fh-IPFE-construction}.
+
+\begin{proof}
+
+Let $\mathcal{A}$ be a \textsf{UF} game adversary that returns $(K_1, K_2) = (1, (1, \cdots, 1))$. Then, in the decryption,
+\[
+	D_1 = e(g_1, g_2)^{0} = 1 \quad \text{and} \quad D_2 = e(g_1, g_2)^0 = 1
+\]
+As $D_1^0 = D_2$, the decryption returns $0$ and let the adversary win the game with probability $1$.
+
+\end{proof}
+
+%-------------------
+
+\subsection{RUF Security of \textsf{FE}}
+
+We also define the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} for a real number $\gamma$.
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.55\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A})$}
+	\label{alg:ruf-fh-IPFE}
+	\begin{algorithmic}[1]
+		\State $\mathbf{r} \getsdollar \mathbb{F}^{k}$ \label{alg:oracle-ruf-fh-IPFE:r}
+
+		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+
+		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\mathcal{O}} ( \textsf{pp}, \mathbf{c} )$
+
+		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}^\prime_{\textsf{Enc}}$ }
+			
+			\State \Return $0$
+		
+		\EndIf
+
+		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\State \Return $1_{s \leq \gamma}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
+
+The oracle $\mathcal{O}$ can be nothing or include the following options based on the threat model.
+
+\begin{itemize}
+
+	\item $\mathcal{O}^\prime_{\textsf{KeyGen}}(\cdot)$: On input $\mathbf{x}^\prime$, it outputs $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^\prime)$.
+	
+	\item $\mathcal{O}^\prime_{\textsf{Enc}}(\cdot)$: On input $\mathbf{y}^\prime$, it outputs $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^\prime)$. The adversary is required to return $\mathbf{\tilde{z}}$ that is not equal to any output of this oracle.
+\end{itemize}
+
+\begin{definition}[RUF Security]
+
+	An fh-IPFE scheme \textsf{FE} is called $\mathcal{O}$-RUF secure for a real number $\gamma$ if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} is
+
+\[
+	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \mathcal{O}, \gamma} := \Pr[\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ] = \negl.
+\]
+
+\noindent We say $\textsf{FE}$ is RUF secure if it is $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \mathcal{O}^\prime_{\textsf{Enc}} \}$-RUF secure.
+
+\end{definition}
+
+
+\subsubsection{Achievability of RUF Security}
+
+We note that RUF security is a new security notion of fh-IPFE. In this section, we provide two theorems to obtain an $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF and an RUF scheme, respectively.
+
+\begin{assumption}
+\label{assump}
+Let $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$. Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns when $\mathbf{z}$ corresponds to a \emph{nonzero} vector $\mathbf{v} \in \mathbb{F}^k$. That is, assume that for any $\mathbf{z}$, there can only be two possibilities.
+
+\begin{itemize}
+	\item There exists a vector $\mathbf{v} \in \mathbb{F}^k \setminus \{\mathbf{0}\}$ such that for any $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, and $\mathbf{c_v} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{v})$, 
+	\[
+		\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c_v}).
+	\]
+	\item For any $\mathbf{x} \in \mathbb{F}^k$ and $ \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) \to \bot$.
+
+\end{itemize}
+Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the input of $\textsf{FE.Enc}$.
+\end{assumption}
+
+\begin{theorem}
+\label{thm:fh-IPFE:ind-OKeyGen-ruf}
+Given Assumption \ref{assump}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for any $\gamma \leq \|\mathbb{F}\|$.
+
+\end{theorem}
+
+\begin{proof}
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}$ game for any $\gamma < \|\mathbb{F}\|$. Let $t$ be an integer, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OKeyGen-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by $\mathcal{O}_\textsf{KeyGen}(\mathbf{x}^\prime, \mathbf{x}^\prime)$.
+If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-ruf:s}, by Assumption \ref{assump}, let $\mathbf{\tilde{z}}$ correspond to a vector $\mathbf{\tilde{v}}$.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:red:ind-OKeyGen-ruf}
+	\begin{algorithmic}[1]
+		\State $\mathbf{r}^{(0)}, \mathbf{r}^{(1)} \getsdollar \mathbb{F}^{k}$
+		
+		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(1)})$ 
+
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} (\textsf{pp}, \mathbf{c})$
+
+		\For{$i = 1$ to $t$}
+		
+			\State $\mathbf{r}_i \getsdollar \mathbb{F}^{k}$
+
+			\State $\mathbf{c}_i \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}_i)$
+
+			\State $s_i \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}_i, \mathbf{\tilde{z}} )$ \label{alg:red:ind-OKeyGen-ruf:s}
+	
+		\EndFor	
+		
+		\If{$\bigwedge_{i=1}^t s_i \leq \gamma$} \label{alg:red:ind-OKeyGen-ruf:verify}
+			\State \Return $\tilde{b} = 0$
+		\Else
+			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
+		\EndIf
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+
+If the challenge bit $b = 0$, then by Assumption \ref{assump}, any $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-ruf:s} implies all $s_i \neq \bot$ and $s_i = s_j$ for any $i, j$. Therefore, the probability that all $s_i \leq \gamma$ in Line \ref{alg:red:ind-OKeyGen-ruf:verify} is
+\begin{align*}
+	\Pr\left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 0 \right]
+	&= \Pr\left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ s_1 \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
+	&= \Pr \left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \mathbf{r}^{(0)} \mathbf{\tilde{v}}^T \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
+	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
+	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1 \mid b = 0 \wedge s_1 \neq \bot \right] \\ 
+	&= \Pr \left[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1 \right] 
+\end{align*}
+
+If the challenge bit $b = 1$, for any $i \in [t]$,
+\begin{align*}
+	\Pr[ s_i \leq \gamma \mid b = 1 ]
+	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ s_i \leq \gamma \mid b = 1 \wedge s_i \neq \bot] \\
+	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ \mathbf{r}_i \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s \neq \bot]
+\end{align*}
+Note that $\mathbf{r}_i$ is independent of $\mathbf{\tilde{z}}$ and thus independent of $\mathbf{\tilde{v}}$. Hence, $\Pr[\mathbf{r}_i \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s_i \neq \bot] = \frac{\gamma}{\| \mathbb{F} \|}$ and
+\[
+	\Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 1 \right] = \Pr \left[ \bigwedge_{i=1}^t s_i \neq \bot \mid b = 1 \right] \cdot \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t \leq \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t
+\]
+
+In conclusion,
+\begin{align*}
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 0 \right] - \Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 1 \right] \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] - \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] -  e^{- t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } \right)
+\end{align*}
+
+\noindent Take $t$ be any integer larger than $\frac{\lambda}{ 1 - \frac{\gamma}{\| \mathbb{F} \| }}$. Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $e^{-t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } \leq e^{-\lambda}$ are negligible,
+\[
+	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]  \leq e^{- t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } + 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND}  = \negl.
+\]
+
+\end{proof}
+
+
+Let $\textsf{Sig} = ( \textsf{Sig.KeyGen}, \textsf{Sig.Sign}, \textsf{Sig.Verify} )$ be an sEUF-CMA signature scheme. By adding $\textsf{Sig}$, an fh-IPFE scheme $\textsf{FE}$ can be upgraded to an RUF scheme $\textsf{FE}^\prime$. 
+
+\begin{itemize}
+
+	\item $\textsf{FE}^\prime \textsf{.Setup}(1^\lambda)$: Run $\textsf{FE.Setup}(1^\lambda) \to (\textsf{msk}, \textsf{pp})$ and $\textsf{Sig.KeyGen}(1^\lambda) \to (\textsf{sk}_{\textsf{Sig}}, \textsf{pk}_{\textsf{Sig}} )$. Output $\textsf{msk}^\prime = (\textsf{msk}, \textsf{sk}_\textsf{Sig})$ and $\textsf{pp}^\prime = (\textsf{pp}, \textsf{pk}_{\textsf{Sig}})$.
+
+	\item $\textsf{FE}^\prime \textsf{.KeyGen}(\textsf{msk}^\prime, \mathbf{x})$: Run $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{x}) \to f_\mathbf{x}$ and output $f_\mathbf{x}$.
+
+	\item $\textsf{FE}^\prime \textsf{.Enc}(\textsf{msk}^\prime, \mathbf{y})$: Run $\textsf{FE.Enc}(\textsf{msk}, \mathbf{y}) \to \mathbf{c_y}$ and sign $\mathbf{c_y}$ by $\textsf{Sig.Sign}(\textsf{sk}_{\textsf{Sig}}, \mathbf{c_y}) \to \sigma$. Output $\mathbf{c_y}^\prime = (\mathbf{c_y}, \sigma)$.
+
+	\item $\textsf{FE}^\prime \textsf{.Dec}(\textsf{pp}^\prime, f_\mathbf{x}, \mathbf{c_y}^\prime )$: Output the decryption $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y})$ if the verification $\textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \mathbf{c_y}, \sigma ) = 1$. Otherwise, output $\bot$.
+
+\end{itemize}
+
+\begin{theorem}
+
+For any fh-IPFE $\textsf{FE}$, $\textsf{FE}^\prime$ is an RUF fh-IPFE for any $\gamma$.
+
+\end{theorem}
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}_{\textsf{KeyGen}}^\prime, \mathcal{O}_{\textsf{Enc}}^\prime, \gamma}_{\textsf{FE}^\prime}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:sEUF-CMA:RUF} which plays the \textsf{sEUF-CMA} game of $\textsf{Sig}$. $\mathcal{R}$ is given a verification public key $\textsf{pk}_{\textsf{Sig}}$ and a signing oracle $\mathcal{O}_{\textsf{Sig}}$ and returns a forged message-signature pair that is not equal to any previous answer of $\mathcal{O}_{\textsf{Sig}}$. To run $\mathcal{A}$, $\mathcal{R}$ simulates each oracle in the following way.
+
+\begin{itemize}
+	\item $\mathcal{O}_{\textsf{KeyGen}}^\prime(\mathbf{x}^\prime)$: Return $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{x})$.
+
+	\item $\mathcal{O}_{\textsf{Enc}}^\prime(\mathbf{y}^\prime)$: Run $\textsf{FE.Enc}(\textsf{msk}, \mathbf{y}) \to \mathbf{c_y}$ and call the signing oracle $\mathcal{O}_{\textsf{Sign}}(\mathbf{c_y}) \to \sigma$. Output $\mathbf{c_y}^\prime = (\mathbf{c_y}, \sigma)$.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{Sign}}}( \textsf{pk}_{\textsf{Sig}} )$}
+	\label{alg:red:sEUF-CMA:RUF}
+	\begin{algorithmic}[1]
+
+		\State $\mathbf{r} \gets \mathbb{F}^k$
+
+		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+
+		\State $\textsf{pp}^\prime \gets (\textsf{pp}, \textsf{pk}_{\textsf{Sig}})$
+
+		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\textsf{KeyGen}}^\prime, \mathcal{O}_{\textsf{Enc}}^\prime } (\textsf{pp}^\prime, \mathbf{c})$ \label{alg:red:ind-uf-OB-Enroll:A}
+
+		\State Parse $(\mathbf{c_z}, \sigma^\prime) \gets \mathbf{\tilde{z}}$
+
+		\State \Return $(\mathbf{c_z}, \sigma^\prime)$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+$\mathcal{R}$ perfectly simulates a $\textsf{RUF}$ game for $\mathcal{A}$, and if $\mathcal{A}$ wins the $\textsf{RUF}$ game, $(\mathbf{c_z}, \sigma^\prime)$ is not equal to any previous answer of $\mathcal{O}_{\textsf{Enc}}^\prime$, and therefoere not equal to any previous message-signature pair $(\mathbf{c_y}, \sigma)$ given from the signing oracle $\mathcal{O}_{\textsf{Sign}}$. Now, since $\textsf{Sig}$ is sEUF-CMA,
+\[
+	\Pr[\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] \leq \Pr[ \textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \mathbf{c_z}, \sigma^\prime) = 1 ] = \negl.
+\]
+
+
+\end{proof}
+
+%-------------------
+
+
+\subsection{UF Security of $\Pi$}
+\label{sec:security_analysis:fh-IPFE:uf}
+
+We first consider \textsf{option}-UF security when $\textsf{option}$ includes $\mathcal{O}_\textsf{Enroll}$. Note that in this instantiation, $\textsf{csk}$ is the public parameter $\textsf{pp}$ of \textsf{FE} and assumed to be given to all adversaries. 
+
+\begin{theorem}
+\label{thm:fh-IPFE:ind-uf-OB-Enroll}
+	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+\end{theorem}
+
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-uf-OB-Enroll} which plays the \textsf{fh-IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates $\mathcal{O}_{\textsf{Enroll}}( \textsf{esk}, \mathbf{b}^\prime )$ by first encoding $\mathbf{b}^\prime = (b_1^\prime, \cdots, b_k^\prime)$ into $\mathbf{x}^\prime = (b_1^\prime, \cdots, b_k^\prime, 1, \|\mathbf{b}^\prime\|^2)$ and calling $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^\prime, \mathbf{x}^\prime)$ given in the \textsf{fh-IND} game.  Note that since $\mathcal{R}$ never calls $\mathcal{O}_{\textsf{Enc}}$, it is an admissible adversary.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:red:ind-uf-OB-Enroll}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Enroll:B}
+
+		\State $\mathbf{b} = (b_1, \cdots, b_k) \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{x} \gets (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$
+
+		\State $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
+		
+		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:red:ind-uf-OB-Enroll:c}
+
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Enroll} } ( \mathbf{c}, \textsf{pp})$ \label{alg:red:ind-uf-OB-Enroll:A}
+
+		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\If{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Enroll:verify}
+			\State \Return $\tilde{b} = 0$
+		\Else
+			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
+		\EndIf
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+	If the challenge bit $b = 0$, then $\mathcal{R}$ perfectly simulates a $\textsf{UF}_{\textsf{option}}$ game for $\mathcal{A}$. Therefore, the probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:red:ind-uf-OB-Enroll:verify} is $\Pr[\textsf{UF}_{\textsf{option}}(\mathcal{A}) \to 1]$.
+
+	For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-uf-OB-Enroll} in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}} }$ game. $\mathcal{A}^\prime$ runs Line \ref{alg:red:ind-uf-OB-Enroll:B} and \ref{alg:red:ind-uf-OB-Enroll:A} of $\mathcal{R}$ and simulates $\mathcal{O}_{\textsf{Enroll}}( \textsf{esk}, \mathbf{b}^\prime )$ by first encoding $\mathbf{b}^\prime$ into $\mathbf{x}^\prime$ as before and calling $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ given in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}} }$ game. 
+
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.45\textwidth}
+	\begin{algorithm}[H]
+	\caption{${\mathcal{A}^\prime}^{\mathcal{O}^\prime_{\textsf{KeyGen}} }(\textsf{pp}, \mathbf{c})$}
+	\label{alg:adv:ind-uf-OB-Enroll}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ 
+		
+		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{Enroll} } (\mathbf{c}, \textsf{pp})$
+
+		\State \Return $\mathbf{\tilde{z}}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
+
+Now, if the challenge bit $b = 1$, then $\mathcal{R}$ perfectly simulates $\mathcal{A}^\prime$ in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}} }$ game. The probability that $\textsf{Verify}(s) = 1$, which is equivalent to $s \leq \tau^2$, in Line \ref{alg:red:ind-uf-OB-Enroll:verify} is $\Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \tau^2}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$
+
+In conclusion, since $\gamma \geq \tau^2$,
+\begin{align*}
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
+	&= \Pr[b = 0] \cdot \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} \cdot \Pr[\textsf{Verify}(s) = 0 \mid b = 0] \right) \\
+	&\quad + \Pr[b = 1] \cdot \frac{1}{2} \cdot \Pr[\textsf{Verify}(s) = 0 \mid b = 1] \\
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] - \Pr[\textsf{Verify}(s) = 1 \mid b = 1] \right) \\
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_{\textsf{option}}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \tau^2}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right)
+\end{align*}
+
+\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF},\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma} = \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ are negligilbe,
+\[
+	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF},\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma} = \negl.
+\]
+
+\end{proof}
+
+
+For $\textsf{option}$ that includes $\mathcal{O}_{\textsf{Probe}}$, we first note that for any $d \in \Z_q$ and any nonzero vector $\mathbf{r} \in \Z_q^{k+2}$, there exists a vector $\mathbf{y} \in \Z_q^{k+2}$ such that $\mathbf{r}\mathbf{y}^T = d$.
+
+\begin{theorem}
+\label{thm:fh-IPFE:ind-uf-OB-Probe}
+	Let $\textsf{option} = \{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+\end{theorem}
+
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the $\textsf{UF}_\textsf{option}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-uf-OB-Probe} which plays the \textsf{fh-IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates $\mathcal{O}_{\textsf{Probe}}$ in the following way.
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{b}^\prime )$: On input $\mathbf{b}^\prime = (b_1^\prime, \cdots, b_k^\prime)$, it first encodes it as $\mathbf{y}^\prime = (-2b_1^\prime, \cdots, \allowbreak -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$. Next, it computes $d \gets \mathbf{x}{\mathbf{y}^\prime}^T$ and finds a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r}{\mathbf{y}^{\prime\prime}}^T = d$. Finally, it calls $\mathcal{O}_{\textsf{Enc}}(\mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}})$, which is given by the \textsf{fh-IND} game, and returns the result.
+
+\end{itemize}
+
+\noindent Note that $(\mathbf{x}, \mathbf{r})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\mathbf{x}{\mathbf{y}^\prime}^T = \mathbf{r}{\mathbf{y}^{\prime\prime}}^T$. Hence, $\mathcal{R}$ is an admissible adversary.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.6\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:red:ind-uf-OB-Probe}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:red:ind-uf-OB-Probe:B}
+
+		\State $\mathbf{b} = (b_1, \cdots, b_k) \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{x} \gets (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$
+
+		\State $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
+
+		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c}, \textsf{pp})$
+
+		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_\textsf{Probe}$}
+
+			\State \Return $\bot$
+
+		\EndIf
+
+		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\If{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Probe:verify}
+			\State \Return $\tilde{b} = 0$
+		\Else
+			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
+		\EndIf
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+If the challenge bit $b = 0$, then $\mathcal{R}$ perfectly simulates a $\textsf{UF}_\textsf{option}$ game for $\mathcal{A}$. Therefore, the probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:red:ind-uf-OB-Probe:verify} is $\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1]$.
+
+For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-uf-OB-Probe} in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{Enc}} }$ game. $\mathcal{A}^\prime$ runs $\mathcal{A}$ and simulates $\mathcal{O}_{\textsf{Probe}}$ in the following way.
+
+\begin{itemize}
+
+	\item $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{b}^\prime )$: It first encodes $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ as before. Next, it computes $d \gets \mathbf{x}^{(*)}{\mathbf{y}^\prime}^T$ and finds a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r}{\mathbf{y}^{\prime\prime}}^T = d$. Finally, it calls $\mathcal{O}^\prime_{\textsf{Enc}} (\mathbf{y}^{\prime\prime} )$ , which is given by the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{Enc}} }$ game, and returns the result.
+
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.8\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$ {\mathcal{A}^\prime}^{ \mathcal{O}^\prime_{\textsf{Enc}} } (\textsf{pp}, \mathbf{c}) $}
+	\label{alg:adv:ind-uf-OB-Probe}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:adv:ind-uf-OB-Probe:B}
+		
+		\State $\mathbf{b}^{(*)} \gets \textsf{getEnroll}^{ \mathcal{O}_{\mathcal{B}} } ()$
+		
+		\State $\mathbf{x}^{(*)} \gets (b_1^{(*)}, \cdots, b_k^{(*)}, 1, \|\mathbf{b}^{(*)}\|^2)$
+
+		\State Sample $k+2$ linearly independent vectors $\{ \mathbf{e}^{(i)} \}_{i=1}^{k+2}$.
+
+		\For{$i=1$ to $k+2$}
+			\State $\mathbf{c}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
+
+			\State $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$.
+		\EndFor
+
+		\State Find the vector $\mathbf{r}$ by solving the linear system $\{ \mathbf{r} {\mathbf{e}^{(i)}}^T = d_i \}_{i=1}^{k+2}$.
+
+		\If{$\mathbf{r} = \mathbf{0}$}
+
+			\State \Return $\bot$
+
+		\EndIf
+
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c}, \textsf{pp})$
+		
+		\State \Return ${\mathbf{\tilde{z}}}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+To make $\mathcal{R}$ simulate $\mathcal{A}^\prime$ in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{Enc}} }$ game, we still need to ensure two conditions.
+
+\begin{itemize}
+
+	\item $\mathbf{r} \neq \mathbf{0}$. Otherwise, $\mathcal{A}^\prime$ cannot simulate $\mathcal{O}_\textsf{Probe}$. 
+
+	\item $\mathbf{\tilde{z}} \neq \mathbf{c}^{(i)}$ for all $i$. The answers of $\mathcal{O}_\textsf{Probe}$ have already been checked in $\mathcal{R}$. 
+\end{itemize}
+
+Let $\mathcal{A}^\prime$ play a tweaked $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}$ game which does not check that $\mathbf{\tilde{z}}$ is not equal to $\mathbf{c}^{(i)}$ for all $i$. That is, the game only checks whether $\mathbf{\tilde{z}}$ is not equal to any output of $\mathcal{O}^\prime_\textsf{Enc}$ called by $\mathcal{O}_\textsf{Probe}$ of $\mathcal{A}$. Let the returned value of this game be $V$. We have Equation \ref{equ:ind-uf-OB-Probe:1} and \ref{equ:ind-uf-OB-Probe:2}. The former one is a relation between $\mathcal{R}$ playing $\textsf{fh-IND}$ game when the challenge bit $b=1$ and $V$, and the latter is a relation between $\mathcal{A}^\prime$ playing a regular $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}$ game and the tweaked one.
+
+\begin{gather}
+	\Pr[\textsf{Verify}(s) = 1 \mid b = 1 \wedge \mathbf{r} \neq \mathbf{0}] = \Pr[V = 1] \label{equ:ind-uf-OB-Probe:1} \\
+	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] = \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right] \label{equ:ind-uf-OB-Probe:2}
+\end{gather}
+
+\noindent For Equation \ref{equ:ind-uf-OB-Probe:1}, consider that
+
+\begin{align*}
+	\Pr[\textsf{Verify}(s) = 1 \mid b = 1]
+	&= \Pr[\textsf{Verify}(s) = 1 \mid b = 1 \wedge \mathbf{r} \neq \mathbf{0}] \cdot \Pr[\mathbf{r} \neq \mathbf{0}] \\
+	&+ \Pr[\textsf{Verify}(s) = 1 \mid b = 1 \wedge \mathbf{r} = \mathbf{0}] \cdot \Pr[\mathbf{r} = \mathbf{0}] \\
+	&\leq \Pr[V = 1] + \Pr[\mathbf{r} = 0] \\
+	&= \Pr[V = 1] + \frac{1}{q^{k+2}} 
+\end{align*}
+
+\noindent For Equation \ref{equ:ind-uf-OB-Probe:2}, consider that
+
+\begin{align*}
+	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] 
+	&= \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right] \\ 
+	& \geq \Pr[V = 1] - \Pr \left[ \neg  \left( \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right) \right] \\
+	& = \Pr[V = 1] - \Pr \left[ \bigvee_{i=1}^{k+2} \mathbf{\tilde{z}} = \mathbf{c}^{(i)} \right] \\
+	& \geq \Pr[V = 1] - \sum_{i=1}^{k+2} \Pr[\mathbf{\tilde{z}} = \mathbf{c}^{(i)}].
+\end{align*}
+
+\noindent Note that each $\mathbf{c}^{(i)} = \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{e}^{(i)})$ for some uniform nonzero vector $\mathbf{e}^{(i)}$. Also note that distinct vectors in $\Z_q^{k+2}$ will have different encryptions due to the correctness of $\textsf{FE}$. Therefore, $\Pr[\mathbf{\tilde{z}} = \mathbf{c}^{(i)}] \leq \frac{1}{q^{k+2} - 1}$ and
+\[
+	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] \geq \Pr[V = 1] - \frac{k+2}{q^{k+2}-1}.
+\]
+
+\noindent Combining both results from Equation \ref{equ:ind-uf-OB-Probe:1} and \ref{equ:ind-uf-OB-Probe:2}, we derive
+\[
+	\Pr[\textsf{Verify}(s) = 1 \mid b = 1] \leq \Pr[V = 1] + \frac{1}{q^{k+2}} \leq \Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}}.
+\]
+Finally, similar to the proof of Theorem \ref{thm:fh-IPFE:ind-uf-OB-Enroll}, we derive
+
+\begin{align*}
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1]
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] - \Pr[\textsf{Verify}(s) = 1 \mid b = 1] \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] - \frac{k+2}{q^{k+2}-1} - \frac{1}{q^{k+2}} \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}(\mathcal{A}^\prime) \to 1] - \frac{k+2}{q^{k+2}-1} - \frac{1}{q^{k+2}} \right) \\
+\end{align*}
+
+\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \mathcal{O}^\prime_{\textsf{Enc}}, \gamma} = \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ are negligible,
+\[
+	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \mathcal{O}^\prime_{\textsf{Enc}}, \gamma} + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}} = \negl.
+\]
+
+\end{proof}
+
+Unfortunately, for the instantiation in Section \ref{sec:fh-IPFE-instantiation}, we cannot achieve UF security when the adversary has \textsf{psk}, even if the false positive rate is negligible. The adversary can simply compute $\mathbf{c} \gets \textsf{Probe}(\textsf{psk}, \mathbf{0})$ and return $\mathbf{c}$. The same results also hold for $\textsf{option}$ that includes $\textsf{esk}$ since both $\textsf{psk}$ and $\textsf{esk}$ are equal to $\textsf{msk}$ and allow the adversary to run $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{v})$ for any vector $\mathbf{v}$. We state this result formally in the following theorem.
+
+\begin{theorem}
+
+Let $\textsf{option}$ include $\textsf{esk}$ or $\textsf{psk}$. For any distribution family $\mathbb{B}$ and functional encryption $\textsf{FE}$, $\Pi$ is not \textsf{option}-UF.
+
+\end{theorem}
+
+
+%-------------------
+
+
+\subsection{IND Security of $\Pi$}
+\label{sec:security_analysis:fh-IPFE:IND}
+
+For the IND security, we first consider the following definition and assumption on the biometric distribution family $\mathbb{B}$.
+
+\begin{definition}
+For an authentication scheme $\Pi$, a distribution $\mathcal{B} \in \mathbb{B}$, and an integer $t$, define the distribution $\mathcal{D}_\mathcal{B}(t)$ as
+\[
+	\mathcal{D}_\mathcal{B}(t) = \left( \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^{(1)}), \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^{(2)}), \cdots, \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^{(t)}) \right)
+\]
+where $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$ and $ \mathbf{b}^{(i)} \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B}}()$ for all $i \in [t]$.
+
+\end{definition}
+
+\begin{assumption}
+\label{assump:equal_distance}
+Let $t$ be an integer. Assume that for any two distributions $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$ in the biometric distribution family $\mathbb{B}$, $\mathcal{D}_{ \mathcal{B}^{(0)} }(t)$ and $\mathcal{D}_{ \mathcal{B}^{(1)} }(t)$ are the same. 
+
+\end{assumption}
+
+Note that indistinguishability between $\mathcal{D}_{ \mathcal{B}^{(0)} }(t)$ and $\mathcal{D}_{ \mathcal{B}^{(1)} }(t)$ is a necessary condition to achieve IND security because
+\[
+	\left( \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(1)}), \cdots, \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(t)}) \right) = \mathcal{D}_{ \mathcal{B}^{(b)} }(t)
+\]
+where $b$ is the challenge bit.
+
+
+\begin{theorem}
+\label{thm:fh-IPFE:ind-ind}
+For any distribution family $\mathbb{B}$ satisfying Assumption \ref{assump:equal_distance} and having a true positive rate $\textsf{TP} > \frac{1}{\poly}$, if \textsf{FE} is fh-IND, then $\Pi$ is IND.
+
+\end{theorem}
+
+
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the $\textsf{IND}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-ind} which plays the \textsf{fh-IND} game by running $\mathcal{A}$.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.75\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:red:ind-ind}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$ \label{alg:red:ind-ind:B0}
+		
+		\State $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$ \label{alg:red:ind-ind:B1}
+
+		\State $\mathbf{b}^{(0)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}(), \mathbf{x}^{(0)} \gets (b_1^{(0)}, \cdots, b_k^{(0)}, 1, \|\mathbf{b}^{(0)}\|^2)$
+		
+		\State $\mathbf{b}^{(1)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}(), \mathbf{x}^{(1)} \gets (b_1^{(1)}, \cdots, b_k^{(1)}, 1, \|\mathbf{b}^{(1)}\|^2)$
+		
+		\State $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ \label{alg:red:ind-ind:cx}
+
+		\For{$i = 1$ to $t$}
+			
+			\State ${\mathbf{b}^\prime}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+
+			\State $\mathbf{y}^{(0)} \gets (-2{b_1^\prime}^{(0)}, \cdots, -2{b_k^\prime}^{(0)}, \| {\mathbf{b}^\prime}^{(0)} \|^2, 1) $
+
+			\Repeat 
+				
+				\State ${\mathbf{b}^\prime}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+
+				\State $\mathbf{y}^{(1)} \gets (-2{b_1^\prime}^{(1)}, \cdots, -2{b_k^\prime}^{(1)}, \| {\mathbf{b}^\prime}^{(1)} \|^2, 1)$
+
+			\Until{ $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ } \label{alg:red:ind-ind:while}
+
+				%\State $\mathbf{y}^{(1)} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
+
+			%\EndWhile
+
+			\State $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$ \label{alg:red:ind-ind:cy}
+
+		\EndFor
+
+		\State $\tilde{b} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}} } (\textsf{pp}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$ \label{alg:red:ind-ind:A}
+
+		\State \Return $\tilde{b}$
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+\noindent Note that $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^{(0)}, {\mathbf{y}^{(1)}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\mathbf{x}^{(0)}{\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)}{\mathbf{y}^{(1)}}^T$. Hence, $\mathcal{R}$ is an admissible adversary.
+
+The probability that Line \ref{alg:red:ind-ind:while} is satisfied is
+\begin{align*}
+	\Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = \mathcal{D}_{\mathcal{B}^{(1)}}(1)] 
+	&\geq \sum_{i=0}^\tau \Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = i]^2 \qquad \text{(Assumption \ref{assump:equal_distance})} \\
+	&\geq \frac{1}{\tau + 1} \cdot \left( \sum_{i=0}^\tau \Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = i] \right)^2 \\
+	&= \frac{1}{\tau + 1} \cdot \left( \Pr \left[
+		\begin{aligned}
+			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}} }() \\
+			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}} }()
+		\end{aligned}
+		: \| \mathbf{b} - \mathbf{b}^\prime \| \leq \tau \right] \right)^2 \\
+	&= \frac{ \textsf{TP}(\mathcal{B}^{(0)})^2 }{\tau + 1} = \frac{ \textsf{TP}^2 }{\tau + 1} \qquad \text{(Assumption \ref{assump:equal_distance})} 
+\end{align*}
+The expected number of repetitions is bounded above by $\frac{\tau + 1}{ \textsf{TP}^2 }$. Moreover, the probability that it is satisfied within $T$ repetitions is at least
+\[
+	1 - (1 - \frac{ \textsf{TP}^2 }{\tau + 1})^T \geq 1 - e^{-T \cdot \frac{ \textsf{TP}^2 }{\tau + 1}}
+\]
+We can reach a $1 - \negl.$ probability that the loop will end within $T$ times by setting a polynomial-size $T$.
+
+Now, we show that $\mathcal{R}$ perfectly simulate an \textsf{IND} game for $\mathcal{A}$. If the challenge bit $b$ of the \textsf{fh-IND} game is $0$, $\mathbf{c_x}$ and $\mathbf{c_y}^{(i)}$ for all $i \in [t]$ are generated from $\mathcal{B}^{(0)}$ and have the same distributions as the inputs for an adversary in \textsf{IND} game.
+If the challenge bit $b$ is $1$, we show that distributions of $\mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t$ also follow the same distribution given Assumption \ref{assump:equal_distance}.
+
+Let $b^\prime \in \{0, 1\}$, define distributions 
+\begin{align*}
+	\mathbf{X}^{(b^\prime)} &= \{ \mathbf{b}^{(b^\prime)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(b^\prime)}}}() : \mathbf{x}^{(b^{\prime})} \gets (b_1^{(b^{\prime})}, \cdots, b_k^{(b^{\prime})}, 1, \|\mathbf{b}^{ (b^{\prime}) }\|^2) \} \\
+	\mathbf{Y}^{ (b^\prime) }_i &= \{ \mathbf{b}^{(b^\prime)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(b^\prime)}}}() : \mathbf{y}^{(b^{\prime})} \gets ( -2b_1^{(b^{\prime})}, \cdots, -2b_k^{(b^{\prime})}, \|\mathbf{b}^{ (b^{\prime}) }\|^2, 1) \} \\
+	\{ \mathbf{Y}^{ (b^\prime) }_i \}_{ i \in [t] } &= (\mathbf{Y}^{ (b^\prime) }_1, \cdots, \mathbf{Y}^{ (b^\prime) }_t) \quad  \text{ ($t$ identical and independent distributions) }
+\end{align*}
+
+Let $\mathbf{Y}^\prime_i$ be the distribution of $\mathbf{y}^{(1)}$ derived after the loop in Line \ref{alg:red:ind-ind:while} in the $i$-th iteration.
+For any $\{ d_i \}_{i=1}^t, d_i > 0$,
+\begin{align*}
+\Pr \left[ \bigwedge_{i=1}^t \mathbf{X}^{(0)} {\mathbf{Y}^{(0)}_i}^T = d_i^2 \right] 
+&= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(0)}}(t) = (d_1, \cdots, d_t) \right] \\
+&= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(1)}}(t) = (d_1, \cdots, d_t) \right] = \Pr \left[ \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right]
+\end{align*}
+
+Hence, for any $\mathbf{x}$ and $\{ \mathbf{y}_i \}_{i=1}^t$,
+\begin{align*}
+	& \Pr [\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^\prime_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^\prime_t = \mathbf{y}_t] \\
+	&= \sum_{d_1, \cdots, d_t} \left( \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right] \right. \\
+	&\qquad \qquad \left. \times \Pr \left[\bigwedge_{i=1}^t \mathbf{X}^{(0)} {\mathbf{Y}_i^{(0)}}^T = d_i^2 \right] \right) \\
+	&= \sum_{d_1, \cdots, d_t} \left( \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right] \right. \\
+	&\qquad \qquad \left. \times \Pr \left[\bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}_i^{(1)}}^T = d_i^2 \right] \right) \\
+	&= \Pr[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t ]
+\end{align*}
+
+\noindent which implies $\mathcal{R}$ also perfectly simulate an \textsf{IND} game for $\mathcal{A}$ when the challenge bit $b = 1$.
+
+In conclusion, 
+\[
+	\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \Adv_{\Pi, \mathbb{B}, \mathcal{A}}^\textsf{IND} = \negl.
+\]
+which holds for all adversaries $\mathcal{A}$ in the \textsf{IND} game. This implies the IND security of $\Pi$.
+
+
+\end{proof}
+
