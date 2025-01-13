@@ -296,7 +296,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}_{\textsf{KeyG
 
 		\State $\textsf{pp}^\prime \gets (\textsf{pp}, \textsf{pk}_{\textsf{Sig}})$
 
-		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\textsf{KeyGen}}^\prime, \mathcal{O}_{\textsf{Enc}}^\prime } (\textsf{pp}^\prime, \mathbf{c})$ \label{alg:red:ind-uf-OB-Enroll:A}
+		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\textsf{KeyGen}}^\prime, \mathcal{O}_{\textsf{Enc}}^\prime } (\textsf{pp}^\prime, \mathbf{c})$ \label{alg:red:sEUF-CMA:RUF:A}
 
 		\State Parse $(\mathbf{c_z}, \sigma^\prime) \gets \mathbf{\tilde{z}}$
 

@@ -38,35 +38,40 @@ A \emph{biomtric authentication shceme} $\Pi$ associated with a family $\mathbb{
 	\item $\textsf{Verify}(s) \to r \in \{0,1\}$: It is a deterministic algorithm that reads the comparison score $s$ and determines whether this is a successful authentication ($r = 1$) or not ($r = 0$).
 
 \end{itemize}
+We also call these algorithms the \emph{biometric layer} of $\Pi$. We will add a \emph{cryptographic layer} on top of it in Section \ref{sec:formalization:cryptographic_layer}
 
 \end{definition}
+
 
 Given an authentication scheme $\Pi$, we can consider its true positive rate and false positive rate.
 
 \begin{definition}[True Positive Rate]
 For a biometric distribution $\mathcal{B} \in \mathbb{B}$ and $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, define the \emph{true positive rate} \textsf{TP}.
 
-\begin{align*}
+\begin{alignat*}{2}
 	\textsf{TP}(\mathcal{B}, \mathbf{b}) 
-	:=&\; \Pr[ \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B}}(): \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 ] \\
+	:=&\; \Pr[ \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B}}()
+	&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 ] \\
+	\\
 	\textsf{TP}(\mathcal{B}) 
-	:=&\; \Pr \left[ 
+	:=&\; \Pr \Bigg[ 
 		\begin{aligned}	
 			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() \\
 			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B}}()
 		\end{aligned}
-		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right] \\
+		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \Bigg] \\
 	=&\; \mathbb{E}_{ \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() }[\textsf{TP}(\mathcal{B}, \mathbf{b})] \\
+	\\
 	\textsf{TP} 
-	:=&\; \Pr \left[
+	:=&\; \Pr \vast[
 		\begin{aligned}
 			& \mathcal{B} \getsdollar \mathbb{B} \\
 			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
 			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B} }()
 		\end{aligned}
-		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \right] \\
+		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \vast] \\
 	=&\; \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{TP}(\mathcal{B})] 
-\end{align*}
+\end{alignat*}
 
 \end{definition}
 
@@ -74,33 +79,35 @@ For a biometric distribution $\mathcal{B} \in \mathbb{B}$ and $\mathbf{b} \gets 
 \begin{definition}[False Positive Rate]
 For a biometric distribution $\mathcal{B} \in \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ and $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, define the \emph{false positive rate} \textsf{FP}.
 
-\begin{align*}
+\begin{alignat*}{2}
 	\textsf{FP}(\mathbf{b}) 
-	:=&\; \Pr \left[ 
+	:=&\; \Pr \Bigg[ 
 		\begin{aligned}
 			& \mathcal{B}^\prime \getsdollar \mathbb{B} \\
 			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()
 		\end{aligned}
-		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right] \\
+		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \Bigg] \\
+	\\
 	\textsf{FP}(\mathcal{B}) 
-	:=&\; \Pr \left[ 
+	:=&\; \Pr \vast[ 
 		\begin{aligned}
 			& \mathcal{B}^\prime \getsdollar \mathbb{B} \\
 			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
 			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
 		\end{aligned}
-		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right] \\
+		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \vast] \\
 	=&\; \mathbb{E}_{ \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() }[\textsf{FP}(\mathbf{b})] \\
+	\\
 	\textsf{FP} 
-	:=&\; \Pr \left[
+	:=&\; \Pr \vast[
 		\begin{aligned}
 			& \mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B} \\
 			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
 			& \mathbf{b} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
 		\end{aligned}
-		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right] \\
+		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \vast] \\
 	=&\; \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{FP}(\mathcal{B})]
-\end{align*}
+\end{alignat*}
 
 \end{definition}
 
@@ -111,7 +118,7 @@ Ideally, we hope $\textsf{TP}$ to be $1$, and $\textsf{FP}(\mathcal{B})$ to be n
 
 
 \subsection{Cryptographic Layer}
-
+\label{sec:formalization:cryptographic_layer}
 In this work, we add a cryptographic layer on top of $\Pi$ to protect privacy of users. The cryptographic layer includes the following algorithms.
 
 \begin{itemize}
@@ -126,7 +133,7 @@ In this work, we add a cryptographic layer on top of $\Pi$ to protect privacy of
 
 \end{itemize}
 
-\noindent \textbf{Correctness}: An authenticaion scheme $\Pi$ is \emph{correct} if for any biometric distributions $\mathcal{B}$ and $\mathcal{B}^\prime$, let $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$, $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$, $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. Then
+\noindent \textbf{Correctness}: An authentication scheme $\Pi$ is \emph{correct} if for any biometric distributions $\mathcal{B}$ and $\mathcal{B}^\prime$, let $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$, $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$, $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. Then
 	\[
 		\Pr \left [
 			\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}) = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)

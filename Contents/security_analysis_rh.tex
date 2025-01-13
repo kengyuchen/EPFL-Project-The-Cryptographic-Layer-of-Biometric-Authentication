@@ -136,4 +136,29 @@ Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \fr
 
 \end{theorem}
 
+\subsubsection{IND Security for a Particular Biometric Layer}
 
+Recall that in Section \ref{sec:ind_game}, we introduce as an example a particular biometric layer:
+\[
+	\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^* + \mathcal{E}_{\textsf{Enroll}}  \quad \text{and} \quad \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^* + \mathcal{E}_{\textsf{Probe}}
+\]
+where $\mathbf{b}^* \in \{0, 1\}^k$ is a fixed vector only dependent on $\mathcal{B}$, and $\mathcal{E}_{\textsf{Enroll}}, \mathcal{E}_{\textsf{Probe}} \subseteq \{0, 1\}^k$ are some \emph{error distributions} independent of $\mathcal{B}$.
+With the same relational hash \textsf{RH} in Section \ref{sec:rh-instantiation}, we can instantiate another authentication scheme using \textsf{RH}.
+
+\begin{itemize}
+
+	\item $\textsf{Setup}(1^\lambda)$: It runs $\textsf{RH.KeyGen}(1^\lambda) \to \textsf{pk}$ and samples $\mathbf{r} \getsdollar \{0, 1\}^k$. Then it outputs $\textsf{esk} \gets (\textsf{pk}, \mathbf{r})$, $(\textsf{psk} \gets \textsf{pk}, \mathbf{r})$, and $\textsf{csk} \gets \textsf{pk}$.
+
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: Let $\mathbf{x} \gets \mathbf{b}$. It calls $\textsf{RH.Hash}_1(\textsf{pk}, \mathbf{x} + \mathbf{r}) \to \mathbf{h_x}$ and outputs $\mathbf{c_x} \gets \mathbf{h_x}$.
+
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: Let $\mathbf{y} \gets \mathbf{b}$. It calls $\textsf{RH.Hash}_2(\textsf{pk}, \mathbf{y} + \mathbf{r}) \to \mathbf{h_y}$ and outputs $\mathbf{c_y} \gets \mathbf{h_y}$.
+
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{RH.Verify}(\textsf{pk}, \mathbf{h_x}, \mathbf{h_y}) \to s$ and outputs the value $s$.
+
+\end{itemize}
+Correctness holds because
+\[
+	\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)} = 1 \Leftrightarrow \textsf{HD}(\mathbf{x} + \mathbf{r}, \mathbf{y} + \mathbf{r}) \leq \tau \Leftrightarrow \textsf{HD}(\mathbf{x}, \mathbf{y}) \leq \tau = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime).
+\]
+
+With the same argument in Theorem \ref{thm:rh:ind:particular-biometri-layer}, one can prove that this new scheme is now IND, albeit at the cost of requiring $\textsf{esk}$ and $\textsf{psk}$ to remain secret.
