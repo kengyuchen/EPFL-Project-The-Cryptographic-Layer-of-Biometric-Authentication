@@ -185,7 +185,7 @@ To model reusability, I think we can consider either providing $\mathbf{c_x}^{(i
 
 
 
-\iffalse
+%\iffalse
 
 \section{Fixing the Proof of Theorem \ref{thm:fh-IPFE:ind-uf-OB-Probe}}
 
@@ -230,7 +230,7 @@ One direction now is to find an fh-IPFE such that
 \begin{itemize}
 	\item $q = \poly(\lambda)$. Otherwise, the scheme is very slow.
 
-	\item $\textsf{FE.Dec}$ do not need prior knowledge of inputs. Otherwise, we need to change \textsf{RUF} game.
+	\item $\textsf{FE.Dec}$ does not need prior knowledge of inputs. Otherwise, we need to change \textsf{RUF} game.
 	
 	\item Full \textsf{fh-IND} security.
 \end{itemize}
@@ -242,7 +242,7 @@ One direction now is to find an fh-IPFE such that
 \begin{assumption}
 \label{assump:random_key_ct}
 
-Let $\textsf{FE}$ be an fh-IPFE scheme and $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$. Assume that given $\textsf{pp}$, there exist PPT algorithms $\textsf{RandKeyGen}$ and $\textsf{RandEnc}$ that can generate $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{r})$ and $\textsf{FE.Enc}(\textsf{msk}, \mathbf{r})$ for some (probably unknown) random vector $\mathbf{r} \in \mathbb{F}^k$, respectively.
+Let $\textsf{FE}$ be an fh-IPFE scheme and $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$. Assume that given $\textsf{pp}$, there exist PPT algorithms $\textsf{RandKeyGen}$ and $\textsf{RandEnc}$ that can generate $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{r})$ and $\textsf{FE.Enc}(\textsf{msk}, \mathbf{r})$ for some random vector $\mathbf{r} \in \mathbb{F}^k$, respectively.
 
 \end{assumption}
 
@@ -250,13 +250,13 @@ Note that constructions in \cite{10.1007/978-3-319-45871-7_24, cryptoeprint:2016
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-OEnc-ruf}
-Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND and $\emptyset$-RUF for some $\gamma \leq \|\mathbb{F}\|$, then $\textsf{FE}$ is also $\mathcal{O}^\prime_{\textsf{Probe}}$-RUF for $\gamma$.
+Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND and $\emptyset$-RUF for some $\gamma \leq \|\mathbb{F}\|$, then $\textsf{FE}$ is also $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for $\gamma$.
 
 \end{theorem}
 
 \begin{proof}
 
-Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}$ game for any $\gamma < \|\mathbb{F}\|$, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OEnc-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{Enc}^\prime(\mathbf{y}^\prime)$ by first sampling a $\mathbf{r}^\prime \gets \mathbb{F}^k$ and returning $\mathcal{O}_\textsf{Enc}(\mathbf{y}^\prime, \mathbf{r}^\prime)$.
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}$ game for any $\gamma \leq \|\mathbb{F}\|$, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OEnc-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{Enc}^\prime(\mathbf{y}^\prime)$ by first sampling a $\mathbf{r}^\prime \gets \mathbb{F}^k$ and returning $\mathcal{O}_\textsf{Enc}(\mathbf{y}^\prime, \mathbf{r}^\prime)$.
 
 \begin{figure}[h]
 \centering
@@ -321,10 +321,10 @@ Since $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF implies $\emptyset$-RUF, we hav
 
 \begin{corollary}
 \label{cor:fh-IPFE:ind-OKeyGen-OEnc-ruf}
-Given Assumption \ref{assump} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is both $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF and $\mathcal{O}^\prime_{\textsf{Probe}}$-RUF for any $\gamma \leq \|\mathbb{F}\|$.
+Given Assumption \ref{assump} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is both $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for any $\gamma \leq \|\mathbb{F}\|$.
 \end{corollary}
 
-\fi
+%\fi
 
 %-------------------
 %% Backup File
