@@ -89,9 +89,9 @@ As $D_1^0 = D_2$, the decryption returns $0$ and let the adversary win the game 
 
 \subsection{RUF Security of \textsf{FE}}
 
-We also define the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} for a real number $\gamma$.
+Let $\mathbb{F} = \Z_q$. We also define the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} for an integer $\gamma$.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
 	\begin{minipage}[t]{0.55\textwidth}
@@ -122,6 +122,8 @@ We also define the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algo
 
 \end{figure}
 
+Here, the game runs $1_{s \leq \gamma}$ by first viewing the field element $s \in \Z_q$ as a positive integer in $\{0, 1, \cdots, q-1 \}$ and comparing it with $\gamma$.
+
 The oracle $\mathcal{O}$ can be nothing or include the following options based on the threat model.
 
 \begin{itemize}
@@ -133,7 +135,7 @@ The oracle $\mathcal{O}$ can be nothing or include the following options based o
 
 \begin{definition}[RUF Security]
 
-	An fh-IPFE scheme \textsf{FE} is called $\mathcal{O}$-RUF secure for a real number $\gamma$ if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} is
+	An fh-IPFE scheme \textsf{FE} is called $\mathcal{O}$-RUF secure for an integer $\gamma$ if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} is
 
 \[
 	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \mathcal{O}, \gamma} := \Pr[\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ] = \negl.
@@ -150,14 +152,15 @@ We note that RUF security is a new security notion of fh-IPFE. In this section, 
 
 \begin{assumption}
 \label{assump}
-Let $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$. Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns when $\mathbf{z}$ corresponds to a \emph{nonzero} vector $\mathbf{v} \in \mathbb{F}^k$. That is, assume that for any $\mathbf{z}$, there can only be two possibilities.
+Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns when $\mathbf{z}$ corresponds to a \emph{nonzero} vector $\mathbf{v} \in \mathbb{F}^k$. More precisely, assume that for any $\mathbf{z}$, there can only be two possibilities.
 
 \begin{itemize}
-	\item There exists a vector $\mathbf{v} \in \mathbb{F}^k \setminus \{\mathbf{0}\}$ such that for any $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, and $\mathbf{c_v} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{v})$, 
+	\item Either there exists a vector $\mathbf{v} \in \mathbb{F}^k \setminus \{\mathbf{0}\}$ such that for any $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, 
 	\[
-		\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c_v}).
+		%\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c_v}).
+		\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \mathbf{x}\mathbf{v}^T.
 	\]
-	\item For any $\mathbf{x} \in \mathbb{F}^k$ and $ \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) \to \bot$.
+	\item Or for any $\mathbf{x} \in \mathbb{F}^k$ and $ \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) \to \bot$.
 
 \end{itemize}
 Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the input of $\textsf{FE.Enc}$.
@@ -165,13 +168,13 @@ Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the inp
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-OKeyGen-ruf}
-Given Assumption \ref{assump}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for any $\gamma \leq \|\mathbb{F}\|$.
+Given Assumption \ref{assump}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for any $\gamma < \|\mathbb{F}\|$.
 
 \end{theorem}
 
 \begin{proof}
 Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}$ game for any $\gamma < \|\mathbb{F}\|$. Let $t$ be an integer, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OKeyGen-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by $\mathcal{O}_\textsf{KeyGen}(\mathbf{x}^\prime, \mathbf{x}^\prime)$.
-If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-ruf:s}, by Assumption \ref{assump}, let $\mathbf{\tilde{z}}$ correspond to a vector $\mathbf{\tilde{v}}$.
+If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-ruf:s}, by Assumption \ref{assump}, let $\mathbf{\tilde{z}}$ correspond to a nonzero vector $\mathbf{\tilde{v}}$.
 
 \begin{figure}[h]
 \centering

@@ -223,6 +223,8 @@ By the correctness of the relational hash scheme $\textsf{RH}$, we have (except 
 	r = 1 \Leftrightarrow (\mathbf{x}, \mathbf{y}) = (\mathbf{b}, \mathbf{b}^\prime) \in R^\tau \Leftrightarrow \textsf{HD}(\mathbf{b}, \mathbf{b}^\prime) \leq \tau
 \]
 
+The idea behing this construction is that users hold a personal device which runs \textsf{Setup}, \textsf{Enroll}, and \textsf{Probe} using templates coming from a biometric sensor. The message $\mathbf{c_x}$ along with the comparison key $\textsf{csk} = \textsf{pk}$, which is assumed to be public, are sent to a server in order to enroll the user, and $\mathbf{c_y}$ is sent on authentication.
+
 A security analysis of this instantiation in our security model is given in Section \ref{sec:security_analysis:rh}.
 
 %-------------------

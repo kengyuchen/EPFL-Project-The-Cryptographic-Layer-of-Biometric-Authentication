@@ -252,11 +252,11 @@ However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ a
 
 Let $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}(), \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ be such that
 \[
-	\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^* + \mathcal{E}_{\textsf{Enroll}}  \quad \text{and} \quad \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^* + \mathcal{E}_{\textsf{Probe}}
+	\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^*_{\mathcal{B}} \oplus \mathcal{E}_{\textsf{Enroll}}  \quad \text{and} \quad \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^*_{\mathcal{B}} \oplus \mathcal{E}_{\textsf{Probe}}
 \]
-where $\mathbf{b}^* \in \{0, 1\}^k$ is a fixed vector only dependent on $\mathcal{B}$, and $\mathcal{E}_{\textsf{Enroll}}, \mathcal{E}_{\textsf{Probe}} \subseteq \{0, 1\}^k$ are some \emph{error distributions} independent of $\mathcal{B}$. Let $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to 1_{\textsf{HD}(\mathbf{b}, \mathbf{b}^\prime) \leq \tau}$. Then
+where $\mathbf{b}^*_{\mathcal{B}} \in \{0, 1\}^k$ is a fixed vector only dependent on $\mathcal{B}$, and $\mathcal{E}_{\textsf{Enroll}}, \mathcal{E}_{\textsf{Probe}} \subseteq \{0, 1\}^k$ are some \emph{error distributions} independent of $\mathcal{B}$. Let $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to 1_{\textsf{HD}(\mathbf{b}, \mathbf{b}^\prime) \leq \tau}$. Then
 \[
-	\textsf{TP} = \Pr[ \textsf{HW}(\mathbf{b}^* + \mathcal{E}_{\textsf{Enroll}} + \mathbf{b}^* + \mathcal{E}_{\textsf{Probe}}) \leq \tau ] = \Pr[ \textsf{HW}(\mathcal{E}_{\textsf{Enroll}} + \mathcal{E}_{\textsf{Probe}}) \leq \tau ]
+	\textsf{TP} = \Pr[ \textsf{HW}(\mathbf{b}^*_{\mathcal{B}} \oplus \mathcal{E}_{\textsf{Enroll}} \oplus \mathbf{b}^*_{\mathcal{B}} \oplus \mathcal{E}_{\textsf{Probe}}) \leq \tau ] = \Pr[ \textsf{HW}(\mathcal{E}_{\textsf{Enroll}} \oplus \mathcal{E}_{\textsf{Probe}}) \leq \tau ]
 \]
 
 \noindent We note that previous works such as \cite{10.1145/1030083.1030096,cryptoeprint:2014/394} model biometric template vectors in a similar way.
@@ -267,16 +267,16 @@ Now, for this biometric layer, we can construct a simple but IND secure authenti
 
 	\item $\textsf{Setup} (1^\lambda)$: Sample $\mathbf{r} \getsdollar \{0, 1\}^k$. Output $\textsf{esk} = \textsf{psk} \gets \mathbf{r}$, $\textsf{csk} \gets \epsilon$.
 
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: Output $\mathbf{b} + \mathbf{r}$.
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: Output $\mathbf{b} \oplus \mathbf{r}$.
 	
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: Output $\mathbf{b}^\prime + \mathbf{r}$.
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: Output $\mathbf{b}^\prime \oplus \mathbf{r}$.
 
 	\item $\textsf{Compare} (\textsf{csk}, \mathbf{c_x}, \mathbf{c_y})$: If $\textsf{HD}(\mathbf{c_x}, \mathbf{c_y}) \leq \tau$, return $1$; otherwise, return $0$. 
 
 \end{itemize}
 The correctness of $\Pi$ holds by
 \[
-	\textsf{HD}(\mathbf{c_x}, \mathbf{c_y}) = \textsf{HW}(\mathbf{b} + \mathbf{r} + \mathbf{b}^\prime + \mathbf{r}) = \textsf{HW}(\mathbf{b} + \mathbf{b}^\prime) = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime).
+	\textsf{HD}(\mathbf{c_x}, \mathbf{c_y}) = \textsf{HW}(\mathbf{b} \oplus \mathbf{r} \oplus \mathbf{b}^\prime \oplus \mathbf{r}) = \textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime).
 \]
 
 \begin{theorem}
@@ -290,10 +290,10 @@ The authentication scheme $\Pi$ is IND.
 Let $\mathbf{b}^*_0$ and $\mathbf{b}^*_1$ be the fixed vectors of $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$ in the \textsf{IND} game, respectively. For any $\mathbf{v}, \mathbf{v}^{(1)}, \cdots, \mathbf{v}^{(t)}$,
 \begin{align*}
 	& \Pr[ \mathbf{c_x} = \mathbf{v},\; \mathbf{c_y}^{(1)} = \mathbf{v}^{(1)},\; \cdots,\; \mathbf{c_y}^{(t)} = \mathbf{v}^{(t)} \mid b = 0,\; \mathbf{b}^*_0,\; \mathbf{b}^*_1 ] \\
-	&= \Pr[ \mathbf{b}^*_0 + \mathcal{E}_{\textsf{Enroll}} + \mathbf{r} = \mathbf{v},\; \mathbf{b}^*_0 + \mathcal{E}_{\textsf{Probe}} + \mathbf{r} =\mathbf{v}^{(1)},\; \cdots,\; \mathbf{b}^*_0 + \mathcal{E}_{\textsf{Probe}} + \mathbf{r} =\mathbf{v}^{(t)} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 
-	&= \Pr[ \mathbf{r} = \mathbf{v} - \mathbf{b}^*_0 - \mathcal{E}_{\textsf{Enroll}} =\mathbf{v}^{(1)} - \mathbf{b}^*_0 - \mathcal{E}_{\textsf{Probe}} = \cdots = \mathbf{v}^{(t)} - \mathbf{b}^*_0 - \mathcal{E}_{\textsf{Probe}} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 
-	&= \Pr[ \mathbf{r} = \mathbf{v} - \mathbf{b}^*_1 - \mathcal{E}_{\textsf{Enroll}} = \mathbf{v}^{(1)} - \mathbf{b}^*_1 - \mathcal{E}_{\textsf{Probe}} = \cdots = \mathbf{v}^{(t)} - \mathbf{b}^*_1 - \mathcal{E}_{\textsf{Probe}} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 
-	&= \Pr[ \mathbf{b}^*_1 + \mathcal{E}_{\textsf{Enroll}} + \mathbf{r} = \mathbf{v},\; \mathbf{b}^*_1 + \mathcal{E}_{\textsf{Probe}} + \mathbf{r} =\mathbf{v}^{(1)},\; \cdots,\; \mathbf{b}^*_1 + \mathcal{E}_{\textsf{Probe}} + \mathbf{r} =\mathbf{v}^{(t)} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 
+	&= \Pr[ \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Enroll}} \oplus \mathbf{r} = \mathbf{v},\; \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Probe}} \oplus \mathbf{r} =\mathbf{v}^{(1)},\; \cdots,\; \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Probe}} \oplus \mathbf{r} =\mathbf{v}^{(t)} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 
+	&= \Pr[ \mathbf{r} = \mathbf{v} \oplus \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Enroll}} =\mathbf{v}^{(1)} \oplus \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Probe}} = \cdots = \mathbf{v}^{(t)} \oplus \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Probe}} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 
+	&= \Pr[ \mathbf{r} = \mathbf{v} \oplus \mathbf{b}^*_1 \oplus \mathcal{E}_{\textsf{Enroll}} = \mathbf{v}^{(1)} \oplus \mathbf{b}^*_1 \oplus \mathcal{E}_{\textsf{Probe}} = \cdots = \mathbf{v}^{(t)} \oplus \mathbf{b}^*_1 \oplus \mathcal{E}_{\textsf{Probe}} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 
+	&= \Pr[ \mathbf{b}^*_1 \oplus \mathcal{E}_{\textsf{Enroll}} \oplus \mathbf{r} = \mathbf{v},\; \mathbf{b}^*_1 \oplus \mathcal{E}_{\textsf{Probe}} \oplus \mathbf{r} =\mathbf{v}^{(1)},\; \cdots,\; \mathbf{b}^*_1 \oplus \mathcal{E}_{\textsf{Probe}} \oplus \mathbf{r} =\mathbf{v}^{(t)} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 
 	&= \Pr[ \mathbf{c_x} = \mathbf{v},\; \mathbf{c_y}^{(1)} = \mathbf{v}^{(1)},\; \cdots,\; \mathbf{c_y}^{(t)} = \mathbf{v}^{(t)} \mid b = 1,\; \mathbf{b}^*_0,\; \mathbf{b}^*_1  ]
 \end{align*}
 Hence, the adversary cannot distinguish between $\mathbf{c_x}, \mathbf{c_y}^{(1)}, \cdots, \mathbf{c_y}^{(t)}$ generated from $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$.
