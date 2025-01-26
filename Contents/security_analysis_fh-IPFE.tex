@@ -168,12 +168,12 @@ Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the inp
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-OKeyGen-ruf}
-Given Assumption \ref{assump}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for any $\gamma < \|\mathbb{F}\|$.
+Given Assumption \ref{assump}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
 
 \end{theorem}
 
 \begin{proof}
-Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}$ game for any $\gamma < \|\mathbb{F}\|$. Let $t$ be an integer, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OKeyGen-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by $\mathcal{O}_\textsf{KeyGen}(\mathbf{x}^\prime, \mathbf{x}^\prime)$.
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}$ game for a $\gamma \leq (1 - \frac{1}{P(\lambda)}) \cdot \|\mathbb{F}\|$, where $P(\lambda)$ is any polynomial. Let $t$ be an integer, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OKeyGen-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by $\mathcal{O}_\textsf{KeyGen}(\mathbf{x}^\prime, \mathbf{x}^\prime)$.
 If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-ruf:s}, by Assumption \ref{assump}, let $\mathbf{\tilde{z}}$ correspond to a nonzero vector $\mathbf{\tilde{v}}$.
 
 \begin{figure}[h]
@@ -240,12 +240,13 @@ In conclusion,
 	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
 	&= \frac{1}{2} + \frac{1}{4} \left( \Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 0 \right] - \Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 1 \right] \right) \\
 	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] - \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t \right) \\
-	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] -  e^{- t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } \right)
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] -  e^{- t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] -  e^{- \frac{t}{P(\lambda)} } \right)
 \end{align*}
 
-\noindent Take $t$ be any integer larger than $\frac{\lambda}{ 1 - \frac{\gamma}{\| \mathbb{F} \| }}$. Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $e^{-t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } \leq e^{-\lambda}$ are negligible,
+\noindent Take $t$ be any integer larger than $P(\lambda) \cdot \lambda$. Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $e^{-t \cdot \frac{1}{P(\lambda)}} < e^{-\lambda}$ are negligible,
 \[
-	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]  \leq e^{- t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } + 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND}  = \negl.
+	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]  \leq e^{- \frac{t}{P(\lambda)} } + 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND}  = \negl.
 \]
 
 \end{proof}

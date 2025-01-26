@@ -317,11 +317,11 @@ Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-I
 
 \end{proof}
 
-Since $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF implies $\emptyset$-RUF, we have the following corollary.
+Since $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF implies $\emptyset$-RUF, with Theorem \ref{thm:fh-IPFE:ind-OKeyGen-ruf}, we have the following corollary.
 
 \begin{corollary}
 \label{cor:fh-IPFE:ind-OKeyGen-OEnc-ruf}
-Given Assumption \ref{assump} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is both $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for any $\gamma \leq \|\mathbb{F}\|$.
+Given Assumption \ref{assump} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is both $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
 \end{corollary}
 
 \fi
