@@ -13,7 +13,12 @@
 
 %% Title
 \title{\textbf{The Cryptographic Layer of Biometric Authentication}}
-\author{Keng-Yu Chen}
+\author{Keng-Yu Chen \\
+  \multicolumn{1}{p{.7\textwidth}}{} \\
+  \multicolumn{1}{p{.7\textwidth}}{\centering \textbf{Supervisor}: Serge Vaudenay}\\
+  \multicolumn{1}{p{.7\textwidth}}{\centering LASEC, EPFL}\\
+  \\
+}
 \date{\today}
 
 \maketitle
@@ -23,8 +28,7 @@
 %% Header and Foot
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{Semester Project}
-\fancyhead[C]{Biometric Authentication}
+\fancyhead[L]{LASEC}
 \fancyhead[R]{Keng-Yu Chen}
 \fancyfoot[C]{\thepage}
 
@@ -180,9 +184,6 @@ In this construction, $q$ is exponential to $\lambda$ to achieve security, and d
 In the reusable fuzzy extractor paper \cite{10.1145/1030083.1030096}, if public strings related to personal information are generated many times, the sensitive information might leak. In our setting, it is a little similar to having multiple $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$.
 
 To model reusability, I think we can consider either providing $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ for different $\textsf{esk}_i$, or just providng $\mathcal{O}^\prime_{\textsf{Enroll}}$.
-
-
-
 
 
 \iffalse
