@@ -6,7 +6,72 @@
 
 %%%%%%%%%%%%%%%%%%%%
 
-Let $\Pi$ be an authentication scheme instantiated by an fh-IPFE scheme \textsf{FE} as in Section \ref{sec:fh-IPFE-instantiation}. We discuss the UF and IND security of $\Pi$ in this section. For this, we first define two security notions of \textsf{FE}.
+\begin{definition}[Function-Hiding Inner Product Functional Encryption (adapted from \cite{cryptoeprint:2016/440}) ]
+\label{def:fh-IPFE}
+	A \emph{function-hiding inner product functional encryption} (fh-IPFE) scheme $\sf FE$ for a field $\mathbb{F}$ and input length $k$ is composed of PPT algorithms $\textsf{FE.Setup}$, $\textsf{FE.KeyGen}$, $\textsf{FE.Enc}$, and $\textsf{FE.Dec}$:
+
+	\begin{itemize}
+	
+		\item $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$: It outputs the public parameter $\textsf{pp}$ and the master secret key $\textsf{msk}$.
+	
+		\item $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to f_\mathbf{x}$: It generates the functional decryption key $f_\mathbf{x}$ for an input vector $\mathbf{x} \in \mathbb{F}^k$. 
+	
+		\item $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
+	
+		\item $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$ or an error symbol $\bot$.
+	
+	\end{itemize}
+	
+	\paragraph{\textbf{Correctness}} An fh-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\[
+		\textsf{FE.Dec}( \textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}), \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \in \mathbb{F}.
+	\]
+
+\end{definition}
+
+%-------------------
+
+\subsection{Instantiation with an fh-IPFE Scheme}
+\label{sec:fh-IPFE-instantiation}
+
+Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be an fh-IPFE scheme. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using $\textsf{FE}$ with the distance metric the Euclidean distance.
+Let $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ both output vectors in $ \{0, 1, \cdots, m \}^k$ for all biometric distributions $\mathcal{B} \in \mathbb{B}$. 
+For a pre-defined real number $\tau \geq 0$, define
+\[
+	\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to \| \mathbf{b} - \mathbf{b}^\prime\|^2 \quad \text{and} \quad 
+	\textsf{Verify}(s) \to 
+	\begin{cases} 
+		1 & \text{if } \sqrt{s} \leq \tau \\
+		0 & \text{if } \sqrt{s} > \tau
+	\end{cases}.
+\]
+
+Now, let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$, where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
+
+\begin{itemize}
+
+	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$ and outputs $\textsf{esk} \gets (\textsf{msk}, \textsf{pp})$, $\textsf{psk} \gets (\textsf{msk}, \textsf{pp})$ and $\textsf{csk} \gets \textsf{pp}$.
+
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: On input a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the algorithm first encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. Next, it calls $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
+
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: On input a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$, the algorithm first encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1^\prime, -2b_2^\prime, \cdots, -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$. Next, it calls $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+
+	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+
+\end{itemize}
+
+By the correctness of the functional encryption scheme $\sf FE$, we have
+\[
+	s = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{y}^T = \sum_{i=1}^k -2b_ib_i^\prime + \|\mathbf{b}\|^2 + \|\mathbf{b}^\prime\|^2 = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
+\]
+which is equal to $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}^\prime$ are close enough such that $\|\mathbf{b} - \mathbf{b}^\prime\| \leq \tau$, the scheme results in $r = 1$, a successful authentication.
+
+Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either $\textsf{esk}$ or $\textsf{psk}$ can probe any (invalidly encoded) $\mathbf{y}^{\prime} \in \Z_q^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about the biometric template $\mathbf{b}$. Even if the adversary has no $\textsf{esk}$ or $\textsf{psk}$, if it can sample ciphertexts $\mathbf{c_{y}}$ corresponding to some unknown random vectors $\mathbf{y}$, and if the field size $q$ is not large enough, it can also find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T \leq \tau$ with a non-negligible probability to impersonate the user by sampling many times offline.
+
+%-------------------
+
+
+Now, let $\Pi$ be an authentication scheme instantiated by an fh-IPFE scheme \textsf{FE}. We discuss the UF and IND security of $\Pi$ in this section. For this, we first define two security notions of \textsf{FE}.
 
 \subsection{fh-IND Security of \textsf{FE}}
 
@@ -88,15 +153,16 @@ As $D_1^0 = D_2$, the decryption returns $0$ and let the adversary win the game 
 %-------------------
 
 \subsection{RUF Security of \textsf{FE}}
+\label{sec:security_analysis:fh-IPFE:ruf}
 
-Let $\mathbb{F} = \Z_q$. We also define the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} for an integer $\gamma$.
+Let $\mathbb{F} = \Z_q$. We also define the $\textsf{RUF}^{\mathcal{O}}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE}.
 
 \begin{figure}[H]
 \centering
 
 	\begin{minipage}[t]{0.55\textwidth}
 	\begin{algorithm}[H]
-	\caption{$\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A})$}
+	\caption{$\textsf{RUF}^{\mathcal{O}}_{\textsf{FE}}(\mathcal{A})$}
 	\label{alg:ruf-fh-IPFE}
 	\begin{algorithmic}[1]
 		\State $\mathbf{r} \getsdollar \mathbb{F}^{k}$ \label{alg:oracle-ruf-fh-IPFE:r}
@@ -115,14 +181,12 @@ Let $\mathbb{F} = \Z_q$. We also define the $\textsf{RUF}^{\mathcal{O}, \gamma}_
 
 		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
 
-		\State \Return $1_{s \leq \gamma}$
+		\State \Return $1_{s \neq \bot}$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
 
 \end{figure}
-
-Here, the game runs $1_{s \leq \gamma}$ by first viewing the field element $s \in \Z_q$ as a positive integer in $\{0, 1, \cdots, q-1 \}$ and comparing it with $\gamma$.
 
 The oracle $\mathcal{O}$ can be nothing or include the following options based on the threat model.
 
@@ -135,124 +199,19 @@ The oracle $\mathcal{O}$ can be nothing or include the following options based o
 
 \begin{definition}[RUF Security]
 
-	An fh-IPFE scheme \textsf{FE} is called $\mathcal{O}$-RUF secure for an integer $\gamma$ if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} is
+	An fh-IPFE scheme \textsf{FE} is called $\mathcal{O}$-RUF secure if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE} is
 
 \[
-	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \mathcal{O}, \gamma} := \Pr[\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ] = \negl.
+	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \mathcal{O}} := \Pr[\textsf{RUF}^{\mathcal{O}}_{\textsf{FE}}(\mathcal{A}) \to 1 ] = \negl.
 \]
 
 \noindent We say $\textsf{FE}$ is RUF secure if it is $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \mathcal{O}^\prime_{\textsf{Enc}} \}$-RUF secure.
 
 \end{definition}
 
-
 \subsubsection{Achievability of RUF Security}
 
-We note that RUF security is a new security notion of fh-IPFE. In this section, we provide two theorems to obtain an $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF and an RUF scheme, respectively.
-
-\begin{assumption}
-\label{assump}
-Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns when $\mathbf{z}$ corresponds to a \emph{nonzero} vector $\mathbf{v} \in \mathbb{F}^k$. More precisely, assume that for any $\mathbf{z}$, there can only be two possibilities.
-
-\begin{itemize}
-	\item Either there exists a vector $\mathbf{v} \in \mathbb{F}^k \setminus \{\mathbf{0}\}$ such that for any $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, 
-	\[
-		%\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c_v}).
-		\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \mathbf{x}\mathbf{v}^T.
-	\]
-	\item Or for any $\mathbf{x} \in \mathbb{F}^k$ and $ \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) \to \bot$.
-
-\end{itemize}
-Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the input of $\textsf{FE.Enc}$.
-\end{assumption}
-
-\begin{theorem}
-\label{thm:fh-IPFE:ind-OKeyGen-ruf}
-Given Assumption \ref{assump}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
-
-\end{theorem}
-
-\begin{proof}
-Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}$ game for a $\gamma \leq (1 - \frac{1}{P(\lambda)}) \cdot \|\mathbb{F}\|$, where $P(\lambda)$ is any polynomial. Let $t$ be an integer, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OKeyGen-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by $\mathcal{O}_\textsf{KeyGen}(\mathbf{x}^\prime, \mathbf{x}^\prime)$.
-If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-ruf:s}, by Assumption \ref{assump}, let $\mathbf{\tilde{z}}$ correspond to a nonzero vector $\mathbf{\tilde{v}}$.
-
-\begin{figure}[h]
-\centering
-	
-	\begin{minipage}[t]{0.5\linewidth}
-	\centering
-	\begin{algorithm}[H]
-	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
-	\label{alg:red:ind-OKeyGen-ruf}
-	\begin{algorithmic}[1]
-		\State $\mathbf{r}^{(0)}, \mathbf{r}^{(1)} \getsdollar \mathbb{F}^{k}$
-		
-		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(1)})$ 
-
-		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} (\textsf{pp}, \mathbf{c})$
-
-		\For{$i = 1$ to $t$}
-		
-			\State $\mathbf{r}_i \getsdollar \mathbb{F}^{k}$
-
-			\State $\mathbf{c}_i \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}_i)$
-
-			\State $s_i \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}_i, \mathbf{\tilde{z}} )$ \label{alg:red:ind-OKeyGen-ruf:s}
-	
-		\EndFor	
-		
-		\If{$\bigwedge_{i=1}^t s_i \leq \gamma$} \label{alg:red:ind-OKeyGen-ruf:verify}
-			\State \Return $\tilde{b} = 0$
-		\Else
-			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
-		\EndIf
-
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-	
-\end{figure}
-
-
-If the challenge bit $b = 0$, then by Assumption \ref{assump}, any $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-ruf:s} implies all $s_i \neq \bot$ and $s_i = s_j$ for any $i, j$. Therefore, the probability that all $s_i \leq \gamma$ in Line \ref{alg:red:ind-OKeyGen-ruf:verify} is
-\begin{align*}
-	\Pr\left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 0 \right]
-	&= \Pr\left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ s_1 \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
-	&= \Pr \left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \mathbf{r}^{(0)} \mathbf{\tilde{v}}^T \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
-	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
-	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1 \mid b = 0 \wedge s_1 \neq \bot \right] \\ 
-	&= \Pr \left[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1 \right] 
-\end{align*}
-
-If the challenge bit $b = 1$, for any $i \in [t]$,
-\begin{align*}
-	\Pr[ s_i \leq \gamma \mid b = 1 ]
-	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ s_i \leq \gamma \mid b = 1 \wedge s_i \neq \bot] \\
-	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ \mathbf{r}_i \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s \neq \bot]
-\end{align*}
-Note that $\mathbf{r}_i$ is independent of $\mathbf{\tilde{z}}$ and thus independent of $\mathbf{\tilde{v}}$. Hence, $\Pr[\mathbf{r}_i \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s_i \neq \bot] = \frac{\gamma}{\| \mathbb{F} \|}$ and
-\[
-	\Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 1 \right] = \Pr \left[ \bigwedge_{i=1}^t s_i \neq \bot \mid b = 1 \right] \cdot \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t \leq \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t
-\]
-
-In conclusion,
-\begin{align*}
-	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
-	&= \frac{1}{2} + \frac{1}{4} \left( \Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 0 \right] - \Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 1 \right] \right) \\
-	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] - \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t \right) \\
-	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] -  e^{- t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } \right) \\
-	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] -  e^{- \frac{t}{P(\lambda)} } \right)
-\end{align*}
-
-\noindent Take $t$ be any integer larger than $P(\lambda) \cdot \lambda$. Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $e^{-t \cdot \frac{1}{P(\lambda)}} < e^{-\lambda}$ are negligible,
-\[
-	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]  \leq e^{- \frac{t}{P(\lambda)} } + 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND}  = \negl.
-\]
-
-\end{proof}
-
-
-Let $\textsf{Sig} = ( \textsf{Sig.KeyGen}, \textsf{Sig.Sign}, \textsf{Sig.Verify} )$ be an sEUF-CMA signature scheme. By adding $\textsf{Sig}$, an fh-IPFE scheme $\textsf{FE}$ can be upgraded to an RUF scheme $\textsf{FE}^\prime$. 
+We note that RUF security is a new security notion of fh-IPFE but can be achieved with a digital signature scheme. Let $\textsf{Sig} = ( \textsf{Sig.KeyGen}, \textsf{Sig.Sign}, \textsf{Sig.Verify} )$ be an sEUF-CMA signature scheme. By adding $\textsf{Sig}$, an fh-IPFE scheme $\textsf{FE}$ can be upgraded to an RUF scheme $\textsf{FE}^\prime$. 
 
 \begin{itemize}
 
@@ -268,13 +227,13 @@ Let $\textsf{Sig} = ( \textsf{Sig.KeyGen}, \textsf{Sig.Sign}, \textsf{Sig.Verify
 
 \begin{theorem}
 
-For any fh-IPFE $\textsf{FE}$, $\textsf{FE}^\prime$ is an RUF fh-IPFE for any $\gamma$.
+For any fh-IPFE $\textsf{FE}$, $\textsf{FE}^\prime$ is an RUF fh-IPFE.
 
 \end{theorem}
 
 \begin{proof}
 
-Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}_{\textsf{KeyGen}}^\prime, \mathcal{O}_{\textsf{Enc}}^\prime, \gamma}_{\textsf{FE}^\prime}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:sEUF-CMA:RUF} which plays the \textsf{sEUF-CMA} game of $\textsf{Sig}$. $\mathcal{R}$ is given a verification public key $\textsf{pk}_{\textsf{Sig}}$ and a signing oracle $\mathcal{O}_{\textsf{Sig}}$ and returns a forged message-signature pair that is not equal to any previous answer of $\mathcal{O}_{\textsf{Sig}}$. To run $\mathcal{A}$, $\mathcal{R}$ simulates each oracle in the following way.
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}_{\textsf{KeyGen}}^\prime, \mathcal{O}_{\textsf{Enc}}^\prime}_{\textsf{FE}^\prime}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:sEUF-CMA:RUF} which plays the \textsf{sEUF-CMA} game of $\textsf{Sig}$. $\mathcal{R}$ is given a verification public key $\textsf{pk}_{\textsf{Sig}}$ and a signing oracle $\mathcal{O}_{\textsf{Sig}}$ and returns a forged message-signature pair that is not equal to any previous answer of $\mathcal{O}_{\textsf{Sig}}$. To run $\mathcal{A}$, $\mathcal{R}$ simulates each oracle in the following way.
 
 \begin{itemize}
 	\item $\mathcal{O}_{\textsf{KeyGen}}^\prime(\mathbf{x}^\prime)$: Return $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{x})$.
@@ -313,7 +272,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}_{\textsf{KeyG
 
 $\mathcal{R}$ perfectly simulates a $\textsf{RUF}$ game for $\mathcal{A}$, and if $\mathcal{A}$ wins the $\textsf{RUF}$ game, $(\mathbf{c_z}, \sigma^\prime)$ is not equal to any previous answer of $\mathcal{O}_{\textsf{Enc}}^\prime$, and therefoere not equal to any previous message-signature pair $(\mathbf{c_y}, \sigma)$ given from the signing oracle $\mathcal{O}_{\textsf{Sign}}$. Now, since $\textsf{Sig}$ is sEUF-CMA,
 \[
-	\Pr[\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] \leq \Pr[ \textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \mathbf{c_z}, \sigma^\prime) = 1 ] = \negl.
+	\Pr[\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}}}(\mathcal{A}) \to 1] \leq \Pr[ \textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \mathbf{c_z}, \sigma^\prime) = 1 ] = \negl.
 \]
 
 
@@ -328,8 +287,8 @@ $\mathcal{R}$ perfectly simulates a $\textsf{RUF}$ game for $\mathcal{A}$, and i
 We first consider \textsf{option}-UF security when $\textsf{option}$ includes $\mathcal{O}_\textsf{Enroll}$. Note that in this instantiation, $\textsf{csk}$ is the public parameter $\textsf{pp}$ of \textsf{FE} and assumed to be given to all adversaries. 
 
 \begin{theorem}
-\label{thm:fh-IPFE:ind-uf-OB-Enroll}
-	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+\label{thm:fh-IPFE:ind-ruf-OB-Enroll}
+	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF, then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
 
@@ -396,21 +355,20 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 
 \end{figure}
 
-Now, if the challenge bit $b = 1$, then $\mathcal{R}$ perfectly simulates $\mathcal{A}^\prime$ in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}} }$ game. The probability that $\textsf{Verify}(s) = 1$, which is equivalent to $s \leq \tau^2$, in Line \ref{alg:red:ind-uf-OB-Enroll:verify} is $\Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \tau^2}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$
+Now, if the challenge bit $b = 1$, then $\mathcal{R}$ perfectly simulates $\mathcal{A}^\prime$ in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}} }$ game. The probability that $\textsf{Verify}(s) = 1$ in Line \ref{alg:red:ind-uf-OB-Enroll:verify} is smaller than $\Pr[s \neq \bot] = \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$
 
-In conclusion, since $\gamma \geq \tau^2$,
+In conclusion,
 \begin{align*}
 	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
 	&= \Pr[b = 0] \cdot \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] + \frac{1}{2} \cdot \Pr[\textsf{Verify}(s) = 0 \mid b = 0] \right) \\
 	&\quad + \Pr[b = 1] \cdot \frac{1}{2} \cdot \Pr[\textsf{Verify}(s) = 0 \mid b = 1] \\
 	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] - \Pr[\textsf{Verify}(s) = 1 \mid b = 1] \right) \\
-	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_{\textsf{option}}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \tau^2}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right) \\
-	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right)
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right)
 \end{align*}
 
-\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF},\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma} = \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ are negligilbe,
+\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF},\mathcal{O}^\prime_{\textsf{KeyGen}}} = \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ are negligilbe,
 \[
-	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF},\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma} = \negl.
+	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF},\mathcal{O}^\prime_{\textsf{KeyGen}}} = \negl.
 \]
 
 \end{proof}
@@ -419,8 +377,8 @@ In conclusion, since $\gamma \geq \tau^2$,
 For $\textsf{option}$ that includes $\mathcal{O}_{\textsf{Probe}}$, we first note that for any $d \in \Z_q$ and any nonzero vector $\mathbf{r} \in \Z_q^{k+2}$, there exists a vector $\mathbf{y} \in \Z_q^{k+2}$ such that $\mathbf{r}\mathbf{y}^T = d$.
 
 \begin{theorem}
-\label{thm:fh-IPFE:ind-uf-OB-Probe}
-	Let $\textsf{option} = \{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+\label{thm:fh-IPFE:ind-ruf-OB-Probe}
+	Let $\textsf{option} = \{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF, then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
 
@@ -536,11 +494,11 @@ To make $\mathcal{R}$ simulate $\mathcal{A}^\prime$ in the $\textsf{RUF}^{ \math
 	\item $\mathbf{\tilde{z}} \neq \mathbf{c}^{(i)}$ for all $i$. The answers of $\mathcal{O}_\textsf{Probe}$ have already been checked in $\mathcal{R}$. 
 \end{itemize}
 
-Let $\mathcal{A}^\prime$ play a tweaked $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}$ game which does not check that $\mathbf{\tilde{z}}$ is not equal to $\mathbf{c}^{(i)}$ for all $i$. That is, the game only checks whether $\mathbf{\tilde{z}}$ is not equal to any output of $\mathcal{O}^\prime_\textsf{Enc}$ called by $\mathcal{O}_\textsf{Probe}$ of $\mathcal{A}$. Let the returned value of this game be $V$. We have Equation \ref{equ:ind-uf-OB-Probe:1} and \ref{equ:ind-uf-OB-Probe:2}. The former one is a relation between $\mathcal{R}$ playing $\textsf{fh-IND}$ game when the challenge bit $b=1$ and $V$, and the latter is a relation between $\mathcal{A}^\prime$ playing a regular $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}$ game and the tweaked one.
+Let $\mathcal{A}^\prime$ play a tweaked $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}$ game which does not check that $\mathbf{\tilde{z}}$ is not equal to $\mathbf{c}^{(i)}$ for all $i$. That is, the game only checks whether $\mathbf{\tilde{z}}$ is not equal to any output of $\mathcal{O}^\prime_\textsf{Enc}$ called by $\mathcal{O}_\textsf{Probe}$ of $\mathcal{A}$. Let the returned value of this game be $V$. We have Equation \ref{equ:ind-uf-OB-Probe:1} and \ref{equ:ind-uf-OB-Probe:2}. The former one is a relation between $\mathcal{R}$ playing $\textsf{fh-IND}$ game when the challenge bit $b=1$ and $V$, and the latter is a relation between $\mathcal{A}^\prime$ playing a regular $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}$ game and the tweaked one.
 
 \begin{gather}
 	\Pr[\textsf{Verify}(s) = 1 \mid b = 1 \wedge \mathbf{r} \neq \mathbf{0}] = \Pr[V = 1] \label{equ:ind-uf-OB-Probe:1} \\
-	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] = \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right] \label{equ:ind-uf-OB-Probe:2}
+	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] = \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right] \label{equ:ind-uf-OB-Probe:2}
 \end{gather}
 
 \noindent For Equation \ref{equ:ind-uf-OB-Probe:1}, consider that
@@ -556,7 +514,7 @@ Let $\mathcal{A}^\prime$ play a tweaked $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\
 \noindent For Equation \ref{equ:ind-uf-OB-Probe:2}, consider that
 
 \begin{align*}
-	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] 
+	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] 
 	&= \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right] \\ 
 	& \geq \Pr[V = 1] - \Pr \left[ \neg  \left( \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right) \right] \\
 	& = \Pr[V = 1] - \Pr \left[ \bigvee_{i=1}^{k+2} \mathbf{\tilde{z}} = \mathbf{c}^{(i)} \right] \\
@@ -565,25 +523,24 @@ Let $\mathcal{A}^\prime$ play a tweaked $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\
 
 \noindent Note that each $\mathbf{c}^{(i)} = \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{e}^{(i)})$ for some uniform nonzero vector $\mathbf{e}^{(i)}$. Also note that distinct vectors in $\Z_q^{k+2}$ will have different encryptions due to the correctness of $\textsf{FE}$. Therefore, $\Pr[\mathbf{\tilde{z}} = \mathbf{c}^{(i)}] \leq \frac{1}{q^{k+2} - 1}$ and
 \[
-	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] \geq \Pr[V = 1] - \frac{k+2}{q^{k+2}-1}.
+	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] \geq \Pr[V = 1] - \frac{k+2}{q^{k+2}-1}.
 \]
 
 \noindent Combining both results from Equation \ref{equ:ind-uf-OB-Probe:1} and \ref{equ:ind-uf-OB-Probe:2}, we derive
 \[
-	\Pr[\textsf{Verify}(s) = 1 \mid b = 1] \leq \Pr[V = 1] + \frac{1}{q^{k+2}} \leq \Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}}.
+	\Pr[\textsf{Verify}(s) = 1 \mid b = 1] \leq \Pr[V = 1] + \frac{1}{q^{k+2}} \leq \Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}}.
 \]
-Finally, similar to the proof of Theorem \ref{thm:fh-IPFE:ind-uf-OB-Enroll}, we derive
 
+Finally, similar to the proof of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}, we derive
 \begin{align*}
 	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1]
 	&= \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{Verify}(s) = 1 \mid b = 0] - \Pr[\textsf{Verify}(s) = 1 \mid b = 1] \right) \\
-	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \tau^2}(\mathcal{A}^\prime) \to 1] - \frac{k+2}{q^{k+2}-1} - \frac{1}{q^{k+2}} \right) \\
-	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}(\mathcal{A}^\prime) \to 1] - \frac{k+2}{q^{k+2}-1} - \frac{1}{q^{k+2}} \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] - \Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] - \frac{k+2}{q^{k+2}-1} - \frac{1}{q^{k+2}} \right).
 \end{align*}
 
-\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \mathcal{O}^\prime_{\textsf{Enc}}, \gamma} = \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ are negligible,
+\noindent Since both $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \mathcal{O}^\prime_{\textsf{Enc}}} = \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ are negligible,
 \[
-	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \mathcal{O}^\prime_{\textsf{Enc}}, \gamma} + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}} = \negl.
+	\Pr[\textsf{UF}_\textsf{option}(\mathcal{A}) \to 1] \leq 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime}^{\textsf{RUF}, \mathcal{O}^\prime_{\textsf{Enc}}} + \frac{k+2}{q^{k+2}-1} + \frac{1}{q^{k+2}} = \negl.
 \]
 
 \end{proof}

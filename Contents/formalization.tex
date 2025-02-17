@@ -142,93 +142,10 @@ In this work, we add a cryptographic layer on top of $\Pi$ to protect privacy of
 
 In a real-world biometric system, these algorithms may be run by different parties such as a biometric scanner, a user's secure hardware, a trusted authority that issues keys, and the server.
 
-Now, we provide two instantiations of a biometric authentication scheme with the cryptographic layer.
+We provide two instantiations of a biometric authentication scheme with the cryptographic layer in Sections \ref{sec:fh-IPFE-instantiation} and \ref{sec:rh-instantiation}.
+
 
 %-------------------
-
-\subsubsection{Instantiation with an fh-IPFE Scheme}
-\label{sec:fh-IPFE-instantiation}
-
-Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be an fh-IPFE scheme we defined in Definition \ref{def:fh-IPFE}. Following \cite{cryptoeprint:2023/481}, we can instantiate a biometric authentication scheme using $\textsf{FE}$ with the distance metric the Euclidean distance.
-Let $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ both output vectors in $ \{0, 1, \cdots, m \}^k$ for all biometric distributions $\mathcal{B} \in \mathbb{B}$. 
-For a pre-defined real number $\tau \geq 0$, define
-\[
-	\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to \| \mathbf{b} - \mathbf{b}^\prime\|^2 \quad \text{and} \quad 
-	\textsf{Verify}(s) \to 
-	\begin{cases} 
-		1 & \text{if } \sqrt{s} \leq \tau \\
-		0 & \text{if } \sqrt{s} > \tau
-	\end{cases}.
-\]
-
-Now, let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$, where $q$ is a prime number larger than the maximum possible Euclidean distance $m^2 \cdot k$. The scheme is instantiated as follows.
-
-\begin{itemize}
-
-	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$ and outputs $\textsf{esk} \gets (\textsf{msk}, \textsf{pp})$, $\textsf{psk} \gets (\textsf{msk}, \textsf{pp})$ and $\textsf{csk} \gets \textsf{pp}$.
-
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: On input a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the algorithm first encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. Next, it calls $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
-
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: On input a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$, the algorithm first encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1^\prime, -2b_2^\prime, \cdots, -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$. Next, it calls $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
-
-	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
-
-\end{itemize}
-
-By the correctness of the functional encryption scheme $\sf FE$, we have
-\[
-	s = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{y}^T = \sum_{i=1}^k -2b_ib_i^\prime + \|\mathbf{b}\|^2 + \|\mathbf{b}^\prime\|^2 = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
-\]
-which is equal to $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}^\prime$ are close enough such that $\|\mathbf{b} - \mathbf{b}^\prime\| \leq \tau$, the scheme results in $r = 1$, a successful authentication.
-
-Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either $\textsf{esk}$ or $\textsf{psk}$ can probe any (invalidly encoded) $\mathbf{y}^{\prime} \in \Z_q^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about the biometric template $\mathbf{b}$. Even if the adversary has no $\textsf{esk}$ or $\textsf{psk}$, if it can sample ciphertexts $\mathbf{c_{y}}$ corresponding to some unknown random vectors $\mathbf{y}$, and if the field size $q$ is not large enough, it can also find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T \leq \tau$ with a non-negligible probability to impersonate the user by sampling many times offline.
-
-A security analysis of this instantiation in our security model is given in Section \ref{sec:security_analysis:fh-IPFE}.
-
-%-------------------
-
-\subsubsection{Instantiation with a Relational Hash Scheme}
-\label{sec:rh-instantiation}
-
-Let $\textsf{RH} = (\textsf{RH.KeyGen}, \textsf{RH.Hash}_1, \textsf{RH.Hash}_2, \textsf{RH.Verify})$ be a relational hash scheme we defined in Definition \ref{def:rh} for the relation $R^\tau$ of Hamming distance proximity parametrized by a constant $\tau$.
-\[
-	R^\tau = \{ (\mathbf{x}, \mathbf{y}) \mid \textsf{HD}(\mathbf{x}, \mathbf{y}) \leq \tau \wedge \mathbf{x}, \mathbf{y} \in \{0,1\}^k \}
-\]
-Note that here we ignore the third parameter $Z$.
-Let $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ both output vectors in $ \{0, 1\}^k$ for all biometric distributions $\mathcal{B} \in \mathbb{B}$, and let 
-\[
-	\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to
-	\begin{cases}
-		1 & \text{if } (\mathbf{b}, \mathbf{b}^\prime) \in R^\tau \\
-		0 & \text{if } (\mathbf{b}, \mathbf{b}^\prime) \notin R^\tau
-	\end{cases} \quad \text{and} \quad
-	\textsf{Verify}(s) \to s.
-\]
-Following \cite{cryptoeprint:2014/394}, we can instantiate a biometric authentication scheme using $\textsf{RH}$.  Let the biometric distribution $\mathcal{B} \subseteq \{0,1\}^k$.
-
-\begin{itemize}
-
-	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{RH.KeyGen}(1^\lambda) \to \textsf{pk}$ and outputs $\textsf{esk} \gets \textsf{pk}$, $\textsf{psk} \gets \textsf{pk}$, and $\textsf{csk} \gets \textsf{pk}$.
-
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: Let $\mathbf{x} \gets \mathbf{b}$. It calls $\textsf{RH.Hash}_1(\textsf{pk}, \mathbf{x}) \to \mathbf{h_x}$ and outputs $\mathbf{c_x} \gets \mathbf{h_x}$.
-
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: Let $\mathbf{y} \gets \mathbf{b}$. It calls $\textsf{RH.Hash}_2(\textsf{pk}, \mathbf{y}) \to \mathbf{h_y}$ and outputs $\mathbf{c_y} \gets \mathbf{h_y}$.
-
-	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{RH.Verify}(\textsf{pk}, \mathbf{h_x}, \mathbf{h_y}) \to s$ and outputs the value $s$.
-
-\end{itemize}
-
-By the correctness of the relational hash scheme $\textsf{RH}$, we have (except for a negligible probability),
-\[
-	r = 1 \Leftrightarrow (\mathbf{x}, \mathbf{y}) = (\mathbf{b}, \mathbf{b}^\prime) \in R^\tau \Leftrightarrow \textsf{HD}(\mathbf{b}, \mathbf{b}^\prime) \leq \tau
-\]
-
-The idea behing this construction is that users hold a personal device which runs \textsf{Setup}, \textsf{Enroll}, and \textsf{Probe} using templates coming from a biometric sensor. The message $\mathbf{c_x}$ along with the comparison key $\textsf{csk} = \textsf{pk}$, which is assumed to be public, are sent to a server in order to enroll the user, and $\mathbf{c_y}$ is sent on authentication.
-
-A security analysis of this instantiation in our security model is given in Section \ref{sec:security_analysis:rh}.
-
-%-------------------
-
 
 \iffalse
 

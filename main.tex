@@ -43,12 +43,6 @@
 \input{Contents/introduction.tex}
 
 %-------------------
-% Preliminaries
-\section{Preliminaries}
-\label{sec:preliminaries}
-\input{Contents/preliminaries}
-
-%-------------------
 % Fomalization
 \section{Formalization}
 \label{sec:formalization}
@@ -149,6 +143,178 @@ In this construction, $q$ is exponential to $\lambda$ to achieve security, and d
 
 %-------------------
 
+\section{$\gamma$-RUF Security of \textsf{FE}}
+
+Let $\mathbb{F} = \Z_q$. We can extend the definition of the RUF security with an integer parameter $\gamma$.
+
+\begin{figure}[H]
+\centering
+
+	\begin{minipage}[t]{0.55\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A})$}
+	\label{alg:gamma-ruf-fh-IPFE}
+	\begin{algorithmic}[1]
+		\State $\mathbf{r} \getsdollar \mathbb{F}^{k}$
+
+		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+
+		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\mathcal{O}} ( \textsf{pp}, \mathbf{c} )$
+
+		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}^\prime_{\textsf{Enc}}$ }
+			
+			\State \Return $0$
+		
+		\EndIf
+
+		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\State \Return $1_{s \leq \gamma}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
+
+Here, the game runs $1_{s \leq \gamma}$ by first viewing the field element $s \in \Z_q$ as a positive integer in $\{0, 1, \cdots, q-1 \}$ and comparing it with $\gamma$.
+
+The oracle $\mathcal{O}$ can be nothing or include $\mathcal{O}^\prime_{\textsf{KeyGen}}(\cdot)$ and $\mathcal{O}^\prime_{\textsf{Enc}}(\cdot)$ based on the threat model as in Section \ref{sec:security_analysis:fh-IPFE:ruf}.
+
+\begin{definition}[$\gamma$-RUF Security]
+
+	An fh-IPFE scheme \textsf{FE} is called $\{ \mathcal{O}, \gamma \}$-RUF secure if for any adversary $\mathcal{A}$, the advantage of $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}, \gamma}_\textsf{FE}$ game in Algorithm \ref{alg:gamma-ruf-fh-IPFE} is
+\[
+	\Adv_{\textsf{FE}, \mathcal{A}}^{\textsf{RUF}, \mathcal{O}, \gamma} := \Pr[\textsf{RUF}^{\mathcal{O}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ] = \negl.
+\]
+
+\noindent Note that if $\textsf{FE}$ is $\mathcal{O}$-RUF secure, it is $\{ \mathcal{O}, \gamma \}$-RUF secure for any integer $\gamma$.
+\end{definition}
+
+With the extension with $\gamma$, we can rewrite our results in Section \ref{sec:security_analysis:fh-IPFE}.
+
+
+\begin{theorem}[Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}]
+\label{thm:fh-IPFE:ind-gamma-ruf-OB-Enroll}
+	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+\end{theorem}
+
+\begin{theorem}[Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}]
+\label{thm:fh-IPFE:ind-gamma-ruf-OB-Probe}
+	Let $\textsf{option} = \{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+\end{theorem}
+
+\subsection{Achievability of $\gamma$-RUF Security}
+
+\begin{assumption}
+\label{assump:only-return-valid-ct}
+Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns when $\mathbf{z}$ corresponds to a \emph{nonzero} vector $\mathbf{v} \in \mathbb{F}^k$. More precisely, assume that for any $\mathbf{z}$, there can only be two possibilities.
+
+\begin{itemize}
+	\item Either there exists a vector $\mathbf{v} \in \mathbb{F}^k \setminus \{\mathbf{0}\}$ such that for any $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, 
+	\[
+		%\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c_v}).
+		\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \mathbf{x}\mathbf{v}^T.
+	\]
+	\item Or for any $\mathbf{x} \in \mathbb{F}^k$ and $ \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) \to \bot$.
+
+\end{itemize}
+Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the input of $\textsf{FE.Enc}$.
+\end{assumption}
+
+\begin{theorem}
+\label{thm:fh-IPFE:ind-OKeyGen-gamma-ruf}
+Given Assumption \ref{assump:only-return-valid-ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
+
+\end{theorem}
+
+\begin{proof}
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}$ game for a $\gamma \leq (1 - \frac{1}{P(\lambda)}) \cdot \|\mathbb{F}\|$, where $P(\lambda)$ is any polynomial. Let $t$ be an integer, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OKeyGen-gamma-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by $\mathcal{O}_\textsf{KeyGen}(\mathbf{x}^\prime, \mathbf{x}^\prime)$.
+If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-gamma-ruf:s}, by Assumption \ref{assump:only-return-valid-ct}, let $\mathbf{\tilde{z}}$ correspond to a nonzero vector $\mathbf{\tilde{v}}$.
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:red:ind-OKeyGen-gamma-ruf}
+	\begin{algorithmic}[1]
+		\State $\mathbf{r}^{(0)}, \mathbf{r}^{(1)} \getsdollar \mathbb{F}^{k}$
+		
+		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(1)})$ 
+
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} (\textsf{pp}, \mathbf{c})$
+
+		\For{$i = 1$ to $t$}
+		
+			\State $\mathbf{r}_i \getsdollar \mathbb{F}^{k}$
+
+			\State $\mathbf{c}_i \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}_i)$
+
+			\State $s_i \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}_i, \mathbf{\tilde{z}} )$ \label{alg:red:ind-OKeyGen-gamma-ruf:s}
+	
+		\EndFor	
+		
+		\If{$\bigwedge_{i=1}^t s_i \leq \gamma$} \label{alg:red:ind-OKeyGen-gamma-ruf:verify}
+			\State \Return $\tilde{b} = 0$
+		\Else
+			\State \Return $\tilde{b} \getsdollar \{0, 1\}$
+		\EndIf
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+
+If the challenge bit $b = 0$, then by Assumption \ref{assump:only-return-valid-ct}, any $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-gamma-ruf:s} implies all $s_i \neq \bot$ and $s_i = s_j$ for any $i, j$. Therefore, the probability that all $s_i \leq \gamma$ in Line \ref{alg:red:ind-OKeyGen-gamma-ruf:verify} is
+\begin{align*}
+	\Pr\left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 0 \right]
+	&= \Pr\left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ s_1 \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
+	&= \Pr \left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \mathbf{r}^{(0)} \mathbf{\tilde{v}}^T \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
+	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
+	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1 \mid b = 0 \wedge s_1 \neq \bot \right] \\ 
+	&= \Pr \left[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1 \right] 
+\end{align*}
+
+If the challenge bit $b = 1$, for any $i \in [t]$,
+\begin{align*}
+	\Pr[ s_i \leq \gamma \mid b = 1 ]
+	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ s_i \leq \gamma \mid b = 1 \wedge s_i \neq \bot] \\
+	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ \mathbf{r}_i \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s \neq \bot]
+\end{align*}
+Note that $\mathbf{r}_i$ is independent of $\mathbf{\tilde{z}}$ and thus independent of $\mathbf{\tilde{v}}$. Hence, $\Pr[\mathbf{r}_i \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s_i \neq \bot] = \frac{\gamma}{\| \mathbb{F} \|}$ and
+\[
+	\Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 1 \right] = \Pr \left[ \bigwedge_{i=1}^t s_i \neq \bot \mid b = 1 \right] \cdot \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t \leq \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t
+\]
+
+In conclusion,
+\begin{align*}
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
+	&= \frac{1}{2} + \frac{1}{4} \left( \Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 0 \right] - \Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 1 \right] \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] - \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] -  e^{- t \cdot (1 - \frac{\gamma}{\| \mathbb{F} \|}) } \right) \\
+	&\geq \frac{1}{2} + \frac{1}{4} \left( \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1] -  e^{- \frac{t}{P(\lambda)} } \right)
+\end{align*}
+
+\noindent Take $t$ be any integer larger than $P(\lambda) \cdot \lambda$. Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $e^{-t \cdot \frac{1}{P(\lambda)}} < e^{-\lambda}$ are negligible,
+\[
+	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]  \leq e^{- \frac{t}{P(\lambda)} } + 4 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND}  = \negl.
+\]
+
+\end{proof}
+
+%-------------------
+
+\newpage
+
+%-------------------
+
+
 \section{One-Way Game}
 
 \begin{figure}[h]
@@ -186,11 +352,11 @@ In the reusable fuzzy extractor paper \cite{10.1145/1030083.1030096}, if public 
 To model reusability, I think we can consider either providing $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ for different $\textsf{esk}_i$, or just providng $\mathcal{O}^\prime_{\textsf{Enroll}}$.
 
 
-\iffalse
+%\iffalse
 
-\section{Fixing the Proof of Theorem \ref{thm:fh-IPFE:ind-uf-OB-Probe}}
+\section{Fixing the Proof of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}}
 
-In Theorem \ref{thm:fh-IPFE:ind-uf-OB-Probe}, we simulate the oracle $\mathcal{O}_{\textsf{Probe}}$ in the adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-uf-OB-Probe} in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{Enc}} }$ game by the following steps:
+In Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}, we simulate the oracle $\mathcal{O}_{\textsf{Probe}}$ in the adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-uf-OB-Probe} in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{Enc}} }$ game by the following steps:
 
 \begin{enumerate}
 
@@ -208,7 +374,7 @@ In Theorem \ref{thm:fh-IPFE:ind-uf-OB-Probe}, we simulate the oracle $\mathcal{O
 
 However, $\textsf{FE.Dec}$ of constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} rely on some \emph{prior knowledge} of the inner product. Their basic idea is to find $d$ given $g$ and $g^d$, where $g$ is in a group of exponential size. Therefore, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$ will probably return $\bot$, representing that $d$ is too large to find.
 
-One way to fix this is by modifying the $\textsf{RUF}$ game. Instead of sampling $\mathbf{r} \getsdollar \mathbb{F}^{k}$, one samples $\mathbf{r} \getsdollar \{0, 1\}^{k+2}$. In this way, we do not need to find $\mathbf{r}$ in the simulation of $\mathcal{O}_{\textsf{Probe}}$. 
+One way to fix this is by modifying the $\textsf{RUF}$ game. Instead of sampling $\mathbf{r} \getsdollar \mathbb{F}^{k}$, one samples $\mathbf{r} \getsdollar \{0, 1\}^{k+2}$. 
 \begin{enumerate}
 
 \item Pick $k+2$ random one-hot vectors $\mathbf{e}^{(i)} \gets (0, \cdots, \overset{i\text{th}}{u_i}, \cdots, 0)$, where $u \getsdollar \mathbb{F}$.
@@ -237,13 +403,12 @@ One direction now is to find an fh-IPFE such that
 \end{itemize}
 
 
-
 \section{Achievability of $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF Security}
 
 \begin{assumption}
 \label{assump:random_key_ct}
 
-Let $\textsf{FE}$ be an fh-IPFE scheme and $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$. Assume that given $\textsf{pp}$, there exist PPT algorithms $\textsf{RandKeyGen}$ and $\textsf{RandEnc}$ that can generate $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{r})$ and $\textsf{FE.Enc}(\textsf{msk}, \mathbf{r})$ for some random vector $\mathbf{r} \in \mathbb{F}^k$, respectively.
+Let $\textsf{FE}$ be an fh-IPFE scheme and $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$. Assume that given $\textsf{pp}$, there exist PPT algorithms $\textsf{RandKeyGen}$ and $\textsf{RandEnc}$ that can generate $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{r})$ and $\textsf{FE.Enc}(\textsf{msk}, \mathbf{r})$ for some random vector $\mathbf{r} \in \mathbb{F}^k$, respectively.
 
 \end{assumption}
 
@@ -251,13 +416,13 @@ Note that constructions in \cite{10.1007/978-3-319-45871-7_24, cryptoeprint:2016
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-OEnc-ruf}
-Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND and $\emptyset$-RUF for some $\gamma \leq \|\mathbb{F}\|$, then $\textsf{FE}$ is also $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for $\gamma$.
+Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND and $\emptyset$-RUF, then $\textsf{FE}$ is also $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF.
 
 \end{theorem}
 
 \begin{proof}
 
-Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}$ game for any $\gamma \leq \|\mathbb{F}\|$, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OEnc-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{Enc}^\prime(\mathbf{y}^\prime)$ by first sampling a $\mathbf{r}^\prime \gets \mathbb{F}^k$ and returning $\mathcal{O}_\textsf{Enc}(\mathbf{y}^\prime, \mathbf{r}^\prime)$.
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}_{\textsf{FE}}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OEnc-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{Enc}^\prime(\mathbf{y}^\prime)$ by first sampling a $\mathbf{r}^\prime \gets \mathbb{F}^k$ and returning $\mathcal{O}_\textsf{Enc}(\mathbf{y}^\prime, \mathbf{r}^\prime)$.
 
 \begin{figure}[h]
 \centering
@@ -274,7 +439,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\text
 
 		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
 		
-		\If{$ s \leq \gamma$}
+		\If{$ s \neq \bot$}
 			\State \Return $\tilde{b} = 0$
 		\Else
 			\State \Return $\tilde{b} = 1$
@@ -301,31 +466,39 @@ Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\text
 	
 \end{figure}
 
-By Assumption \ref{assump:random_key_ct}, $\mathbf{c}$ looks like an honest key of some random vector $\mathbf{r}$. If the challenge bit $b = 0$, $\mathcal{R}$ perfectly simulates an $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}$ game for $\mathcal{A}$ and $\Pr[\tilde{b} = 0 \mid b = 0] = \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1 ]$. On the other hand, if the challenge bit $b = 1$, then $\mathcal{R}$ simulates an $\textsf{RUF}^{\emptyset, \gamma}_{\textsf{FE}}$ adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-OEnc-ruf}. $\mathcal{A}^\prime$ runs $\mathcal{A}$ and simulates $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{y}^\prime)$ by simply returning $\textsf{RandEnc}(\textsf{pp})$. Therefore, $\Pr[\tilde{b} = 0 \mid b = 1] = \Pr[ \textsf{RUF}^{\emptyset, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$.
+By Assumption \ref{assump:random_key_ct}, $\mathbf{c}$ looks like an honest key of some random vector $\mathbf{r}$. If the challenge bit $b = 0$, $\mathcal{R}$ perfectly simulates an $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}_{\textsf{FE}}$ game for $\mathcal{A}$ and $\Pr[\tilde{b} = 0 \mid b = 0] = \Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}_{\textsf{FE}}(\mathcal{A}) \to 1 ]$. On the other hand, if the challenge bit $b = 1$, then $\mathcal{R}$ simulates an $\textsf{RUF}^{\emptyset}_{\textsf{FE}}$ adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-OEnc-ruf}. $\mathcal{A}^\prime$ runs $\mathcal{A}$ and simulates $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{y}^\prime)$ by simply returning $\textsf{RandEnc}(\textsf{pp})$. Therefore, $\Pr[\tilde{b} = 0 \mid b = 1] = \Pr[ \textsf{RUF}^{\emptyset}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$.
 
 In conclusion,
 \begin{align*}
 	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
 	&= \Pr[b = 0] \cdot \Pr[\tilde{b} = 0 \mid b = 0] + \Pr[b = 1] \cdot \Pr[\tilde{b} = 1 \mid b = 1] \\
-	&= \frac{1}{2} \left( \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1] + 1 - \Pr[ \textsf{RUF}^{\emptyset, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right) \\
-	&= \frac{1}{2} + \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}_{\textsf{FE}}(\mathcal{A}) \to 1] - \Pr[ \textsf{RUF}^{\emptyset, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]
+	&= \frac{1}{2} \left( \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}_{\textsf{FE}}(\mathcal{A}) \to 1] + 1 - \Pr[ \textsf{RUF}^{\emptyset}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right) \\
+	&= \frac{1}{2} + \frac{1}{2} \left( \Pr[\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}_{\textsf{FE}}(\mathcal{A}) \to 1] - \Pr[ \textsf{RUF}^{\emptyset}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ] \right)
 \end{align*}
 
-Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime }^{\textsf{RUF}, \emptyset, \gamma} = \Pr[\textsf{RUF}^{\emptyset, \gamma}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ is negligible,
+Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime }^{\textsf{RUF}, \emptyset} = \Pr[\textsf{RUF}^{\emptyset}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ is negligible,
 \[
-	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}, \gamma}(\mathcal{A}) \to 1]  = \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime }^{\textsf{RUF}, \emptyset, \gamma} = \negl.
+	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}) \to 1]  = \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime }^{\textsf{RUF}, \emptyset} = \negl.
 \]
 
 \end{proof}
 
-Since $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF implies $\emptyset$-RUF, with Theorem \ref{thm:fh-IPFE:ind-OKeyGen-ruf}, we have the following corollary.
+With a similar proof, one can also show that
+
+\begin{theorem}
+\label{thm:fh-IPFE:ind-OEnc-gamma-ruf}
+Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND and $\{ \emptyset, \gamma \}$-RUF, then $\textsf{FE}$ is also $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF.
+
+\end{theorem}
+
+Since $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF implies $\{ \emptyset, \gamma \}$-RUF, with Theorem \ref{thm:fh-IPFE:ind-OKeyGen-gamma-ruf}, we have the following corollary.
 
 \begin{corollary}
 \label{cor:fh-IPFE:ind-OKeyGen-OEnc-ruf}
-Given Assumption \ref{assump} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is both $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
+Given Assumption \ref{assump:only-return-valid-ct} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is both $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
 \end{corollary}
 
-\fi
+%\fi
 
 %-------------------
 %% Backup File

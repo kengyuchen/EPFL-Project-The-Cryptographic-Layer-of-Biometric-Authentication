@@ -218,15 +218,19 @@ In the game of indistinguishability, we model the ability of an authentication s
 \label{fig:ind_game}
 \end{figure}
 
-%Note that in Device-of-Domain model, a probe oracle is given to the adversary.
+The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x}, \textsf{csk}$ or the following oracles:
 
-%\begin{itemize}
+\begin{itemize}
 
-	%\item $\mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}(\cdot)$: On input an index $i$, it first samples $\mathbf{y}^\prime \getsdollar \textsf{encodeProbe}^{\mathcal{O}_{\textsf{samp}}(i)}$, which uses $\mathcal{O}_{\textsf{samp}}(i)$ to answer biometric queries, and outputs $\textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime )$. 
+	\item $\mathcal{O}_{\mathbf{x}}$: It first samples a biometric sample $\mathbf{b} \getsdollar \textsf{getEnroll}^{\mathcal{B}^{(b)} }()$ and outputs $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$. 
+	
+	\item $\mathcal{O}_{\mathbf{y}}$: It first samples a biometric sample $\mathbf{b}^{\prime} \getsdollar \textsf{getProbe}^{\mathcal{B}^{(b)} }()$ and outputs $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^{\prime})$.
 
-%\end{itemize}
+	\item $\mathcal{O}_\textsf{Enroll}(\textsf{esk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}, \mathbf{b}^\prime)$.
 
-%We provide $\mathcal{O}_{\textsf{Probe}}^{\textsf{samp}}(\cdot)$ instead of $\mathcal{O}_{\textsf{Probe}}(\textsf{psk}, \cdot)$. This is to avoid the trivial attack where the adversary probes samples from the oracles $\mathcal{O}_{\mathcal{B}^{(0)}}$ and $\mathcal{O}_{\mathcal{B}^{(1)}}$ and compare the results with $\mathbf{c_x}$.
+	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. If this oracle is given, we require the adversary to return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$.
+	
+\end{itemize}
 
 We define the advantage of an adversary $\mathcal{A}$ in the \textsf{IND} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
