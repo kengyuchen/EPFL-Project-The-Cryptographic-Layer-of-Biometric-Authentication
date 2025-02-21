@@ -65,8 +65,8 @@ The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x
 	
 \end{itemize}
 
-The requirement that the adversary should return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$ is to prevent a trivial attack that leverages \textsf{TP} or \textsf{FP} when it is non-negligible. If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}. Therefore, we rule out the case that $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary to return what $\mathcal{O}_\textsf{Probe}$ returns.
-If \textsf{option} has only $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can still enjoy a winning rate $\textsf{FP}$, if we place no restriction on the adversary's answer. Therefore, we only consider $\textsf{psk}$ in \textsf{option} when \textsf{FP} is non-negligible, and we restrict the adversary's answer when $\mathcal{O}_\textsf{Probe}$ is given.
+The requirement that the adversary should return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$ is to prevent a trivial attack that leverages \textsf{TP} or \textsf{FP} when it is not negligible. If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}. Therefore, we rule out the case that $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary to return what $\mathcal{O}_\textsf{Probe}$ returns.
+If \textsf{option} has only $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can still enjoy a winning rate $\textsf{FP}$, if we place no restriction on the adversary's answer. Therefore, we only consider $\textsf{psk}$ in \textsf{option} when \textsf{FP} is negligible, and we restrict the adversary's answer when $\mathcal{O}_\textsf{Probe}$ is given.
 
 %If $\textsf{option}$ includes $\mathcal{O}_{\textsf{Enroll}}^\prime$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, and if we place no restriction on an \textsf{UF} game adversary's answer, the adversary in Algorithm \ref{alg:adv:FP2} can win with a probability
 %\[
@@ -170,15 +170,14 @@ An $\textsf{UF}_\textsf{option}$ adversary has to forge a signature $\sigma$ to 
 \subsection{Indistinguishability}
 \label{sec:ind_game}
 
-
-In the game of indistinguishability, we model the ability of an authentication server who tries to identify the user, which describes the privacy leakage of the scheme. The adversary $\mathcal{A}$ is given oracles to two biometric distributions $\mathcal{B}^{(0)}$ and $ \mathcal{B}^{(1)}$, the comparison key $\textsf{csk}$, an enrollment message $\mathbf{c_x}$, and a list of $t$ probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$. It tries to guess from either $\mathcal{B}^{(0)}$ or $ \mathcal{B}^{(1)}$ these messages are generated. The whole game is defined in Algorithm \ref{alg:ind_game}.
+In the game of indistinguishability, we model the ability of an authentication server who tries to identify the user, which describes the privacy leakage of the scheme. The adversary $\mathcal{A}$ is given oracles to two biometric distributions $\mathcal{B}^{(0)}$ and $ \mathcal{B}^{(1)}$ and \textsf{option} that depends on our threat model. It tries to guess from either $\mathcal{B}^{(0)}$ or $ \mathcal{B}^{(1)}$ the enrollment or probe messages are generated. The whole game $\textsf{IND}_{\Pi, \mathbb{B}, \textsf{option}}$ is defined in Algorithm \ref{alg:ind_game}.
 
 \begin{figure}[h]
 \centering
 
 	\begin{minipage}[t]{0.55\textwidth}
 	\begin{algorithm}[H]
-	\caption{$\textsf{IND}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\caption{$\textsf{IND}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$}
 	\label{alg:ind_game}
 	\begin{algorithmic}[1]
 		\State $b \getsdollar \{0, 1\}$
@@ -193,13 +192,13 @@ In the game of indistinguishability, we model the ability of an authentication s
 
 		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
 
-		\For{$i = 1$ to $t$}
+		%\For{$i = 1$ to $t$}
 
-			\State ${\mathbf{b}^\prime}^{(i)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(b)}}}() $
+			%\State ${\mathbf{b}^\prime}^{(i)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(b)}}}() $
 		
-			\State $\mathbf{c_y}^{(i)} \gets \textsf{Probe}( \textsf{psk}, {\mathbf{b}^\prime}^{(i)} )$
+			%\State $\mathbf{c_y}^{(i)} \gets \textsf{Probe}( \textsf{psk}, {\mathbf{b}^\prime}^{(i)} )$
 
-		\EndFor
+		%\EndFor
 
 		%\State In Device-of-User Model:
 		
@@ -207,7 +206,7 @@ In the game of indistinguishability, we model the ability of an authentication s
 
 		%\State In Device-of-Domain Model:
 		
-			\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} ( \textsf{csk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$
+			\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} ( \textsf{option} )$
 
 		\State \Return $1_{\tilde{b} = b}$
 	\end{algorithmic}
@@ -218,28 +217,29 @@ In the game of indistinguishability, we model the ability of an authentication s
 \label{fig:ind_game}
 \end{figure}
 
-The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x}, \textsf{csk}$ or the following oracles:
+The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}$ or the following oracles:
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\mathbf{x}}$: It first samples a biometric sample $\mathbf{b} \getsdollar \textsf{getEnroll}^{\mathcal{B}^{(b)} }()$ and outputs $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$. 
+	%\item $\mathcal{O}_{\mathbf{c_x}}$: It first samples a biometric sample $\mathbf{b} \getsdollar \textsf{getEnroll}^{\mathcal{B}^{(b)} }()$ and outputs $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$. 
 	
-	\item $\mathcal{O}_{\mathbf{y}}$: It first samples a biometric sample $\mathbf{b}^{\prime} \getsdollar \textsf{getProbe}^{\mathcal{B}^{(b)} }()$ and outputs $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^{\prime})$.
+	\item $\mathcal{O}_{\mathbf{c_y}}$: It first samples a biometric sample $\mathbf{b}^{\prime} \getsdollar \textsf{getProbe}^{\mathcal{B}^{(b)} }()$ and outputs $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^{\prime})$.
 
 	\item $\mathcal{O}_\textsf{Enroll}(\textsf{esk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}, \mathbf{b}^\prime)$.
 
-	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. If this oracle is given, we require the adversary to return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$.
+	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$.
 	
+	\item $\mathcal{O}_\textsf{CompVrfy}(\textsf{csk}, \cdot, \cdot)$: On input $\mathbf{c}, \mathbf{c}^\prime$, it first computes $s \gets \textsf{Compare}(\textsf{csk}, \mathbf{c}, \mathbf{c}^\prime)$ and outputs $\textsf{Verify}(s)$.
 \end{itemize}
 
-We define the advantage of an adversary $\mathcal{A}$ in the \textsf{IND} game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
+We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{IND}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
-	\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}} := \left |\Pr[\textsf{IND}_{\Pi}(\mathcal{A}) \to 1] - \frac{1}{2} \right|.
+	\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \left |\Pr[\textsf{IND}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] - \frac{1}{2} \right|.
 \]
 
-An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{indistinguishable (IND)} if for any PPT adversary $\mathcal{A}$,
+An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{\textsf{option}-indistinguishable} (\textsf{option}-IND) if for any PPT adversary $\mathcal{A}$,
 \[
-	\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}} = \negl.
+	\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
 \]
 
 \paragraph{Necessity of IND Security}
@@ -249,7 +249,7 @@ Consider the following authentication scheme for any biometric layer. Let $\text
 	\textsf{Compare}(\textsf{csk}, \mathbf{b}, \mathbf{b}^\prime) = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime ) 
 \end{gather*}
 By the transformation using an sEUF-CMA digital signature scheme we introduced in Section \ref{sec:uf_game}, we can obtain an authentication scheme $\Pi^\prime$ that is $\textsf{option}$-UF for any $\textsf{option}$ that does not include $\textsf{psk}$.
-However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$ and compromise privacy. Obviously, this scheme is not IND, and we use this example emphasize the necessity of the game of indistinguishability.
+However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$ and compromise privacy. Obviously, this scheme is not \textsf{option}-IND for an \textsf{option} that includes either $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$, and we use this example emphasize the necessity of the game of indistinguishability.
 
 
 \paragraph{IND Security for a Particular Biometric Layer}
@@ -285,13 +285,13 @@ The correctness of $\Pi$ holds by
 
 \begin{theorem}
 \label{thm:rh:ind:particular-biometri-layer}
-The authentication scheme $\Pi$ is IND.
+Let $\textsf{option} = \{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_{\mathbf{c_y}}\}$. The authentication scheme $\Pi$ is \textsf{option}-IND.
 
 \end{theorem}
 
 \begin{proof}
 
-Let $\mathbf{b}^*_0$ and $\mathbf{b}^*_1$ be the fixed vectors of $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$ in the \textsf{IND} game, respectively. For any $\mathbf{v}, \mathbf{v}^{(1)}, \cdots, \mathbf{v}^{(t)}$,
+Let $\mathbf{b}^*_0$ and $\mathbf{b}^*_1$ be the fixed vectors of $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$ in the \textsf{IND} game, respectively. Given any adversary, assume that the number of its queries to $\mathcal{O}_{\mathbf{c_y}}$ is bounded by $t$. For any $\mathbf{v}, \mathbf{v}^{(1)}, \cdots, \mathbf{v}^{(t)}$,
 \begin{align*}
 	& \Pr[ \mathbf{c_x} = \mathbf{v},\; \mathbf{c_y}^{(1)} = \mathbf{v}^{(1)},\; \cdots,\; \mathbf{c_y}^{(t)} = \mathbf{v}^{(t)} \mid b = 0,\; \mathbf{b}^*_0,\; \mathbf{b}^*_1 ] \\
 	&= \Pr[ \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Enroll}} \oplus \mathbf{r} = \mathbf{v},\; \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Probe}} \oplus \mathbf{r} =\mathbf{v}^{(1)},\; \cdots,\; \mathbf{b}^*_0 \oplus \mathcal{E}_{\textsf{Probe}} \oplus \mathbf{r} =\mathbf{v}^{(t)} \mid \mathbf{b}^*_0,\; \mathbf{b}^*_1] \\ 

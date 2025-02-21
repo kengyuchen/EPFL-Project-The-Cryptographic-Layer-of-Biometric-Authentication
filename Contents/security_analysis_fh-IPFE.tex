@@ -66,12 +66,13 @@ By the correctness of the functional encryption scheme $\sf FE$, we have
 \]
 which is equal to $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}^\prime$ are close enough such that $\|\mathbf{b} - \mathbf{b}^\prime\| \leq \tau$, the scheme results in $r = 1$, a successful authentication.
 
-Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either $\textsf{esk}$ or $\textsf{psk}$ can probe any (invalidly encoded) $\mathbf{y}^{\prime} \in \Z_q^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about the biometric template $\mathbf{b}$. Even if the adversary has no $\textsf{esk}$ or $\textsf{psk}$, if it can sample ciphertexts $\mathbf{c_{y}}$ corresponding to some unknown random vectors $\mathbf{y}$, and if the field size $q$ is not large enough, it can also find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T \leq \tau$ with a non-negligible probability to impersonate the user by sampling many times offline.
+Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either $\textsf{esk}$ or $\textsf{psk}$ can probe any (invalidly encoded) $\mathbf{y}^{\prime} \in \Z_q^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about the biometric template $\mathbf{b}$. Even if the adversary has no $\textsf{esk}$ or $\textsf{psk}$, if it can sample ciphertexts $\mathbf{c_{y}}$ corresponding to some unknown random vectors $\mathbf{y}$, and if the field size $q$ is not large enough, it can also find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T \leq \tau$ with a good probability to impersonate the user by sampling many times offline.
 
 %-------------------
 
+Let $\Pi$ be an authentication scheme instantiated by an fh-IPFE scheme \textsf{FE} for a field $\mathbb{F} = \Z_q$. In the following, we discuss the UF and IND security of $\Pi$ in this section. For this, we first define two security notions of \textsf{FE}\footnote{In security definition, the vectors lie in $\Z_q^k$, but we consider $\Z_q^{k+2}$ when discussing the instantiation $\Pi$.}.
 
-Now, let $\Pi$ be an authentication scheme instantiated by an fh-IPFE scheme \textsf{FE}. We discuss the UF and IND security of $\Pi$ in this section. For this, we first define two security notions of \textsf{FE}.
+%-------------------
 
 \subsection{fh-IND Security of \textsf{FE}}
 
@@ -101,9 +102,9 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{fh-IND} game \cite{cr
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\textsf{KeyGen}}(\cdot, \cdot)$: On input pair $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$, it outputs $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^{(b)} )$.
+	\item $\mathcal{O}_{\textsf{KeyGen}}(\cdot, \cdot)$: On input pair $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$, where $\mathbf{x}^{(0)}, \mathbf{x}^{(1)} \in \Z_q^k \setminus \{\mathbf{0}\}$, it outputs $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}^{(b)} )$.
 
-	\item $\mathcal{O}_{\textsf{Enc}}(\cdot, \cdot)$: On input pair $(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$, it outputs $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^{(b)} )$.
+	\item $\mathcal{O}_{\textsf{Enc}}(\cdot, \cdot)$: On input pair $(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$, where $\mathbf{y}^{(0)}, \mathbf{y}^{(1)} \in \Z_q^k \setminus \{\mathbf{0}\}$, it outputs $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}^{(b)} )$.
 
 \end{itemize}
 
@@ -155,7 +156,7 @@ As $D_1^0 = D_2$, the decryption returns $0$ and let the adversary win the game 
 \subsection{RUF Security of \textsf{FE}}
 \label{sec:security_analysis:fh-IPFE:ruf}
 
-Let $\mathbb{F} = \Z_q$. We also define the $\textsf{RUF}^{\mathcal{O}}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE}.
+We also define the $\textsf{RUF}^{\mathcal{O}}_\textsf{FE}$ game in Algorithm \ref{alg:ruf-fh-IPFE}.
 
 \begin{figure}[H]
 \centering

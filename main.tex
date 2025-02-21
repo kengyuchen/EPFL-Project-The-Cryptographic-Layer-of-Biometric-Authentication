@@ -315,43 +315,6 @@ In conclusion,
 %-------------------
 
 
-\section{One-Way Game}
-
-\begin{figure}[h]
-\centering
-
-	\begin{minipage}[t]{0.55\textwidth}
-	\begin{algorithm}[H]
-	\caption{$\textsf{OW}_{\Pi, \mathbb{B}}(\mathcal{A})$}
-	\label{alg:ow_game}
-	\begin{algorithmic}[1]
-
-		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
-
-		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
-
-		\State $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
-
-		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
-
-		\State $\mathbf{\tilde{b}} \gets \mathcal{A}( \textsf{option} )$
-
-		\State $s \gets \textsf{BioCompare}( \mathbf{\tilde{b}}, \mathbf{b})$
-		\State \Return $ \textsf{Verify}(s) $
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-
-\label{fig:ow_game}
-\end{figure}
-
-\noindent $\textsf{option}$ can be $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}$ or oracles $\mathcal{O}_{\textsf{Enroll}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}^\prime_{\textsf{Enroll}}, \mathcal{O}^\prime_{\textsf{Probe}}$.
-
-In the reusable fuzzy extractor paper \cite{10.1145/1030083.1030096}, if public strings related to personal information are generated many times, the sensitive information might leak. In our setting, it is a little similar to having multiple $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$.
-
-To model reusability, I think we can consider either providing $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ for different $\textsf{esk}_i$, or just providng $\mathcal{O}^\prime_{\textsf{Enroll}}$.
-
-
 %\iffalse
 
 \section{Fixing the Proof of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}}
@@ -374,34 +337,169 @@ In Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}, we simulate the oracle $\mathcal{
 
 However, $\textsf{FE.Dec}$ of constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} rely on some \emph{prior knowledge} of the inner product. Their basic idea is to find $d$ given $g$ and $g^d$, where $g$ is in a group of exponential size. Therefore, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$ will probably return $\bot$, representing that $d$ is too large to find.
 
-One way to fix this is by modifying the $\textsf{RUF}$ game. Instead of sampling $\mathbf{r} \getsdollar \mathbb{F}^{k}$, one samples $\mathbf{r} \getsdollar \{0, 1\}^{k+2}$. 
+For this problem, I have three proposals:
+\begin{enumerate}
+	\item Let the adversary choose $\mathbf{r}$.
+
+	\item Modify the $\textsf{RUF}$ game. 
+
+	\item Do nothing. Claim \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are not ideal \textsf{FE}.
+\end{enumerate}
+
+\subsection{Solution I}
+Consider the \textsf{SUF} game.
+\begin{figure}[H]
+\centering
+
+	\begin{minipage}[t]{0.55\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{SUF}^{\mathcal{O}}_{\textsf{FE}}(\mathcal{A} = (\mathcal{A}_1, \mathcal{A}_2))$}
+	\begin{algorithmic}[1]
+		\State $\mathbf{r}, \textsf{st} \gets \mathcal{A}_1(1^\lambda)$
+
+		\If{$\mathbf{r} = \mathbf{0}$}
+			\State \Return $\bot$
+		\EndIf
+
+		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
+
+		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+
+		\State $\mathbf{\tilde{z}} \gets \mathcal{A}_2^{\mathcal{O}} ( \textsf{st}, \textsf{pp}, \mathbf{c} )$
+
+		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}^\prime_{\textsf{Enc}}$ }
+			
+			\State \Return $0$
+		
+		\EndIf
+
+		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+
+		\State \Return $1_{s \neq \bot}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
+
+$\mathbf{r} \neq 0$ is because for constructions \cite{10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440}, there exists an algorithm $\textsf{RandEnc}(\textsf{pp})$ that can generate ciphertexts of random unknown vectors $\textsf{FE.Enc}(\textsf{msk}, r)$.
+
+I call this security property \emph{selective unforgeability (SUF)}. An SUF \textsf{FE} is RUF since the adversary $\mathcal{A}_1$ can choose $\mathbf{r} \getsdollar \mathbb{F}^k$. We can also add a signature scheme to an \textsf{FE} to make it SUF. Moreover, if we use SUF security, we do not need fh-IND security in our main results in \ref{sec:security_analysis:fh-IPFE:uf}. One can reduce \textsf{option}-\textsf{UF} of $\Pi$ to \textsf{SUF} of $\textsf{FE}$ in a simple and intuitive way.
+
+\begin{theorem}
+	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if either one of the following is satisfied:
+	\begin{itemize}
+		\item \textsf{FE} is both fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF (Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll})
+		\item \textsf{FE} is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-SUF
+	\end{itemize}
+then $\Pi$ is $\textsf{option}$-UF. 
+\end{theorem}
+
+\begin{theorem}
+	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is $\mathcal{O}^\prime_{\textsf{Enc}}$-SUF, then $\Pi$ is $\textsf{option}$-UF. 
+\end{theorem}
+
+We can also leave both \textsf{RUF} and \textsf{SUF} security.
+
+\subsection{Solution II}
+
+Instead of sampling $\mathbf{r} \getsdollar \mathbb{F}^{k}$, one samples $\mathbf{r} \getsdollar \{0, 1\}^{k+2}$.
 \begin{enumerate}
 
-\item Pick $k+2$ random one-hot vectors $\mathbf{e}^{(i)} \gets (0, \cdots, \overset{i\text{th}}{u_i}, \cdots, 0)$, where $u \getsdollar \mathbb{F}$.
+	\item Pick $k+2$ random one-hot vectors $\mathbf{e}^{(i)} \gets (0, \cdots, \overset{i\text{th}}{u_i}, \cdots, 0)$, where $u \getsdollar \mathbb{F}$.
 
-\item For $i \in [k+2]$, $\mathbf{c}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
+	\item For $i \in [k+2]$, $\mathbf{c}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
 
-\item For $i \in [k+2]$, $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$. Note that $d_i$ can only be $u_i$ or $0$.
+	\item For $i \in [k+2]$, $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$. Note that $d_i$ can only be $u_i$ or $0$.
 
-\item Find the vector $\mathbf{r} \in \{0, 1\}^{k+2}$.
+	\item Find the vector $\mathbf{r} \in \{0, 1\}^{k+2}$.
 
-\item On query $\mathcal{O}_{\textsf{Probe}}(\mathbf{b}^\prime)$, first encode $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ and find $d \gets \mathbf{x}^{*}{\mathbf{y}^\prime}^T$. Then find a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r} {\mathbf{y}^{\prime\prime}}^T = d$. Return $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{y}^{\prime\prime})$.
+	\item On query $\mathcal{O}_{\textsf{Probe}}(\mathbf{b}^\prime)$, first encode $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ and find $d \gets \mathbf{x}^{*}{\mathbf{y}^\prime}^T$. Then find a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r} {\mathbf{y}^{\prime\prime}}^T = d$. Return $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{y}^{\prime\prime})$.
 
 \end{enumerate}
-Another way is to provide $\mathbf{r}$ in the $\textsf{RUF}$ game.
 
-We can say these fh-IPFE constructions are not \emph{ideal} in the sense that $\textsf{FE.Dec}$ aborts without further restrictions on input vectors. Constructions in \cite{10.1007/978-3-030-90567-5_33} do not need discrete logarithm in $\textsf{FE.Dec}$. Unfortunately, it is also not \textsf{fh-IND} secure.
+\subsection{Solution III}
 
-One direction now is to find an fh-IPFE such that
+We can say these fh-IPFE constructions \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are not \emph{ideal}. Their $\textsf{FE.Dec}$ often aborts on unrestricted inputs. On the contrary, constructions like \cite{10.1007/978-3-030-90567-5_33} do not need discrete logarithm in $\textsf{FE.Dec}$. Unfortunately, it is not \textsf{fh-IND} secure.
+
+%-------------------
+
+\newpage
+
+%-------------------
+
+\section{Reusability}
+
+The work \cite{simoens2012framework} discusses a security concept related to reusability. It is called \emph{Trace users with different identities}. It is about when a user registers multiple records of its biometrics on the database. The server or compromised database should not be able to find that two records correspond to the same person.
+
+Based on this concept, I design the following games. $\mathcal{S}_{\textsf{Enroll}}$ and $\mathcal{S}_{\textsf{Probe}}$ are two simulators that do not have access to $\mathbb{B}$.
+
+\begin{figure}[H]
+\centering
+
+	\begin{minipage}[t]{0.45\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{REU}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\begin{algorithmic}[1]
+		\State $b \getsdollar \{0, 1\}$
+
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\textsf{Reg}}, \mathcal{O}_{\textsf{auth}}}(1^\lambda)$
+ 
+		\State \Return $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
 
 \begin{itemize}
-	\item $q = \poly(\lambda)$. Otherwise, the scheme is very slow.
+	\item $\mathcal{O}_{\textsf{Reg}}$: It maintains a table $\mathcal{T}$ and a counter $i$ initialized to $0$ at the beginning. On query, it updates $i \gets i+1$, and behaves depending on $b$:
+	\begin{itemize}
+		\item If $b = 0$: It generates key triplets $(\textsf{esk}_i, \textsf{psk}_i, \textsf{csk}_i) \gets \textsf{Setup}(1^\lambda)$, samples an enrollment template $\mathbf{b} \getsdollar \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$, stores an entry $\textsf{psk}_i$ in $\mathcal{T}[i]$, and outputs $\mathbf{c_x}_i \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ and $\textsf{csk}_i$.
 
-	\item $\textsf{FE.Dec}$ does not need prior knowledge of inputs. Otherwise, we need to change \textsf{RUF} game.
+		\item If $b = 1$: It generates key triplets $(\textsf{esk}_i, \textsf{psk}_i, \textsf{csk}_i) \gets \textsf{Setup}(1^\lambda)$, samples a biometric distribution $\mathcal{B}_i \getsdollar \mathbb{B}$ and an enrollment template $\mathbf{b}_i \getsdollar \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}_i}}()$, stores an entry $(\textsf{psk}_i, \mathcal{B}_i)$ in $\mathcal{T}[i]$, and outputs $\mathbf{c_x}_i \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b}_i)$ and $\textsf{csk}_i$.
+	\end{itemize}
+
+	\item $\mathcal{O}_{\textsf{auth}}(i)$: This oracle has access to the table $\mathcal{T}$. On input $i$, it retrieves the entry $\mathcal{T}[i]$ and behaves depending on $b$:
+	\begin{itemize}
+		\item If $b = 0$: Let $\textsf{psk}_i \gets \mathcal{T}[i]$. It samples a probe template $\mathbf{b} \getsdollar \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\mathbf{c_y}_i \gets \textsf{Probe}(\textsf{psk}_i, \mathbf{b})$.
+
+		\item If $b = 1$: Let $(\textsf{psk}_i, \mathcal{B}_i) \gets \mathcal{T}[i]$. It samples a probe template $\mathbf{b}_i \getsdollar \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}_i}} ()$ and outputs $\mathbf{c_y}_i \gets \textsf{Probe}(\textsf{psk}_i, \mathbf{b}_i)$.
+	\end{itemize}
 	
-	\item Full \textsf{fh-IND} security.
+\end{itemize}
+If any adversary $\mathcal{A}$ cannot recover the bit $b$; that is, if $\Pr[ \textsf{REU}(\mathcal{A}) \to 1 ] = \negl.$, then a real-world server cannot distinguish whether a list of enrollment records all corresponding to the same person or not.
+
+To provide more power for the adversary, we can also consider the following oracles.
+
+\begin{itemize}
+	\item $\mathcal{O}_{\textsf{Reg}}^\prime(\textsf{esk}^\prime)$: This oracle maintains a table $\mathcal{T}$ and a counter $i$ initialized to $0$ at the beginning. If $\textsf{esk}^\prime$ has been queried before, it aborts. Otherwise, it updates $i \gets i+1$ and behaves depending on $b$:
+	\begin{itemize}
+		\item If $b = 0$: It samples an enrollment template $\mathbf{b} \getsdollar \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}^\prime, \mathbf{b})$.
+
+		\item If $b = 1$: It samples a biometric distribution $\mathcal{B}_i \getsdollar \mathbb{B}$ and an enrollment template $\mathbf{b}_i \getsdollar \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}_i}}()$, stores $\mathcal{B}_i$ in $\mathcal{T}[i]$, and outputs $\mathbf{c_x}_i \gets \textsf{Enroll}(\textsf{esk}^\prime, \mathbf{b}_i)$.
+	\end{itemize}
+
+	\item $\mathcal{O}_{\textsf{auth}}^\prime(i, \textsf{psk}^\prime)$: This oracle has access to the table $\mathcal{T}$ and behaves depending on $b$:
+	\begin{itemize}
+		\item If $b = 0$: It samples a probe template $\mathbf{b} \getsdollar \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}^\prime, \mathbf{b})$.
+
+		\item If $b = 1$: Let $\mathcal{B}_i \gets \mathcal{T}[i]$. It samples a probe template $\mathbf{b}_i \getsdollar \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}_i}} ()$ and outputs $\mathbf{c_y}_i \gets \textsf{Probe}(\textsf{psk}^\prime, \mathbf{b}_i)$.
+	\end{itemize}
+	
 \end{itemize}
 
+We forbid the adversary to query $\mathcal{O}_{\textsf{Reg}}^\prime$ on the same $\textsf{esk}^\prime$ twice to avoid trivial attacks. Without this restriction, the adversary can generate honest key triplet $(\textsf{esk}, \textsf{psk}, \textsf{csk})$, ask for two records $\mathbf{c_x}_1, \mathbf{c_x}_2$ both corresponding to $\textsf{esk}$, and use $\mathbf{c_y} \gets \mathcal{O}_{\textsf{auth}}^\prime(1, \textsf{psk})$ and $s \gets \textsf{Compare}(\textsf{csk}, \mathbf{c_x}_2, \mathbf{c_y})$ to know the challenge bit $b$. If $b = 0$, $\textsf{Verify}(s) \to 1$ with probability $\textsf{TP}$; otherwise, $\textsf{Verify}(s) \to 1$ with probability $\textsf{FP}$.
+
+%-------------------
+
+\newpage
+
+%-------------------
+
+\iffalse
 
 \section{Achievability of $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF Security}
 
@@ -478,7 +576,7 @@ In conclusion,
 
 Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\Adv_{\textsf{FE}, \mathcal{A}^\prime }^{\textsf{RUF}, \emptyset} = \Pr[\textsf{RUF}^{\emptyset}_{\textsf{FE}}(\mathcal{A}^\prime) \to 1 ]$ is negligible,
 \[
-	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}) \to 1]  = \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime }^{\textsf{RUF}, \emptyset} = \negl.
+	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}) \to 1]  = 2 \cdot \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} + \Adv_{\textsf{FE}, \mathcal{A}^\prime }^{\textsf{RUF}, \emptyset} = \negl.
 \]
 
 \end{proof}
@@ -498,7 +596,50 @@ Since $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF implies $\{ \empt
 Given Assumption \ref{assump:only-return-valid-ct} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is both $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
 \end{corollary}
 
-%\fi
+
+\section{One-Way Game}
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.55\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{OW}_{\Pi, \mathbb{B}}(\mathcal{A})$}
+	\label{alg:ow_game}
+	\begin{algorithmic}[1]
+
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
+
+		\State $\mathbf{\tilde{b}} \gets \mathcal{A}( \textsf{option} )$
+
+		\State $s \gets \textsf{BioCompare}( \mathbf{\tilde{b}}, \mathbf{b})$
+		\State \Return $ \textsf{Verify}(s) $
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\label{fig:ow_game}
+\end{figure}
+
+\noindent $\textsf{option}$ can be $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}$ or oracles $\mathcal{O}_{\textsf{Enroll}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}^\prime_{\textsf{Enroll}}, \mathcal{O}^\prime_{\textsf{Probe}}$.
+
+In the reusable fuzzy extractor paper \cite{10.1145/1030083.1030096}, if public strings related to personal information are generated many times, the sensitive information might leak. In our setting, it is a little similar to having multiple $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$.
+
+To model reusability, I think we can consider either providing $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ for different $\textsf{esk}_i$, or just providng $\mathcal{O}^\prime_{\textsf{Enroll}}$.
+
+\fi
+
+%-------------------
+
+\newpage
+
+%-------------------
 
 %-------------------
 %% Backup File
