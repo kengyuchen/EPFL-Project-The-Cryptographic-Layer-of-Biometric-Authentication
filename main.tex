@@ -499,6 +499,37 @@ We forbid the adversary to query $\mathcal{O}_{\textsf{Reg}}^\prime$ on the same
 
 %-------------------
 
+\section{Instantiation using Other Primitives}
+
+\begin{itemize}
+	\item Homomorphic encryption (HE) \cite{10.1007/978-3-642-01957-9_7, 10.1007/978-3-642-40588-4_5, pradel2021privacypreservingbiometricmatchingusing}:
+	\begin{itemize}
+		\item \cite{10.1007/978-3-642-40588-4_5}: The server owns the secret key for the HE. $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y})$ is split into two phases:
+			\begin{itemize}
+				\item With $\mathbf{c_x}$ and $\mathbf{c_y}$, homomorphically compute the encryption of $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$.
+				\item Use $\textsf{csk}$, which is the secret key of the HE, to recover $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$.
+			\end{itemize}
+			If we want to hide the biometrics $\mathbf{b}, \mathbf{b}^\prime$ from the server, two phases of $\textsf{Compare}$ have to be run by two parties.
+			\begin{itemize}
+				\item The first one only has $\mathbf{c_x}$ without $\textsf{csk}$.
+				\item The other one only has $\textsf{csk}$ without $\mathbf{c_x}$.
+			\end{itemize}
+		\item \cite{10.1007/978-3-642-01957-9_7, pradel2021privacypreservingbiometricmatchingusing}: The user owns the secret key for the HE. The server homomorphically computes the encryption of $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$, where $R$ is a random value, and sends it to the user. The user decrypts the value $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$, sends it back to the server. The server recovers $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$ by subtracting from $R$.
+
+	\end{itemize}
+
+	\item Fuzzy extractor \cite{10.1145/1030083.1030096, 7980010}: This requires either the enrollment phase passes a public string $Q$ to the authentication phases, or the server sends $Q$ to the user on authentication.
+
+	\item Oblivious transfer \cite{cryptoeprint:2012/586}: The server knows $\mathbf{b}$. Run $k$ OT protocols, where $k$ is the length of $\mathbf{b}$ and $\mathbf{b}^\prime$. Finally after the protocol, the user will have $R$. The server will have $T = \textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$. The user sends $R$ to the server, and the server recovers $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$.
+
+\end{itemize}
+
+%-------------------
+
+\newpage
+
+%-------------------
+
 \iffalse
 
 \section{Achievability of $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF Security}
