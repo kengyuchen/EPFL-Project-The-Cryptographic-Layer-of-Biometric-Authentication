@@ -289,7 +289,7 @@ We first consider \textsf{option}-UF security when $\textsf{option}$ includes $\
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-ruf-OB-Enroll}
-	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF, then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
 
@@ -316,7 +316,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 		
 		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:red:ind-uf-OB-Enroll:c}
 
-		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Enroll} } ( \mathbf{c}, \textsf{pp})$ \label{alg:red:ind-uf-OB-Enroll:A}
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Enroll} } ( \textsf{pp}, \mathbf{c} )$ \label{alg:red:ind-uf-OB-Enroll:A}
 
 		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
 
@@ -347,7 +347,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ 
 		
-		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{Enroll} } (\mathbf{c}, \textsf{pp})$
+		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{Enroll} } (\textsf{pp}, \mathbf{c})$
 
 		\State \Return $\mathbf{\tilde{z}}$
 	\end{algorithmic}
@@ -379,7 +379,7 @@ For $\textsf{option}$ that includes $\mathcal{O}_{\textsf{Probe}}$, we first not
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-ruf-OB-Probe}
-	Let $\textsf{option} = \{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF, then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
 
@@ -414,7 +414,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_\textsf{option}$ game, cons
 
 		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c}, \textsf{pp})$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \textsf{pp}, \mathbf{c})$
 
 		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_\textsf{Probe}$}
 
@@ -477,7 +477,7 @@ For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^
 
 		\EndIf
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \mathbf{c}, \textsf{pp})$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } (\textsf{pp}, \mathbf{c})$
 		
 		\State \Return ${\mathbf{\tilde{z}}}$
 	\end{algorithmic}
@@ -578,7 +578,7 @@ Let $t$ be an integer. Assume that for any two distributions $\mathcal{B}^{(0)}$
 
 \end{assumption}
 
-Note that indistinguishability between $\mathcal{D}_{ \mathcal{B}^{(0)} }(t)$ and $\mathcal{D}_{ \mathcal{B}^{(1)} }(t)$ is a necessary condition to achieve IND security because
+Note that indistinguishability between $\mathcal{D}_{ \mathcal{B}^{(0)} }(t)$ and $\mathcal{D}_{ \mathcal{B}^{(1)} }(t)$ is a necessary condition to achieve \textsf{option}-IND security when $\textsf{option}$ includes $\textsf{csk}, \mathbf{c_x}$ and $\mathcal{O}_{\mathbf{c_y}}$ because
 \[
 	\left( \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(1)}), \cdots, \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(t)}) \right) = \mathcal{D}_{ \mathcal{B}^{(b)} }(t)
 \]
@@ -587,7 +587,7 @@ where $b$ is the challenge bit.
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-ind}
-For any distribution family $\mathbb{B}$ satisfying Assumption \ref{assump:equal_distance} and having a true positive rate $\textsf{TP} > \frac{1}{\poly}$, if \textsf{FE} is fh-IND, then $\Pi$ is IND.
+Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}.$ For a distribution family $\mathbb{B}$ satisfying Assumption \ref{assump:equal_distance} and having a true positive rate $\textsf{TP} > \frac{1}{\poly}$, if \textsf{FE} is fh-IND, then $\Pi$ is \textsf{option}-IND.
 
 \end{theorem}
 
@@ -595,7 +595,17 @@ For any distribution family $\mathbb{B}$ satisfying Assumption \ref{assump:equal
 
 \begin{proof}
 
-Given an adversary $\mathcal{A}$ in the $\textsf{IND}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-ind} which plays the \textsf{fh-IND} game by running $\mathcal{A}$.
+Given an adversary $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-ind} which plays the \textsf{fh-IND} game by running $\mathcal{A}$. $\mathcal{R}$ simulates $\mathcal{O}_{\mathbf{c_y}}$ by the following steps.
+
+\begin{enumerate}
+
+	\item Sample ${\mathbf{b}^\prime}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$ and let $\mathbf{y}^{(0)} \gets (-2{b_1^\prime}^{(0)}, \cdots, -2{b_k^\prime}^{(0)}, \| {\mathbf{b}^\prime}^{(0)} \|^2, 1) $
+
+	\item Repeat sampling ${\mathbf{b}^\prime}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$ and let $\mathbf{y}^{(1)} \gets (-2{b_1^\prime}^{(1)}, \cdots, -2{b_k^\prime}^{(1)}, \| {\mathbf{b}^\prime}^{(1)} \|^2, 1)$ until $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$.
+	
+	\item Return $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$.
+
+\end{enumerate}
 
 \begin{figure}[h]
 \centering
@@ -630,10 +640,6 @@ Given an adversary $\mathcal{A}$ in the $\textsf{IND}$ game, consider the reduct
 
 			\Until{ $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ } \label{alg:red:ind-ind:while}
 
-				%\State $\mathbf{y}^{(1)} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
-
-			%\EndWhile
-
 			\State $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$ \label{alg:red:ind-ind:cy}
 
 		\EndFor
@@ -650,7 +656,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{IND}$ game, consider the reduct
 
 \noindent Note that $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^{(0)}, {\mathbf{y}^{(1)}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\mathbf{x}^{(0)}{\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)}{\mathbf{y}^{(1)}}^T$. Hence, $\mathcal{R}$ is an admissible adversary.
 
-The probability that Line \ref{alg:red:ind-ind:while} is satisfied is
+We first show that the simulation of oracle $\mathcal{O}_{\mathbf{c_y}}$ is efficient. The probability that $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ is satisfied is
 \begin{align*}
 	\Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = \mathcal{D}_{\mathcal{B}^{(1)}}(1)] 
 	&\geq \sum_{i=0}^\tau \Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = i]^2 \qquad \text{(Assumption \ref{assump:equal_distance})} \\
@@ -669,25 +675,24 @@ The expected number of repetitions is bounded above by $\frac{\tau + 1}{ \textsf
 \]
 We can reach a $1 - \negl.$ probability that the loop will end within $T$ times by setting a polynomial-size $T$.
 
-Now, we show that $\mathcal{R}$ perfectly simulate an \textsf{IND} game for $\mathcal{A}$. If the challenge bit $b$ of the \textsf{fh-IND} game is $0$, $\mathbf{c_x}$ and $\mathbf{c_y}^{(i)}$ for all $i \in [t]$ are generated from $\mathcal{B}^{(0)}$ and have the same distributions as the inputs for an adversary in \textsf{IND} game.
+Now, we show that $\mathcal{R}$ perfectly simulate an $\textsf{IND}_{\textsf{option}}$ game for $\mathcal{A}$. Assume that $\mathcal{A}$ makes $t$ queries to $\mathcal{O}_{\mathbf{c_y}}$ and receives probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$. If the challenge bit $b$ of the \textsf{fh-IND} game is $0$, $\mathbf{c_x}$ and $\mathbf{c_y}^{(i)}$ for all $i \in [t]$ are generated from $\mathcal{B}^{(0)}$ and have the same distributions as the inputs for an adversary in \textsf{IND} game.
 If the challenge bit $b$ is $1$, we show that distributions of $\mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t$ also follow the same distribution given Assumption \ref{assump:equal_distance}.
 
 Let $b^\prime \in \{0, 1\}$, define distributions 
 \begin{align*}
 	\mathbf{X}^{(b^\prime)} &= \{ \mathbf{b}^{(b^\prime)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(b^\prime)}}}() : \mathbf{x}^{(b^{\prime})} \gets (b_1^{(b^{\prime})}, \cdots, b_k^{(b^{\prime})}, 1, \|\mathbf{b}^{ (b^{\prime}) }\|^2) \} \\
 	\mathbf{Y}^{ (b^\prime) }_i &= \{ \mathbf{b}^{(b^\prime)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(b^\prime)}}}() : \mathbf{y}^{(b^{\prime})} \gets ( -2b_1^{(b^{\prime})}, \cdots, -2b_k^{(b^{\prime})}, \|\mathbf{b}^{ (b^{\prime}) }\|^2, 1) \} \\
-	\{ \mathbf{Y}^{ (b^\prime) }_i \}_{ i \in [t] } &= (\mathbf{Y}^{ (b^\prime) }_1, \cdots, \mathbf{Y}^{ (b^\prime) }_t) \quad  \text{ ($t$ identical and independent distributions) }
+	\{ \mathbf{Y}^{ (b^\prime) }_i \}_{i=1}^t &= (\mathbf{Y}^{ (b^\prime) }_1, \cdots, \mathbf{Y}^{ (b^\prime) }_t) \quad  \text{ ($t$ identical and independent distributions) }
 \end{align*}
 
-Let $\mathbf{Y}^\prime_i$ be the distribution of $\mathbf{y}^{(1)}$ derived after the loop in Line \ref{alg:red:ind-ind:while} in the $i$-th iteration.
-For any $\{ d_i \}_{i=1}^t, d_i > 0$,
+\noindent Note that for any $\{ d_i \}_{i=1}^t, d_i > 0$,
 \begin{align*}
 \Pr \left[ \bigwedge_{i=1}^t \mathbf{X}^{(0)} {\mathbf{Y}^{(0)}_i}^T = d_i^2 \right] 
 &= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(0)}}(t) = (d_1, \cdots, d_t) \right] \\
 &= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(1)}}(t) = (d_1, \cdots, d_t) \right] = \Pr \left[ \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right]
 \end{align*}
 
-Hence, for any $\mathbf{x}$ and $\{ \mathbf{y}_i \}_{i=1}^t$,
+Now, let $\mathbf{Y}^\prime_i$ be the distribution of $\mathbf{y}^{(1)}$ derived in the $i$-th query to $\mathcal{O}_{\mathbf{c_y}}$. For any $\mathbf{x}$ and $\{ \mathbf{y}_i \}_{i=1}^t$,
 \begin{align*}
 	& \Pr [\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^\prime_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^\prime_t = \mathbf{y}_t] \\
 	&= \sum_{d_1, \cdots, d_t} \left( \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right] \right. \\
@@ -697,13 +702,13 @@ Hence, for any $\mathbf{x}$ and $\{ \mathbf{y}_i \}_{i=1}^t$,
 	&= \Pr[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t ]
 \end{align*}
 
-\noindent which implies $\mathcal{R}$ also perfectly simulate an \textsf{IND} game for $\mathcal{A}$ when the challenge bit $b = 1$.
+\noindent which implies $\mathcal{R}$ also perfectly simulate an $\textsf{IND}_{\textsf{option}}$ game for $\mathcal{A}$ when the challenge bit $b = 1$.
 
 In conclusion, 
 \[
-	\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \Adv_{\Pi, \mathbb{B}, \mathcal{A}}^\textsf{IND} = \negl.
+	\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \Adv_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}}^\textsf{IND} = \negl.
 \]
-which holds for all adversaries $\mathcal{A}$ in the \textsf{IND} game. This implies the IND security of $\Pi$.
+which holds for all adversaries $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game. This implies the \textsf{option}-IND security of $\Pi$.
 
 
 \end{proof}

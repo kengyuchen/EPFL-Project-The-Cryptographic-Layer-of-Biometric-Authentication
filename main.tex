@@ -145,7 +145,7 @@ In this construction, $q$ is exponential to $\lambda$ to achieve security, and d
 
 \section{$\gamma$-RUF Security of \textsf{FE}}
 
-Let $\mathbb{F} = \Z_q$. We can extend the definition of the RUF security with an integer parameter $\gamma$.
+Let $\mathbb{F} = \Z_q$. We can extend the definition of the RUF security in Section \ref{sec:security_analysis:fh-IPFE:ruf} with an integer parameter $\gamma$.
 
 \begin{figure}[H]
 \centering
@@ -197,12 +197,12 @@ With the extension with $\gamma$, we can rewrite our results in Section \ref{sec
 
 \begin{theorem}[Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}]
 \label{thm:fh-IPFE:ind-gamma-ruf-OB-Enroll}
-	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
 \begin{theorem}[Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}]
 \label{thm:fh-IPFE:ind-gamma-ruf-OB-Probe}
-	Let $\textsf{option} = \{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
 \subsection{Achievability of $\gamma$-RUF Security}

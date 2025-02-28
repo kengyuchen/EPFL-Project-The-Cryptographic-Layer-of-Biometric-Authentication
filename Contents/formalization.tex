@@ -25,15 +25,15 @@ Assume the existence of a family $\mathbb{B}$ of biometric distributions that ar
 
 \begin{definition}[Biometric Authentication Scheme]
 
-A \emph{biomtric authentication shceme} $\Pi$ associated with a family $\mathbb{B}$ of biometric distributions is composed of the following algorithms.
+A \emph{biometric authentication scheme} $\Pi$ associated with a family $\mathbb{B}$ of biometric distributions is composed of the following algorithms.
 
 \begin{itemize}
 
-	\item $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from a distribution $\mathcal{B} \in \mathbb{B}$, it outputs a biometric template $\mathbf{b}$ for enrollment.
+	\item $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from a distribution $\mathcal{B} \in \mathbb{B}$, it outputs a biometric template $\mathbf{b}$ for enrollment. In practice, $\textsf{getEnroll}$ can collect several biometric samples from a user's biometric distribution $\mathcal{B}$ to create a more accurate template.
 
-	\item $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^\prime$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from a distribution $\mathcal{B} \in \mathbb{B}$, it outputs a biometric template $\mathbf{b}^\prime$ for probe.
+	\item $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^\prime$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from a distribution $\mathcal{B} \in \mathbb{B}$, it outputs a biometric template $\mathbf{b}^\prime$ for probe. In practice, $\textsf{getProbe}$ often directly outputs the answer from $\mathcal{O}_{\mathcal{B}}$.
 
-	\item $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to s$: Given two biometric templates $\mathbf{b}$ and $\mathbf{b}^\prime$, it outputs a score $s$. 
+	\item $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to s$: Given a biometric template $\mathbf{b}$ from $\textsf{getEnroll}$ and another template $\mathbf{b}^\prime$ from $\textsf{getProbe}$, it outputs a score $s$.
 
 	\item $\textsf{Verify}(s) \to r \in \{0,1\}$: It is a deterministic algorithm that reads the comparison score $s$ and determines whether this is a successful authentication ($r = 1$) or not ($r = 0$).
 

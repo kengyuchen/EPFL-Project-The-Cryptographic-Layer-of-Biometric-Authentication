@@ -78,7 +78,14 @@ By the correctness of the relational hash scheme $\textsf{RH}$, we have (except 
 The idea behing this construction is that users hold a personal device which runs \textsf{Setup}, \textsf{Enroll}, and \textsf{Probe} using templates coming from a biometric sensor. The message $\mathbf{c_x}$ along with the comparison key $\textsf{csk} = \textsf{pk}$, which is assumed to be public, are sent to a server in order to enroll the user, and $\mathbf{c_y}$ is sent on authentication.
 
 
-Now, let $\Pi$ be an authentication scheme instantiated by a relational hash scheme \textsf{RH}. For the UF and IND security of $\Pi$, we define the unforgeability \cite{cryptoeprint:2014/394} of \textsf{RH}.
+Now, let $\Pi$ be an authentication scheme instantiated by a relational hash scheme \textsf{RH}. We discuss the UF and IND security of $\Pi$ in the following subsections.
+
+%-------------------
+
+\subsection{UF Security of $\Pi$}
+\label{sec:security_analysis:rh:uf}
+
+We first reacll the unforgeability \cite{cryptoeprint:2014/394} of a relational hash scheme.
 
 \begin{definition}[Unforgeability]
 
@@ -97,20 +104,10 @@ A relational hash scheme \textsf{RH} is called \emph{unforgeable} for the distri
 
 \end{definition}
 
-%Note that in \cite{cryptoeprint:2014/394}, the authors proposed an unforgeable relational scheme for the Hamming distance proximity relation $R^\tau$ for any $\tau < k$.
-
-%-------------------
-
-\subsection{UF Security of $\Pi$}
-\label{sec:security_analysis:rh:uf}
-
-We first consider $\textsf{option}$ that includes $\mathbf{c_x}$.
-
-
 \begin{theorem}
 \label{thm:rh:uf-uf-cx}
 
-Let $\textsf{option} = \{\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}\}$. If \textsf{RH} is unforgeable for the distribution
+Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} \}$. If \textsf{RH} is unforgeable for the distribution
 \[
 	\mathcal{X} = \{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \gets {\sf getEnroll}^{\mathcal{O}_\mathcal{B}}() \mid \mathbb{B} \},
 \]
@@ -152,17 +149,17 @@ For \textsf{option} that includes $\mathcal{O}_\textsf{Enroll}^\prime$, we notic
 \subsection{IND Security of $\Pi$}
 \label{sec:security_analysis:rh:IND}
 
-For the IND security, we have a negative result for $\Pi$.
+For the IND security, we have a negative result for $\Pi$. Note that $\textsf{esk}, \textsf{psk}$ and $\textsf{csk}$ are assumed to be public in this instantiation and should given in $\textsf{option}$.
 
 \begin{theorem}
 
-For any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, and for any relational hash scheme \textsf{RH}, $\Pi$ is not IND for any $t \geq 0$.
+Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}\}$ or $\{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathcal{O}_{\mathbf{c_y}} \}$. For any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, and for any relational hash scheme \textsf{RH}, $\Pi$ is not $\textsf{option}$-IND.
 
 \end{theorem}
 
 \begin{proof}
 
-Consider the adversary $\mathcal{A}$ in Algorithm \ref{alg:rh:ind}. When the challenge bit $b = 0$, the probability that $\mathcal{A}$ wins is $\textsf{TP}$. When the challenge bit $b = 1$, the probability that $\mathcal{A}$ wins is $1 - \textsf{FP}$. Now, 
+Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}\}$, consider the adversary $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game in Algorithm \ref{alg:rh:ind}. When the challenge bit $b = 0$, the probability that $\mathcal{A}$ wins is $\textsf{TP}$. When the challenge bit $b = 1$, the probability that $\mathcal{A}$ wins is $1 - \textsf{FP}$. Now, 
 
 \[
 	\Adv_{\Pi, \mathbb{B}, \mathcal{A}}^{\textsf{IND}} = \left| \Pr[ \textsf{IND}_\Pi(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \left| \frac{1}{2} (\textsf{TP} + 1 - \textsf{FP}) - \frac{1}{2} \right| > \frac{1}{\poly}.
@@ -173,7 +170,7 @@ Consider the adversary $\mathcal{A}$ in Algorithm \ref{alg:rh:ind}. When the cha
 
 	\begin{minipage}[t]{0.65\textwidth}
 	\begin{algorithm}[H]
-	\caption{$\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} ( \textsf{csk} = \textsf{pk}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$}
+	\caption{$\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} (\textsf{esk} = \textsf{psk} = \textsf{csk} = \textsf{pk}, \mathbf{c_x} )$}
 	\label{alg:rh:ind}
 	\begin{algorithmic}[1]
 
@@ -196,13 +193,15 @@ Consider the adversary $\mathcal{A}$ in Algorithm \ref{alg:rh:ind}. When the cha
 
 \end{figure}
 
+The case when $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathcal{O}_{\mathbf{c_y}} \}$ can be analyzed similarly by considering an adversary who first asks a $\mathbf{c_y}$ and verifies its relation with $\mathbf{h_x}^{(0)}$, which is created from $\mathcal{O}_{\mathcal{B}^{(0)}}$.
+
 \end{proof}
 
-We note that this insecurity result holds whenever $\textsf{psk}$ is public. When $\textsf{esk}$ is public, one can also use $\mathbf{c_y}^{(i)}$ to verify from which distribution the chalenge ciphertexts are generated. We write this observation formally in the following theorem.
+We note that this insecurity result holds whenever $\textsf{csk}$ and at least one of $\textsf{esk}$ and $\textsf{psk}$ are public. We write this observation formally in the following theorem.
 
 \begin{theorem}
 
-Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$. If $\textsf{psk}$ is public, $\Pi$ is not IND for any $t \geq 0$. If $\textsf{esk}$ is public, $\Pi$ is not IND for any $t \geq 1$.
+Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$. $\Pi$ is not $\textsf{option}$-IND for an $\textsf{option}$ that includes $\textsf{csk}$ and at least one of $\textsf{esk}$ and $\textsf{psk}$.
 
 \end{theorem}
 
@@ -231,4 +230,4 @@ Correctness holds because
 	\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)} = 1 \Leftrightarrow \textsf{HD}(\mathbf{x} + \mathbf{r}, \mathbf{y} + \mathbf{r}) \leq \tau \Leftrightarrow \textsf{HD}(\mathbf{x}, \mathbf{y}) \leq \tau = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime).
 \]
 
-With the same argument in Theorem \ref{thm:rh:ind:particular-biometri-layer}, one can prove that this new scheme is now IND, albeit at the cost of requiring $\textsf{esk}$ and $\textsf{psk}$ to remain secret.
+With the same argument in Theorem \ref{thm:rh:ind:particular-biometri-layer}, one can prove that this new scheme is now $\{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}}\}$-IND, albeit at the cost of requiring $\textsf{esk}$ and $\textsf{psk}$ to remain secret.

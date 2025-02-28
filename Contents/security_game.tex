@@ -47,7 +47,7 @@ To describe the unforgeability of an authentication scheme, we model the ability
 \label{fig:uf_game}
 \end{figure}
 
-The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}$ or the following oracles:
+The auxiliary information \textsf{option} can be nothing or include $\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}$ or the following oracles:
 
 \begin{itemize}
 
@@ -61,7 +61,7 @@ The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x
 	
 	\item $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, it first samples $\mathbf{b}^\prime \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{b}^\prime)$. This oracle is only useful when $\textsf{option}$ does not include $\mathcal{O}_{\mathcal{B}}$.
 
-	\item $\mathcal{O}_\textsf{Probe}^\prime (\cdot)$: On input $\textsf{psk}^\prime$, it first samples $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Probe}(\textsf{psk}^\prime, \mathbf{b}^\prime)$. This oracle is only useful when $\textsf{option}$ does not include $\mathcal{O}_{\mathcal{B}}$, and this oracle and $\textsf{psk}$ should not be given at the same time; otherwise, there exists a trivial attack with a winning rate $\textsf{TP}$ by returning $\mathcal{O}_{\textsf{Probe}}^\prime (\textsf{psk})$.
+	\item $\mathcal{O}_\textsf{Probe}^\prime (\cdot)$: On input $\textsf{psk}^\prime$, it first samples $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Probe}(\textsf{psk}^\prime, \mathbf{b}^\prime)$. This oracle is only useful when $\textsf{option}$ does not include $\mathcal{O}_{\mathcal{B}}$. This oracle and $\textsf{psk}$ should not be given at the same time; otherwise, there exists a trivial attack with a winning rate $\textsf{TP}$ by returning $\mathcal{O}_{\textsf{Probe}}^\prime (\textsf{psk})$.
 	
 \end{itemize}
 
@@ -161,7 +161,7 @@ An $\textsf{UF}_\textsf{option}$ adversary has to forge a signature $\sigma$ to 
 
 \begin{theorem}
 \label{thm:sEUF-CMA-esk-csk}
-	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{esk}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$. For any authentication scheme $\Pi$, $\Pi^\prime$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{ \textsf{esk}, \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$. For any authentication scheme $\Pi$, $\Pi^\prime$ is $\textsf{option}$-UF. 
 \end{theorem}
 
 %-------------------
@@ -217,7 +217,7 @@ In the game of indistinguishability, we model the ability of an authentication s
 \label{fig:ind_game}
 \end{figure}
 
-The auxiliary information \textsf{option} can be nothing or include $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}$ or the following oracles:
+The auxiliary information \textsf{option} can be nothing or include $\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} $ or the following oracles:
 
 \begin{itemize}
 
@@ -285,7 +285,7 @@ The correctness of $\Pi$ holds by
 
 \begin{theorem}
 \label{thm:rh:ind:particular-biometri-layer}
-Let $\textsf{option} = \{\mathbf{c_x}, \textsf{csk}, \mathcal{O}_{\mathbf{c_y}}\}$. The authentication scheme $\Pi$ is \textsf{option}-IND.
+Let $\textsf{option} = \{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}}\}$. The authentication scheme $\Pi$ is \textsf{option}-IND.
 
 \end{theorem}
 
