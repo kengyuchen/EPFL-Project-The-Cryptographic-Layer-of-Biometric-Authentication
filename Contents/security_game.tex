@@ -65,8 +65,44 @@ The auxiliary information \textsf{option} can be nothing or include $\textsf{esk
 	
 \end{itemize}
 
-The requirement that the adversary should return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$ is to prevent a trivial attack that leverages \textsf{TP} or \textsf{FP} when it is not negligible. If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}. Therefore, we rule out the case that $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary to return what $\mathcal{O}_\textsf{Probe}$ returns.
-If \textsf{option} has only $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can still enjoy a winning rate $\textsf{FP}$, if we place no restriction on the adversary's answer. Therefore, we only consider $\textsf{psk}$ in \textsf{option} when \textsf{FP} is negligible, and we restrict the adversary's answer when $\mathcal{O}_\textsf{Probe}$ is given.
+%The requirement that the adversary should return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$ is to prevent a trivial attack that leverages \textsf{TP} or \textsf{FP} when it is not negligible.
+%If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}. Therefore, we rule out the case that $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary to return what $\mathcal{O}_\textsf{Probe}$ returns.
+%If \textsf{option} has only $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can still enjoy a winning rate $\textsf{FP}$, if we place no restriction on the adversary's answer. Therefore, we only consider $\textsf{psk}$ in \textsf{option} when \textsf{FP} is negligible, and we restrict the adversary's answer when $\mathcal{O}_\textsf{Probe}$ is given.
+
+We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions as
+\[
+	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1]
+\]
+
+An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{\textsf{option}-unforgeable} (\textsf{option}-UF) if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
+\]
+
+For the rest of this work, if the scheme $\Pi$, the family $\mathbb{B}$ of distributions, and the auxiliary information $\textsf{option}$ are clear from context, we omit the subscript and write the game as $\textsf{UF}(\mathcal{A})$. This abbreviation also holds for all other games.
+
+\paragraph{Choice of \textsf{option}}
+\noindent Consider a \textsf{UF} adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP}. The $\textsf{option}$ includes either $\textsf{psk}$ or $\mathcal{O}_{\textsf{Probe}}$. It's winning probability is
+\begin{align*}
+	& \Pr [ \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}) \to 1 ] \\
+	=\; & \Pr \left [
+		\begin{aligned}
+			& \mathcal{B}^\prime \getsdollar \mathbb{B} \\
+			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
+		\end{aligned}
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right ] - \negl. \\
+	=\; & \textsf{FP} - \negl.
+\end{align*}
+
+\noindent If $\textsf{psk}$ and $\mathcal{O}_{\mathcal{B}}$ are given at the same time, the adversary can even win with a probability \textsf{TP} by returning a probe from the distribution $\mathcal{B}$. To prevent such trivial attacks, we add the following requirements:
+
+\begin{itemize}
+	\item \textsf{option} only includes $\textsf{psk}$ when \textsf{FP} is negligible.
+
+	\item \label{item:requirement} The adversary is not allowed to return what $\mathcal{O}_\textsf{Probe}$ returns.
+	
+	\item \textsf{option} cannot include both $\textsf{psk}$ and $\mathcal{O}_{\mathcal{B}}$.
+\end{itemize}
 
 %If $\textsf{option}$ includes $\mathcal{O}_{\textsf{Enroll}}^\prime$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, and if we place no restriction on an \textsf{UF} game adversary's answer, the adversary in Algorithm \ref{alg:adv:FP2} can win with a probability
 %\[
@@ -130,19 +166,6 @@ If \textsf{option} has only $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the 
 \end{figure}
 
 
-We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions as
-\[
-	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1]
-\]
-
-An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{\textsf{option}-unforgeable} (\textsf{option}-UF) if for any PPT adversary $\mathcal{A}$,
-\[
-	\Adv^{\textsf{UF}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
-\]
-
-For the rest of this work, if the scheme $\Pi$, the family $\mathbb{B}$ of distributions, and the auxiliary information $\textsf{option}$ are clear from context, we omit the subscript and write the game as $\textsf{UF}(\mathcal{A})$. This abbreviation also holds for all other games.
-
-
 \paragraph{UF Security with Digital Signature}
 
 We note that we can achieve UF security by a similar approach in \cite{cryptoeprint:2023/481} with a digital signature scheme. Given any authentication scheme $\Pi$ and an sEUF-CMA digital signature scheme $\textsf{Sig} = (\textsf{Sig.KeyGen}, \textsf{Sig.Sign}, \textsf{Sig.Verify})$, consider the following scheme $\Pi^\prime$.
@@ -150,6 +173,8 @@ We note that we can achieve UF security by a similar approach in \cite{cryptoepr
 \begin{itemize}
 
 	\item $\textsf{Setup}^\prime (1^\lambda)$: Run $(\textsf{esk}, \textsf{psk}, \textsf{csk}) \gets \textsf{Setup}(1^\lambda)$ and $(\textsf{sk}_{\textsf{Sig}}, \textsf{pk}_{\textsf{Sig}}) \gets \textsf{Sig.KeyGen}(1^\lambda)$. Output $\textsf{esk}^\prime \gets \textsf{esk}$, $\textsf{psk}^\prime \gets (\textsf{psk}, \textsf{sk}_{\textsf{Sig}})$, $\textsf{csk}^\prime \gets \textsf{csk}$.
+
+	\item $\textsf{Enroll}^\prime$: The same as $\textsf{Enroll}$.
 
 	\item $\textsf{Probe}^\prime (\textsf{psk}^\prime, \mathbf{b}^\prime)$: Run $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$ and $\sigma \gets \textsf{Sig.Sign}(\textsf{sk}_{\textsf{Sig}}, \mathbf{c_y})$. Output $\mathbf{c_y}^\prime \gets (\mathbf{c_y}, \sigma)$.
 
@@ -221,16 +246,16 @@ The auxiliary information \textsf{option} can be nothing or include $\textsf{esk
 
 \begin{itemize}
 
-	%\item $\mathcal{O}_{\mathbf{c_x}}$: It first samples a biometric sample $\mathbf{b} \getsdollar \textsf{getEnroll}^{\mathcal{B}^{(b)} }()$ and outputs $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$. 
-	
 	\item $\mathcal{O}_{\mathbf{c_y}}$: It first samples a biometric sample $\mathbf{b}^{\prime} \getsdollar \textsf{getProbe}^{\mathcal{B}^{(b)} }()$ and outputs $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^{\prime})$.
 
 	\item $\mathcal{O}_\textsf{Enroll}(\textsf{esk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}, \mathbf{b}^\prime)$.
 
 	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$.
 	
-	\item $\mathcal{O}_\textsf{CompVrfy}(\textsf{csk}, \cdot, \cdot)$: On input $\mathbf{c}, \mathbf{c}^\prime$, it first computes $s \gets \textsf{Compare}(\textsf{csk}, \mathbf{c}, \mathbf{c}^\prime)$ and outputs $\textsf{Verify}(s)$.
+	\item $\mathcal{O}_\textsf{CompVrfy}(\textsf{csk}, \cdot, \cdot)$: On input $\mathbf{c}$ and $\mathbf{c}^\prime$, it first computes $s \gets \textsf{Compare}(\textsf{csk}, \mathbf{c}, \mathbf{c}^\prime)$ and outputs $\textsf{Verify}(s)$.
 \end{itemize}
+
+\noindent Note that at least one of $\mathbf{c_x}$ and $\mathcal{O}_{\mathbf{c_y}}$ should be given; otherwise, IND security is trivial.
 
 We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{IND}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family of distributions $\mathbb{B}$ as
 \[
@@ -242,15 +267,66 @@ An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distribu
 	\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
 \]
 
+
+\paragraph{Trivial Attacks}
+We note that if $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, there are trivial attacks.
+
+\begin{theorem}
+\label{thm:ind-tp-fp}
+Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, $\Pi$ is not $\textsf{option}$-IND for an $\textsf{option}$ such that
+
+\begin{itemize}
+	\item \textsf{option} includes either $\textsf{csk}$ or $\mathcal{O}_{\textsf{CompVrfy}}$.
+
+	\item If \textsf{option} includes $\mathbf{c_x}$, then it also includes either $\textsf{psk}$ or $\mathcal{O}_{\textsf{Probe}}$.
+
+	\item If \textsf{option} includes $\mathcal{O}_{\mathbf{c_y}}$, then it also includes either $\textsf{esk}$ or $\mathcal{O}_{\textsf{Enroll}}$.
+\end{itemize}
+
+\end{theorem}
+
+\begin{proof}
+
+Let $\textsf{option}$ include $\mathbf{c_x}$ and either $\textsf{psk}$ or $\mathcal{O}_{\textsf{Probe}}$. The case when $\mathcal{O}_{\mathbf{c_y}}$ is given can be analyzed analogously. Consider the adversary $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game in Algorithm \ref{alg:ind-tp-fp}. When the challenge bit $b = 0$, the probability that $\mathcal{A}$ wins is $\textsf{TP}$. When the challenge bit $b = 1$, the probability that $\mathcal{A}$ wins is $1 - \textsf{FP}$. Now, 
+
+\[
+	\Adv_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}}^{\textsf{IND}} = \left| \Pr[ \textsf{IND}_\Pi(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \left| \frac{1}{2} (\textsf{TP} + 1 - \textsf{FP}) - \frac{1}{2} \right| > \frac{1}{\poly}.
+\]
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.85\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} (\textsf{psk}, \textsf{csk}, \mathbf{c_x})$ or $\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_{\textsf{CompVrfy}} } (\mathbf{c_x})$}
+	\label{alg:ind-tp-fp}
+	\begin{algorithmic}[1]
+
+		\State $\mathbf{b}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+		
+		\State $\mathbf{c_y}^{(0)} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^{(0)})$ \Comment{or $\mathbf{c_y}^{(0)} \gets \mathcal{O}_{\textsf{Probe}}(\mathbf{b}^{(0)})$ }
+		
+		\State $r \gets \textsf{Verify}( \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(0)}) ) $ \Comment{or $r \gets \mathcal{O}_{\textsf{CompVrfy}}( \mathbf{c_x}, \mathbf{c_y}^{(0)}) $ }
+		
+		\State \Return $1 - r$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
+
+\end{proof}
+
+
 \paragraph{Necessity of IND Security}
+
 Consider the following authentication scheme for any biometric layer. Let $\textsf{esk} = \textsf{psk} = \textsf{csk}$ be empty strings and
 \begin{gather*}
 	\textsf{Enroll}(\textsf{esk}, \mathbf{b}) \to \mathbf{b}, \quad \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime ) \to \mathbf{b}^\prime \\
 	\textsf{Compare}(\textsf{csk}, \mathbf{b}, \mathbf{b}^\prime) = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime ) 
 \end{gather*}
 By the transformation using an sEUF-CMA digital signature scheme we introduced in Section \ref{sec:uf_game}, we can obtain an authentication scheme $\Pi^\prime$ that is $\textsf{option}$-UF for any $\textsf{option}$ that does not include $\textsf{psk}$.
-However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$ and compromise privacy. Obviously, this scheme is not \textsf{option}-IND for an \textsf{option} that includes either $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$, and we use this example emphasize the necessity of the game of indistinguishability.
-
+However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$ and compromise privacy. Obviously, this scheme is not \textsf{option}-IND for an \textsf{option} that includes either $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$ when $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$.
 
 \paragraph{IND Security for a Particular Biometric Layer}
 
@@ -301,5 +377,111 @@ Let $\mathbf{b}^*_0$ and $\mathbf{b}^*_1$ be the fixed vectors of $\mathcal{B}^{
 	&= \Pr[ \mathbf{c_x} = \mathbf{v},\; \mathbf{c_y}^{(1)} = \mathbf{v}^{(1)},\; \cdots,\; \mathbf{c_y}^{(t)} = \mathbf{v}^{(t)} \mid b = 1,\; \mathbf{b}^*_0,\; \mathbf{b}^*_1  ]
 \end{align*}
 Hence, the adversary cannot distinguish between $\mathbf{c_x}, \mathbf{c_y}^{(1)}, \cdots, \mathbf{c_y}^{(t)}$ generated from $\mathcal{B}^{(0)}$ and $\mathcal{B}^{(1)}$.
+
+\end{proof}
+
+\paragraph{IND Security with Public-Key Encryption}
+
+We note that we can achieve IND security with a public-key encryption scheme. We first recall the \emph{multi-challenge IND-CPA} security for a public-key encryption scheme.
+
+\begin{definition}[Multi-challenge IND-CPA]
+
+A public-key encryption scheme $\textsf{PKE} = (\textsf{PKE.KeyGen}, \textsf{PKE.Enc}, \textsf{PKE.Dec})$ is multi-challenge IND-CPA if for any adversary $\mathcal{A}$ , the advantage of $\mathcal{A}$ in the game $\textsf{MC-IND-CPA}_{\textsf{PKE}}$ is
+
+\[
+	\Adv^{\textsf{MC-IND-CPA}}_{\textsf{PKE}, \mathcal{A}} := \left| \Pr[ \textsf{MC-IND-CPA}_{\textsf{PKE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
+\]
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.6\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{MC-IND-CPA}_{\textsf{PKE}} (\mathcal{A})$ }
+	\label{alg:ind-tp-fp}
+	\begin{algorithmic}[1]
+		\State $b \getsdollar \{0, 1\}$
+
+		\State $(\textsf{sk}_{\textsf{PKE}}, \textsf{pk}_{\textsf{PKE}}) \gets \textsf{PKE.KeyGen}(1^\lambda)$
+		
+		\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\textsf{MC-Enc}}}(\textsf{pk}_{\textsf{PKE}})$ 
+		
+		\State \Return $1_{\tilde{b} = b}$
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\end{figure}
+\end{definition}
+
+\begin{itemize}
+	\item $\mathcal{O}_{\textsf{MC-Enc}}(\cdot, \cdot)$: On input $(\textsf{m}_0, \textsf{m}_1)$, it outputs $\textsf{PKE.Enc}(\textsf{pk}_{\textsf{PKE}}, \textsf{m}_b)$
+\end{itemize}
+
+Given any authentication scheme $\Pi$ and a multi-challenge IND-CPA public-key encryption scheme $\textsf{PKE} = (\textsf{PKE.KeyGen}, \allowbreak \textsf{PKE.Enc}, \textsf{PKE.Dec})$, consider the following scheme $\Pi^\prime$. 
+
+\begin{itemize}
+
+	\item $\textsf{Setup}^\prime (1^\lambda)$: Run $(\textsf{esk}, \textsf{psk}, \textsf{csk}) \gets \textsf{Setup}(1^\lambda)$ and $(\textsf{sk}_{\textsf{PKE}}, \textsf{pk}_{\textsf{PKE}}) \gets \textsf{PKE.KeyGen}(1^\lambda)$. Output $\textsf{esk}^\prime \gets ( \textsf{esk}, \textsf{pk}_{\textsf{PKE}} ) $, $\textsf{psk}^\prime \gets (\textsf{psk}, \textsf{pk}_{\textsf{PKE}})$, $\textsf{csk}^\prime \gets (\textsf{csk}, \textsf{sk}_{\textsf{PKE}} )$.
+
+	\item $\textsf{Enroll}^\prime (\textsf{esk}^\prime, \mathbf{b})$: Run $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$ and $\textsf{ct}_{\mathbf{x}} \gets \textsf{PKE.Enc}(\textsf{pk}_{\textsf{PKE}}, \mathbf{c_x})$. Output $\mathbf{c_x}^\prime \gets \textsf{ct}_{\mathbf{x}}$.
+
+	\item $\textsf{Probe}^\prime (\textsf{psk}^\prime, \mathbf{b}^\prime)$: Run $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$ and $\textsf{ct}_{\mathbf{y}} \gets \textsf{PKE.Enc}(\textsf{pk}_{\textsf{PKE}}, \mathbf{c_y})$. Output $\mathbf{c_y}^\prime \gets \textsf{ct}_{\mathbf{y}}$.
+
+	\item $\textsf{Compare}^\prime (\textsf{csk}^\prime, \mathbf{c_x}^\prime, \mathbf{c_y}^\prime)$: First decrypt $\mathbf{c_x} \gets \textsf{PKE.Dec}(\textsf{sk}_{\textsf{PKE}}, \mathbf{c_x}^\prime)$ and  $\mathbf{c_y} \gets \textsf{PKE.Dec}(\textsf{sk}_{\textsf{PKE}}, \mathbf{c_y}^\prime)$. Output $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y})$.
+\end{itemize}
+
+\begin{theorem}
+\label{thm:mc-ind-cpa:ind-esk-psk}
+	Let $\textsf{option} = \{ \textsf{esk}, \textsf{psk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}} \}$. For any authentication scheme $\Pi$, $\Pi^\prime$ is $\textsf{option}$-IND. 
+\end{theorem}
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game, consider the reduction adversary $\mathcal{R}$ in Algrothm \ref{red:mc-ind-cpa:ind-esk-psk-ox-oc} which plays the $\textsf{MC-IND-CPA}_{\textsf{PKE}}$ game by running $\mathcal{A}$. $\mathcal{R}$ simulates $\mathcal{O}_{\mathbf{c_y}}$ by the following steps.
+
+\begin{enumerate}
+	\item Sample ${\mathbf{b}^{\prime}}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$ and ${\mathbf{b}^{\prime}}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$.
+	\item Run $\mathbf{c_y}^{(0)} \gets \textsf{Probe}(\textsf{psk}, {\mathbf{b}^{\prime}}^{(0)} )$ and $\mathbf{c_y}^{(1)} \gets \textsf{Probe}(\textsf{psk}, {\mathbf{b}^{\prime}}^{(1)} )$
+	\item Output $\mathcal{O}_{\textsf{MC-Enc}}(\mathbf{c_y}^{(0)}, \mathbf{c_y}^{(1)})$.
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+	
+	\begin{minipage}[t]{0.7\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{MC-Enc}}}(\textsf{pk}_{\textsf{PKE}})$}
+	\label{red:mc-ind-cpa:ind-esk-psk-ox-oc}
+	\begin{algorithmic}[1]
+		\State $\mathcal{B}^{(0)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(0)}$
+		
+		\State $\mathcal{B}^{(1)} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}^{(1)}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{b}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}(), \mathbf{c_x}^{(0)} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b}^{(0)})$
+		
+		\State $\mathbf{b}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}(), \mathbf{c_x}^{(1)} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b}^{(1)})$
+		
+		\State $\mathbf{c_x}^\prime \gets \mathcal{O}_{\textsf{MC-Enc}}(\mathbf{c_x}^{(0)}, \mathbf{c_x}^{(1)})$
+
+		\State $\textsf{esk}^\prime \gets (\textsf{esk}, \textsf{pk}_{\textsf{PKE}}), \textsf{psk}^\prime \gets (\textsf{psk}, \textsf{pk}_{\textsf{PKE}})$
+
+		\State $ \tilde{b} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}, \mathcal{O}_{\mathbf{c_y}} } (\textsf{esk}^\prime, \textsf{psk}^\prime, \mathbf{c_x}^\prime)$ \label{alg:red:ind-cpa:ind-esk-psk-ox-oc}
+
+		\State \Return $\tilde{b}$
+
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+\noindent Since $\mathcal{R}$ simulates an $\textsf{IND}_{\textsf{option}}$ game for $\mathcal{A}$, the advantage of $\mathcal{A}$ is
+\[
+	\Adv^{\textsf{IND}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \Adv^{\textsf{MC-IND-CPA}}_{\textsf{PKE}, \mathcal{R}} = \negl.
+\]
 
 \end{proof}

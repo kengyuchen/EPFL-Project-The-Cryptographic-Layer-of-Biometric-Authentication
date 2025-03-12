@@ -85,7 +85,7 @@ Now, let $\Pi$ be an authentication scheme instantiated by a relational hash sch
 \subsection{UF Security of $\Pi$}
 \label{sec:security_analysis:rh:uf}
 
-We first reacll the unforgeability \cite{cryptoeprint:2014/394} of a relational hash scheme.
+We first recall the unforgeability \cite{cryptoeprint:2014/394} of a relational hash scheme.
 
 \begin{definition}[Unforgeability]
 
@@ -149,59 +149,11 @@ For \textsf{option} that includes $\mathcal{O}_\textsf{Enroll}^\prime$, we notic
 \subsection{IND Security of $\Pi$}
 \label{sec:security_analysis:rh:IND}
 
-For the IND security, we have a negative result for $\Pi$. Note that $\textsf{esk}, \textsf{psk}$ and $\textsf{csk}$ are assumed to be public in this instantiation and should given in $\textsf{option}$.
+For the IND security, since $\textsf{esk}, \textsf{psk}$ and $\textsf{csk}$ are assumed to be public in this instantiation and should given in $\textsf{option}$, by applying Theorem \ref{thm:ind-tp-fp}, $\Pi$ is not $\textsf{option}$-IND for any \textsf{option} that includes $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$.
 
 \begin{theorem}
 
 Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}\}$ or $\{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathcal{O}_{\mathbf{c_y}} \}$. For any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, and for any relational hash scheme \textsf{RH}, $\Pi$ is not $\textsf{option}$-IND.
-
-\end{theorem}
-
-\begin{proof}
-
-Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}\}$, consider the adversary $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game in Algorithm \ref{alg:rh:ind}. When the challenge bit $b = 0$, the probability that $\mathcal{A}$ wins is $\textsf{TP}$. When the challenge bit $b = 1$, the probability that $\mathcal{A}$ wins is $1 - \textsf{FP}$. Now, 
-
-\[
-	\Adv_{\Pi, \mathbb{B}, \mathcal{A}}^{\textsf{IND}} = \left| \Pr[ \textsf{IND}_\Pi(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \left| \frac{1}{2} (\textsf{TP} + 1 - \textsf{FP}) - \frac{1}{2} \right| > \frac{1}{\poly}.
-\]
-
-\begin{figure}[h]
-\centering
-
-	\begin{minipage}[t]{0.65\textwidth}
-	\begin{algorithm}[H]
-	\caption{$\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} (\textsf{esk} = \textsf{psk} = \textsf{csk} = \textsf{pk}, \mathbf{c_x} )$}
-	\label{alg:rh:ind}
-	\begin{algorithmic}[1]
-
-		\State $\mathbf{y}^{(0)} = \mathbf{b}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
-		
-		\State $\mathbf{h_y}^{(0)} \gets \textsf{RH.Hash}_2(\textsf{pk}, \mathbf{y}^{(0)})$
-		
-		\If{ $\textsf{RH.Verify}(\textsf{pk}, \mathbf{c_x}, \mathbf{h_y}^{(0)}) = 1$}
-		
-			\State \Return $0$
-		
-		\Else
-			
-			\State \Return $1$
-		
-		\EndIf
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-
-\end{figure}
-
-The case when $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathcal{O}_{\mathbf{c_y}} \}$ can be analyzed similarly by considering an adversary who first asks a $\mathbf{c_y}$ and verifies its relation with $\mathbf{h_x}^{(0)}$, which is created from $\mathcal{O}_{\mathcal{B}^{(0)}}$.
-
-\end{proof}
-
-We note that this insecurity result holds whenever $\textsf{csk}$ and at least one of $\textsf{esk}$ and $\textsf{psk}$ are public. We write this observation formally in the following theorem.
-
-\begin{theorem}
-
-Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$. $\Pi$ is not $\textsf{option}$-IND for an $\textsf{option}$ that includes $\textsf{csk}$ and at least one of $\textsf{esk}$ and $\textsf{psk}$.
 
 \end{theorem}
 
@@ -216,7 +168,7 @@ With the same relational hash \textsf{RH} in Section \ref{sec:rh-instantiation},
 
 \begin{itemize}
 
-	\item $\textsf{Setup}(1^\lambda)$: It runs $\textsf{RH.KeyGen}(1^\lambda) \to \textsf{pk}$ and samples $\mathbf{r} \getsdollar \{0, 1\}^k$. Then it outputs $\textsf{esk} \gets (\textsf{pk}, \mathbf{r})$, $(\textsf{psk} \gets \textsf{pk}, \mathbf{r})$, and $\textsf{csk} \gets \textsf{pk}$.
+	\item $\textsf{Setup}(1^\lambda)$: It runs $\textsf{RH.KeyGen}(1^\lambda) \to \textsf{pk}$ and samples $\mathbf{r} \getsdollar \{0, 1\}^k$. Then it outputs $\textsf{esk} \gets (\textsf{pk}, \mathbf{r})$, $\textsf{psk} \gets (\textsf{pk}, \mathbf{r})$, and $\textsf{csk} \gets \textsf{pk}$.
 
 	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: Let $\mathbf{x} \gets \mathbf{b}$. It calls $\textsf{RH.Hash}_1(\textsf{pk}, \mathbf{x} + \mathbf{r}) \to \mathbf{h_x}$ and outputs $\mathbf{c_x} \gets \mathbf{h_x}$.
 

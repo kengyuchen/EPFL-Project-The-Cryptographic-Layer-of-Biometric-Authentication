@@ -103,7 +103,7 @@ For a biometric distribution $\mathcal{B} \in \mathbb{B}, \mathbb{B} \gets \math
 		\begin{aligned}
 			& \mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B} \\
 			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
-			& \mathbf{b} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
+			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
 		\end{aligned}
 		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \vast] \\
 	=&\; \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{FP}(\mathcal{B})]
@@ -111,7 +111,7 @@ For a biometric distribution $\mathcal{B} \in \mathbb{B}, \mathbb{B} \gets \math
 
 \end{definition}
 
-Ideally, we hope $\textsf{TP}$ to be $1$, and $\textsf{FP}(\mathcal{B})$ to be negligible for any $\mathcal{B} \in \mathbb{B}$. However, due to the inherent nature of biometrics, there might be a nonzero false negative rate $ 1 - \textsf{TP} > 0$ and a $\textsf{FP}(\mathcal{B})$ that is not negligible. Our security model and analysis also take these possibilities into consideration.
+Ideally, we hope $\textsf{TP}$ to be $1$ and $\textsf{FP}$ to be negligible. However, due to the inherent nature of biometrics, there might be a nonzero false negative rate $ 1 - \textsf{TP} > 0$ and a $\textsf{FP}$ that is not negligible. Our security model and analysis also take these possibilities into consideration.
 
 
 %-------------------
@@ -119,7 +119,11 @@ Ideally, we hope $\textsf{TP}$ to be $1$, and $\textsf{FP}(\mathcal{B})$ to be n
 
 \subsection{Cryptographic Layer}
 \label{sec:formalization:cryptographic_layer}
-In this work, we add a cryptographic layer on top of $\Pi$ to protect privacy of users. The cryptographic layer includes the following algorithms.
+In this work, we add a cryptographic layer on top of a biometric authentication scheme to protect privacy of users.
+
+\begin{definition}[Cryptographic Layer]
+
+The \emph{cryptographic layer} of a biometric authentication scheme associated with a family $\mathbb{B}$ of biometric distributions is composed of the following algorithms.
 
 \begin{itemize}
 
@@ -133,12 +137,14 @@ In this work, we add a cryptographic layer on top of $\Pi$ to protect privacy of
 
 \end{itemize}
 
-\noindent \textbf{Correctness}: An authentication scheme $\Pi$ is \emph{correct} if for any biometric distributions $\mathcal{B}$ and $\mathcal{B}^\prime$, let $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$, $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$, $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. Then
+\noindent \textbf{Correctness}: A cryptographic layer is \emph{correct} if for any biometric distributions $\mathcal{B}$ and $\mathcal{B}^\prime$, let $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$, $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$, $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. Then
 	\[
 		\Pr \left [
 			\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}) = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)
 		\right ] = 1 - \negl.
 	\]
+
+\end{definition}
 
 In a real-world biometric system, these algorithms may be run by different parties such as a biometric scanner, a user's secure hardware, a trusted authority that issues keys, and the server.
 
