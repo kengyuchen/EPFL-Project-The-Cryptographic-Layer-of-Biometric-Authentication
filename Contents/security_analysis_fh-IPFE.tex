@@ -14,17 +14,17 @@
 	
 		\item $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$: It outputs the public parameter $\textsf{pp}$ and the master secret key $\textsf{msk}$.
 	
-		\item $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to f_\mathbf{x}$: It generates the functional decryption key $f_\mathbf{x}$ for an input vector $\mathbf{x} \in \mathbb{F}^k$. 
+		\item $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to \textsf{sk}_{\mathbf{x}}$: It generates the functional decryption key $\textsf{sk}{\mathbf{x}}$ for an input vector $\mathbf{x} \in \mathbb{F}^k$. 
 	
-		\item $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\mathbf{c_y}$. 
+		\item $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \textsf{ct}_{\mathbf{y}}$: It encrypts the input vector $\mathbf{y} \in \mathbb{F}^k$ to the ciphertext $\textsf{ct}_{\mathbf{y}}$. 
 	
-		\item $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: It outputs a value $z \in \mathbb{F}$ or an error symbol $\bot$.
+		\item $\textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{x}}, \textsf{ct}_{\mathbf{y}}) \to z$: It outputs a value $z \in \mathbb{F}$ or an error symbol $\bot$.
 	
 	\end{itemize}
 	
-	\paragraph{\textbf{Correctness}} An fh-IPFE scheme \textsf{FE} is \emph{correct} if $\forall (\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$ and $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k$, we have
+	\paragraph{\textbf{Correctness}} An fh-IPFE scheme \textsf{FE} is \emph{correct} if for all non-zero $ \mathbf{x}, \mathbf{y} \in \mathbb{F}^k \setminus \{\mathbf{0}\}$, let $(\textsf{msk}, \textsf{pp}) \gets \textsf{FE.Setup}(1^\lambda)$, we have
 	\[
-		\textsf{FE.Dec}( \textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}), \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) ) = \mathbf{x} \mathbf{y}^T \in \mathbb{F}.
+		\textsf{FE.Dec}( \textsf{pp}, \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}), \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) ) = \langle \mathbf{x}, \mathbf{y} \rangle \in \mathbb{F}.
 	\]
 
 \end{definition}
@@ -52,9 +52,9 @@ Now, let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$, where $q$ is a
 
 	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{msk}, \textsf{pp}$ and outputs $\textsf{esk} \gets (\textsf{msk}, \textsf{pp})$, $\textsf{psk} \gets (\textsf{msk}, \textsf{pp})$ and $\textsf{csk} \gets \textsf{pp}$.
 
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: On input a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the algorithm first encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. Next, it calls $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to f_\mathbf{x}$ and outputs $\mathbf{c_x} \gets f_\mathbf{x}$.
+	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: On input a template vector $\mathbf{b} = (b_1, b_2, \cdots, b_k)$, the algorithm first encodes it as $\mathbf{x} = (x_1, x_2, \cdots, x_{k+2}) = (b_1, b_2, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. Next, it calls $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x}) \to \textsf{sk}_{\mathbf{x}}$ and outputs $\mathbf{c_x} \gets \textsf{sk}_{\mathbf{x}}$.
 
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: On input a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$, the algorithm first encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1^\prime, -2b_2^\prime, \cdots, -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$. Next, it calls $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: On input a template vector $\mathbf{b}^\prime = (b_1^\prime, b_2^\prime, \cdots, b_k^\prime)$, the algorithm first encodes it as $\mathbf{y} = (y_1, y_2, \cdots, y_{k+2}) = (-2b_1^\prime, -2b_2^\prime, \cdots, -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$. Next, it calls $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y}) \to \textsf{ct}_{\mathbf{y}}$ and outputs $\mathbf{c_y} \gets \textsf{ct}_{\mathbf{y}}$.
 
 	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
 
@@ -62,11 +62,11 @@ Now, let the associated field of $\textsf{FE}$ be $\mathbb{Z}_q$, where $q$ is a
 
 By the correctness of the functional encryption scheme $\sf FE$, we have
 \[
-	s = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{y}^T = \sum_{i=1}^k -2b_ib_i^\prime + \|\mathbf{b}\|^2 + \|\mathbf{b}^\prime\|^2 = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
+	s = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c_x}, \mathbf{c_y}) = \langle \mathbf{x}, \mathbf{y} \rangle = \sum_{i=1}^k -2b_ib_i^\prime + \|\mathbf{b}\|^2 + \|\mathbf{b}^\prime\|^2 = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
 \]
 which is equal to $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)$. Therefore, if two templates $\mathbf{b}$ and $\mathbf{b}^\prime$ are close enough such that $\|\mathbf{b} - \mathbf{b}^\prime\| \leq \tau$, the scheme results in $r = 1$, a successful authentication.
 
-Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either $\textsf{esk}$ or $\textsf{psk}$ can probe any (invalidly encoded) $\mathbf{y}^{\prime} \in \Z_q^{k+2}$ and find $\mathbf{x} {\mathbf{y}^\prime}^T$ to get partial or full information about the biometric template $\mathbf{b}$. Even if the adversary has no $\textsf{esk}$ or $\textsf{psk}$, if it can sample ciphertexts $\mathbf{c_{y}}$ corresponding to some unknown random vectors $\mathbf{y}$, and if the field size $q$ is not large enough, it can also find a forged $\mathbf{c_{y^*}}$ such that $\mathbf{x}\mathbf{y^*}^T \leq \tau$ with a good probability to impersonate the user by sampling many times offline.
+Instantiated with an fh-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is public, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are the same. Anyone with access to the enrollment message $\mathbf{c_x}$ and either $\textsf{esk}$ or $\textsf{psk}$ can probe any (invalidly encoded) $\mathbf{y}^{\prime} \in \Z_q^{k+2}$ and find $\langle \mathbf{x}, {\mathbf{y}^\prime} \rangle$ to get partial or full information about the biometric template $\mathbf{b}$. Even if the adversary has no $\textsf{esk}$ or $\textsf{psk}$, if it can sample ciphertexts $\mathbf{c_{y}}$ corresponding to some unknown random vectors $\mathbf{y}$, and if the field size $q$ is not large enough, it can also find a forged $\mathbf{c_{y^*}}$ such that $\langle \mathbf{x}, \mathbf{y^*} \rangle \leq \tau$ with a good probability to impersonate the user by sampling many times offline.
 
 We note that the construction in \cite{cryptoeprint:2023/481} is applying Theorem \ref{thm:sEUF-CMA-esk-csk} on this instantiation. The user holds \textsf{esk} and \textsf{psk} while the server holds \textsf{csk}, the public parameter of the functional encryption scheme.
 %-------------------
@@ -114,9 +114,9 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{fh-IND} game \cite{cr
 \begin{definition}[Admissible Adversary]
 
 	Let $\mathcal{A}$ be an adversary in an \textsf{fh-IND} game, and let $ (\mathbf{x}_1^{(0)}, \mathbf{x}_1^{(1)}), \cdots, (\mathbf{x}_{Q_K}^{(0)}, \mathbf{x}_{Q_K}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{KeyGen}}$ and $(\mathbf{y}_1^{(0)}, \mathbf{y}_1^{(1)}), \cdots, (\mathbf{y}_{Q_E}^{(0)}, \mathbf{y}_{Q_E}^{(1)})$ be its queries to $\mathcal{O}_{\textsf{Enc}}$.
-	We say $\mathcal{A}$ is \emph{admissible} if $\forall i \in [Q_K], \forall j \in [Q_E]$,
+	We say $\mathcal{A}$ is \emph{admissible} if $\forall i \in [Q_K], \forall j \in [Q_E]$, we have
 \[
-	{\mathbf{x}^{(0)}_{i}} {\mathbf{y}^{(0)}_{j}}^T = {\mathbf{x}^{(1)}_{i}} {\mathbf{y}^{(1)}_{j}}^T
+	\left\langle {\mathbf{x}^{(0)}_{i}}, {\mathbf{y}^{(0)}_{j}} \right\rangle = \left\langle {\mathbf{x}^{(1)}_{i}}, {\mathbf{y}^{(1)}_{j}} \right\rangle
 \]
 
 \end{definition}
@@ -171,9 +171,9 @@ We also define the $\textsf{RUF}^{\mathcal{O}}_\textsf{FE}$ game in Algorithm \r
 
 		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
 
-		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+		\State $\textsf{sk}_{\mathbf{r}} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
 
-		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\mathcal{O}} ( \textsf{pp}, \mathbf{c} )$
+		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\mathcal{O}} ( \textsf{pp}, \textsf{sk}_{\mathbf{r}} )$
 
 		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}^\prime_{\textsf{Enc}}$ }
 			
@@ -181,7 +181,7 @@ We also define the $\textsf{RUF}^{\mathcal{O}}_\textsf{FE}$ game in Algorithm \r
 		
 		\EndIf
 
-		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \mathbf{\tilde{z}} )$
 
 		\State \Return $1_{s \neq \bot}$
 	\end{algorithmic}
@@ -219,11 +219,11 @@ We note that RUF security is a new security notion of fh-IPFE but can be achieve
 
 	\item $\textsf{FE}^\prime \textsf{.Setup}(1^\lambda)$: Run $\textsf{FE.Setup}(1^\lambda) \to (\textsf{msk}, \textsf{pp})$ and $\textsf{Sig.KeyGen}(1^\lambda) \to (\textsf{sk}_{\textsf{Sig}}, \textsf{pk}_{\textsf{Sig}} )$. Output $\textsf{msk}^\prime = (\textsf{msk}, \textsf{sk}_\textsf{Sig})$ and $\textsf{pp}^\prime = (\textsf{pp}, \textsf{pk}_{\textsf{Sig}})$.
 
-	\item $\textsf{FE}^\prime \textsf{.KeyGen}(\textsf{msk}^\prime, \mathbf{x})$: Run $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{x}) \to f_\mathbf{x}$ and output $f_\mathbf{x}$.
+	\item $\textsf{FE}^\prime \textsf{.KeyGen}(\textsf{msk}^\prime, \mathbf{x})$: Run $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{x}) \to \textsf{sk}_{\mathbf{x}}$ and output $\textsf{sk}_{\mathbf{x}}^\prime \gets \textsf{sk}_{\mathbf{x}}$.
 
-	\item $\textsf{FE}^\prime \textsf{.Enc}(\textsf{msk}^\prime, \mathbf{y})$: Run $\textsf{FE.Enc}(\textsf{msk}, \mathbf{y}) \to \mathbf{c_y}$ and sign $\mathbf{c_y}$ by $\textsf{Sig.Sign}(\textsf{sk}_{\textsf{Sig}}, \mathbf{c_y}) \to \sigma$. Output $\mathbf{c_y}^\prime = (\mathbf{c_y}, \sigma)$.
+	\item $\textsf{FE}^\prime \textsf{.Enc}(\textsf{msk}^\prime, \mathbf{y})$: Run $\textsf{FE.Enc}(\textsf{msk}, \mathbf{y}) \to \textsf{ct}_{\mathbf{y}}$ and sign $\textsf{ct}_{\mathbf{y}}$ by $\textsf{Sig.Sign}(\textsf{sk}_{\textsf{Sig}}, \textsf{ct}_{\mathbf{y}}) \to \sigma$. Output $\textsf{ct}_{\mathbf{y}}^\prime = (\textsf{ct}_{\mathbf{y}}, \sigma)$.
 
-	\item $\textsf{FE}^\prime \textsf{.Dec}(\textsf{pp}^\prime, f_\mathbf{x}, \mathbf{c_y}^\prime )$: Output the decryption $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y})$ if the verification $\textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \mathbf{c_y}, \sigma ) = 1$. Otherwise, output $\bot$.
+	\item $\textsf{FE}^\prime \textsf{.Dec}(\textsf{pp}^\prime, \textsf{sk}_{\mathbf{x}}^\prime, \textsf{ct}_{\mathbf{y}}^\prime )$: Output the decryption $\textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{x}}, \textsf{ct}_{\mathbf{y}})$ if the verification $\textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \textsf{ct}_{\mathbf{y}}, \sigma ) = 1$. Otherwise, output $\bot$.
 
 \end{itemize}
 
@@ -240,7 +240,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}_{\textsf{KeyG
 \begin{itemize}
 	\item $\mathcal{O}_{\textsf{KeyGen}}^\prime(\mathbf{x}^\prime)$: Return $\textsf{FE.KeyGen}(\textsf{msk}, \mathbf{x})$.
 
-	\item $\mathcal{O}_{\textsf{Enc}}^\prime(\mathbf{y}^\prime)$: Run $\textsf{FE.Enc}(\textsf{msk}, \mathbf{y}) \to \mathbf{c_y}$ and call the signing oracle $\mathcal{O}_{\textsf{Sign}}(\mathbf{c_y}) \to \sigma$. Output $\mathbf{c_y}^\prime = (\mathbf{c_y}, \sigma)$.
+	\item $\mathcal{O}_{\textsf{Enc}}^\prime(\mathbf{y}^\prime)$: Run $\textsf{FE.Enc}(\textsf{msk}, \mathbf{y}) \to \textsf{ct}_{\mathbf{y}}$ and call the signing oracle $\mathcal{O}_{\textsf{Sign}}(\textsf{ct}_{\mathbf{y}}) \to \sigma$. Output $\textsf{ct}_{\mathbf{y}}^\prime = (\textsf{ct}_{\mathbf{y}}, \sigma)$.
 \end{itemize}
 
 \begin{figure}[h]
@@ -257,24 +257,24 @@ Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}_{\textsf{KeyG
 
 		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
 
-		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+		\State $\textsf{sk}_{\mathbf{r}} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
 
 		\State $\textsf{pp}^\prime \gets (\textsf{pp}, \textsf{pk}_{\textsf{Sig}})$
 
-		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\textsf{KeyGen}}^\prime, \mathcal{O}_{\textsf{Enc}}^\prime } (\textsf{pp}^\prime, \mathbf{c})$ \label{alg:red:sEUF-CMA:RUF:A}
+		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\textsf{KeyGen}}^\prime, \mathcal{O}_{\textsf{Enc}}^\prime } (\textsf{pp}^\prime, \textsf{sk}_{\mathbf{r}})$ \label{alg:red:sEUF-CMA:RUF:A}
 
-		\State Parse $(\mathbf{c_z}, \sigma^\prime) \gets \mathbf{\tilde{z}}$
+		\State Parse $(\textsf{ct}_{\mathbf{z}}, \sigma^\prime) \gets \mathbf{\tilde{z}}$
 
-		\State \Return $(\mathbf{c_z}, \sigma^\prime)$
+		\State \Return $(\textsf{ct}_{\mathbf{z}}, \sigma^\prime)$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
 	
 \end{figure}
 
-$\mathcal{R}$ perfectly simulates a $\textsf{RUF}$ game for $\mathcal{A}$, and if $\mathcal{A}$ wins the $\textsf{RUF}$ game, $(\mathbf{c_z}, \sigma^\prime)$ is not equal to any previous answer of $\mathcal{O}_{\textsf{Enc}}^\prime$, and therefoere not equal to any previous message-signature pair $(\mathbf{c_y}, \sigma)$ given from the signing oracle $\mathcal{O}_{\textsf{Sign}}$. Now, since $\textsf{Sig}$ is sEUF-CMA,
+$\mathcal{R}$ perfectly simulates a $\textsf{RUF}$ game for $\mathcal{A}$, and if $\mathcal{A}$ wins the $\textsf{RUF}$ game, $(\textsf{ct}_{\mathbf{z}}, \sigma^\prime)$ is not equal to any previous answer of $\mathcal{O}_{\textsf{Enc}}^\prime$, and therefoere not equal to any previous message-signature pair $(\textsf{ct}_{\mathbf{y}}, \sigma)$ given by the signing oracle $\mathcal{O}_{\textsf{Sign}}$. Now, since $\textsf{Sig}$ is sEUF-CMA,
 \[
-	\Pr[\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}}}(\mathcal{A}) \to 1] \leq \Pr[ \textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \mathbf{c_z}, \sigma^\prime) = 1 ] = \negl.
+	\Pr[\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}}}(\mathcal{A}) \to 1] \leq \Pr[ \textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \textsf{ct}_{\mathbf{z}}, \sigma^\prime) = 1 ] = \negl.
 \]
 
 
@@ -315,11 +315,11 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 
 		\State $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
 		
-		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:red:ind-uf-OB-Enroll:c}
+		\State $\textsf{sk} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$ \label{alg:red:ind-uf-OB-Enroll:sk}
 
-		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Enroll} } ( \textsf{pp}, \mathbf{c} )$ \label{alg:red:ind-uf-OB-Enroll:A}
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Enroll} } ( \textsf{pp}, \textsf{sk} )$ \label{alg:red:ind-uf-OB-Enroll:A}
 
-		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \textsf{sk}, \mathbf{\tilde{z}} )$
 
 		\If{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Enroll:verify}
 			\State \Return $\tilde{b} = 0$
@@ -343,12 +343,12 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_{\textsf{option}}$ game, co
 
 	\begin{minipage}[t]{0.45\textwidth}
 	\begin{algorithm}[H]
-	\caption{${\mathcal{A}^\prime}^{\mathcal{O}^\prime_{\textsf{KeyGen}} }(\textsf{pp}, \mathbf{c})$}
+	\caption{${\mathcal{A}^\prime}^{\mathcal{O}^\prime_{\textsf{KeyGen}} }(\textsf{pp}, \textsf{sk}_\mathbf{r})$}
 	\label{alg:adv:ind-uf-OB-Enroll}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ 
 		
-		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{Enroll} } (\textsf{pp}, \mathbf{c})$
+		\State $\mathbf{\tilde{z}} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_\textsf{Enroll} } (\textsf{pp}, \textsf{sk}_{\mathbf{r}})$
 
 		\State \Return $\mathbf{\tilde{z}}$
 	\end{algorithmic}
@@ -376,7 +376,7 @@ In conclusion,
 \end{proof}
 
 
-For $\textsf{option}$ that includes $\mathcal{O}_{\textsf{Probe}}$, we first note that for any $d \in \Z_q$ and any nonzero vector $\mathbf{r} \in \Z_q^{k+2}$, there exists a vector $\mathbf{y} \in \Z_q^{k+2}$ such that $\mathbf{r}\mathbf{y}^T = d$.
+For $\textsf{option}$ that includes $\mathcal{O}_{\textsf{Probe}}$, we first note that for any $d \in \Z_q$ and any non-zero vector $\mathbf{r} \in \Z_q^{k+2} \setminus \{\mathbf{0}\}$, there exists a vector $\mathbf{y} \in \Z_q^{k+2}$ such that $\langle \mathbf{r}, \mathbf{y} \rangle = d$.
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-ruf-OB-Probe}
@@ -390,11 +390,11 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_\textsf{option}$ game, cons
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{b}^\prime )$: On input $\mathbf{b}^\prime = (b_1^\prime, \cdots, b_k^\prime)$, it first encodes it as $\mathbf{y}^\prime = (-2b_1^\prime, \cdots, \allowbreak -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$. Next, it computes $d \gets \mathbf{x}{\mathbf{y}^\prime}^T$ and finds a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r}{\mathbf{y}^{\prime\prime}}^T = d$. Finally, it calls $\mathcal{O}_{\textsf{Enc}}(\mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}})$, which is given by the \textsf{fh-IND} game, and returns the result.
+	\item $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{b}^\prime )$: On input $\mathbf{b}^\prime = (b_1^\prime, \cdots, b_k^\prime)$, it first encodes it as $\mathbf{y}^\prime = (-2b_1^\prime, \cdots, \allowbreak -2b_k^\prime, \|\mathbf{b}^\prime\|^2, 1)$. Next, it computes $d \gets \langle \mathbf{x}, {\mathbf{y}^\prime} \rangle$ and finds a vector $\mathbf{y}^{\prime\prime}$ such that $\langle \mathbf{r}, {\mathbf{y}^{\prime\prime}} \rangle = d$. Finally, it calls $\mathcal{O}_{\textsf{Enc}}(\mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}})$, which is given by the \textsf{fh-IND} game, and returns the result.
 
 \end{itemize}
 
-\noindent Note that $(\mathbf{x}, \mathbf{r})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\mathbf{x}{\mathbf{y}^\prime}^T = \mathbf{r}{\mathbf{y}^{\prime\prime}}^T$. Hence, $\mathcal{R}$ is an admissible adversary.
+\noindent Note that $(\mathbf{x}, \mathbf{r})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^\prime, {\mathbf{y}^{\prime\prime}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\langle \mathbf{x}, {\mathbf{y}^\prime} \rangle = \langle \mathbf{r}, {\mathbf{y}^{\prime\prime}} \rangle$. Hence, $\mathcal{R}$ is an admissible adversary.
 
 \begin{figure}[h]
 \centering
@@ -413,9 +413,9 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_\textsf{option}$ game, cons
 
 		\State $\mathbf{r} \getsdollar \mathbb{F}^{k+2}$
 
-		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$
+		\State $\textsf{sk} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}, \mathbf{r})$
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \textsf{pp}, \mathbf{c})$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } ( \textsf{pp}, \textsf{sk})$
 
 		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_\textsf{Probe}$}
 
@@ -423,7 +423,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{UF}_\textsf{option}$ game, cons
 
 		\EndIf
 
-		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{FE.Dec}( \textsf{pp}, \textsf{sk}, \mathbf{\tilde{z}} )$
 
 		\If{$\textsf{Verify}(s) = 1$} \label{alg:red:ind-uf-OB-Probe:verify}
 			\State \Return $\tilde{b} = 0$
@@ -443,17 +443,17 @@ For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{b}^\prime )$: It first encodes $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ as before. Next, it computes $d \gets \mathbf{x}^{(*)}{\mathbf{y}^\prime}^T$ and finds a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r}{\mathbf{y}^{\prime\prime}}^T = d$. Finally, it calls $\mathcal{O}^\prime_{\textsf{Enc}} (\mathbf{y}^{\prime\prime} )$ , which is given by the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{Enc}} }$ game, and returns the result.
+	\item $\mathcal{O}_{\textsf{Probe}}( \textsf{psk}, \mathbf{b}^\prime )$: It first encodes $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ as before. Next, it computes $d \gets \langle \mathbf{x}^{(*)}, {\mathbf{y}^\prime} \rangle$ and finds a vector $\mathbf{y}^{\prime\prime}$ such that $\langle \mathbf{r}, {\mathbf{y}^{\prime\prime}} \rangle = d$. Finally, it calls $\mathcal{O}^\prime_{\textsf{Enc}} (\mathbf{y}^{\prime\prime} )$ , which is given by the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{Enc}} }$ game, and returns the result.
 
 \end{itemize}
 
 \begin{figure}[h]
 \centering
 	
-	\begin{minipage}[t]{0.8\linewidth}
+	\begin{minipage}[t]{0.85\linewidth}
 	\centering
 	\begin{algorithm}[H]
-	\caption{$ {\mathcal{A}^\prime}^{ \mathcal{O}^\prime_{\textsf{Enc}} } (\textsf{pp}, \mathbf{c}) $}
+	\caption{$ {\mathcal{A}^\prime}^{ \mathcal{O}^\prime_{\textsf{Enc}} } (\textsf{pp}, \textsf{sk}_{\mathbf{r}}) $}
 	\label{alg:adv:ind-uf-OB-Probe}
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ \label{alg:adv:ind-uf-OB-Probe:B}
@@ -465,12 +465,12 @@ For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^
 		\State Sample $k+2$ linearly independent vectors $\{ \mathbf{e}^{(i)} \}_{i=1}^{k+2}$.
 
 		\For{$i=1$ to $k+2$}
-			\State $\mathbf{c}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
+			\State $\textsf{ct}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
 
-			\State $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$.
+			\State $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \textsf{ct}^{(i)})$.
 		\EndFor
 
-		\State Find the vector $\mathbf{r}$ by solving the linear system $\{ \mathbf{r} {\mathbf{e}^{(i)}}^T = d_i \}_{i=1}^{k+2}$.
+		\State Find the vector $\mathbf{r}$ by solving the linear system $\{ \langle \mathbf{r}, {\mathbf{e}^{(i)}} \rangle = d_i \}_{i=1}^{k+2}$.
 
 		\If{$\mathbf{r} = \mathbf{0}$}
 
@@ -478,7 +478,7 @@ For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^
 
 		\EndIf
 
-		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } (\textsf{pp}, \mathbf{c})$
+		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A}^{\mathcal{O}_{\mathcal{B}}, \mathcal{O}_{\textsf{Probe}} } (\textsf{pp}, \textsf{sk}_{\mathbf{r}})$
 		
 		\State \Return ${\mathbf{\tilde{z}}}$
 	\end{algorithmic}
@@ -493,14 +493,14 @@ To make $\mathcal{R}$ simulate $\mathcal{A}^\prime$ in the $\textsf{RUF}^{ \math
 
 	\item $\mathbf{r} \neq \mathbf{0}$. Otherwise, $\mathcal{A}^\prime$ cannot simulate $\mathcal{O}_\textsf{Probe}$. 
 
-	\item $\mathbf{\tilde{z}} \neq \mathbf{c}^{(i)}$ for all $i$. The answers of $\mathcal{O}_\textsf{Probe}$ have already been checked in $\mathcal{R}$. 
+	\item $\mathbf{\tilde{z}} \neq \textsf{ct}^{(i)}$ for all $i$. The answers of $\mathcal{O}_\textsf{Probe}$ have already been checked in $\mathcal{R}$. 
 \end{itemize}
 
 Let $\mathcal{A}^\prime$ play a tweaked $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}$ game which does not check that $\mathbf{\tilde{z}}$ is not equal to $\mathbf{c}^{(i)}$ for all $i$. That is, the game only checks whether $\mathbf{\tilde{z}}$ is not equal to any output of $\mathcal{O}^\prime_\textsf{Enc}$ called by $\mathcal{O}_\textsf{Probe}$ of $\mathcal{A}$. Let the returned value of this game be $V$. We have Equation \ref{equ:ind-uf-OB-Probe:1} and \ref{equ:ind-uf-OB-Probe:2}. The former one is a relation between $\mathcal{R}$ playing $\textsf{fh-IND}$ game when the challenge bit $b=1$ and $V$, and the latter is a relation between $\mathcal{A}^\prime$ playing a regular $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}$ game and the tweaked one.
 
 \begin{gather}
 	\Pr[\textsf{Verify}(s) = 1 \mid b = 1 \wedge \mathbf{r} \neq \mathbf{0}] = \Pr[V = 1] \label{equ:ind-uf-OB-Probe:1} \\
-	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] = \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right] \label{equ:ind-uf-OB-Probe:2}
+	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] = \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \textsf{ct}^{(i)} \right] \label{equ:ind-uf-OB-Probe:2}
 \end{gather}
 
 \noindent For Equation \ref{equ:ind-uf-OB-Probe:1}, consider that
@@ -517,13 +517,13 @@ Let $\mathcal{A}^\prime$ play a tweaked $\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\
 
 \begin{align*}
 	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] 
-	&= \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right] \\ 
-	& \geq \Pr[V = 1] - \Pr \left[ \neg  \left( \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \mathbf{c}^{(i)} \right) \right] \\
-	& = \Pr[V = 1] - \Pr \left[ \bigvee_{i=1}^{k+2} \mathbf{\tilde{z}} = \mathbf{c}^{(i)} \right] \\
-	& \geq \Pr[V = 1] - \sum_{i=1}^{k+2} \Pr[\mathbf{\tilde{z}} = \mathbf{c}^{(i)}].
+	&= \Pr\left[ V = 1 \mid \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \textsf{ct}^{(i)} \right] \\ 
+	& \geq \Pr[V = 1] - \Pr \left[ \neg  \left( \bigwedge_{i=1}^{k+2} \mathbf{\tilde{z}} \neq \textsf{ct}^{(i)} \right) \right] \\
+	& = \Pr[V = 1] - \Pr \left[ \bigvee_{i=1}^{k+2} \mathbf{\tilde{z}} = \textsf{ct}^{(i)} \right] \\
+	& \geq \Pr[V = 1] - \sum_{i=1}^{k+2} \Pr[\mathbf{\tilde{z}} = \textsf{ct}^{(i)}].
 \end{align*}
 
-\noindent Note that each $\mathbf{c}^{(i)} = \textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{e}^{(i)})$ for some uniform nonzero vector $\mathbf{e}^{(i)}$. Also note that distinct vectors in $\Z_q^{k+2}$ will have different encryptions due to the correctness of $\textsf{FE}$. Therefore, $\Pr[\mathbf{\tilde{z}} = \mathbf{c}^{(i)}] \leq \frac{1}{q^{k+2} - 1}$ and
+\noindent Note that each $\textsf{ct}^{(i)}$ is an encryption of of some uniform non-zero vector $\mathbf{e}^{(i)}$. Also note that distinct vectors in $\Z_q^{k+2}$ will have different encryptions due to the correctness of $\textsf{FE}$. Therefore, $\Pr[\mathbf{\tilde{z}} = \textsf{ct}^{(i)}] \leq \frac{1}{q^{k+2} - 1}$ and
 \[
 	\Pr[\textsf{RUF}_\textsf{FE}^{\mathcal{O}^\prime_{\textsf{Enc}}}(\mathcal{A}^\prime) \to 1] \geq \Pr[V = 1] - \frac{k+2}{q^{k+2}-1}.
 \]
@@ -547,7 +547,7 @@ Finally, similar to the proof of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}, we
 
 \end{proof}
 
-Unfortunately, for the instantiation in Section \ref{sec:fh-IPFE-instantiation}, we cannot achieve UF security when the adversary has \textsf{psk}, even if the false positive rate is negligible. The adversary can simply compute $\mathbf{c} \gets \textsf{Probe}(\textsf{psk}, \mathbf{0})$ and return $\mathbf{c}$. The same results also hold for $\textsf{option}$ that includes $\textsf{esk}$ since both $\textsf{psk}$ and $\textsf{esk}$ are equal to $\textsf{msk}$ and allow the adversary to run $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{v})$ for any vector $\mathbf{v}$. We state this result formally in the following theorem.
+Unfortunately, for the instantiation in Section \ref{sec:fh-IPFE-instantiation}, we cannot achieve UF security when the adversary has \textsf{psk}, even if the false positive rate is negligible. The adversary can simply compute $\mathbf{c} \gets \textsf{Probe}(\textsf{psk}, \mathbf{0})$ and return $\mathbf{c}$. The same results also hold for an $\textsf{option}$ that includes $\textsf{esk}$ since both $\textsf{psk}$ and $\textsf{esk}$ are equal to $\textsf{msk}$ and allow the adversary to run $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{v})$ for any vector $\mathbf{v}$. We state this result formally in the following theorem.
 
 \begin{theorem}
 
@@ -602,9 +602,9 @@ Given an adversary $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game, c
 
 	\item Sample ${\mathbf{b}^\prime}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$ and let $\mathbf{y}^{(0)} \gets (-2{b_1^\prime}^{(0)}, \cdots, -2{b_k^\prime}^{(0)}, \| {\mathbf{b}^\prime}^{(0)} \|^2, 1) $
 
-	\item Repeat sampling ${\mathbf{b}^\prime}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$ and let $\mathbf{y}^{(1)} \gets (-2{b_1^\prime}^{(1)}, \cdots, -2{b_k^\prime}^{(1)}, \| {\mathbf{b}^\prime}^{(1)} \|^2, 1)$ until $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$.
+	\item Repeat sampling ${\mathbf{b}^\prime}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$ and let $\mathbf{y}^{(1)} \gets (-2{b_1^\prime}^{(1)}, \cdots, -2{b_k^\prime}^{(1)}, \| {\mathbf{b}^\prime}^{(1)} \|^2, 1)$ until $\langle \mathbf{x}^{(0)}, {\mathbf{y}^{(0)}} \rangle = \langle \mathbf{x}^{(1)}, {\mathbf{y}^{(1)}} \rangle$.
 	
-	\item Return $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$.
+	\item Return $\textsf{ct}_{\mathbf{y}}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$.
 
 \end{enumerate}
 
@@ -625,27 +625,9 @@ Given an adversary $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game, c
 		
 		\State $\mathbf{b}^{(1)} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}(), \mathbf{x}^{(1)} \gets (b_1^{(1)}, \cdots, b_k^{(1)}, 1, \|\mathbf{b}^{(1)}\|^2)$
 		
-		\State $\mathbf{c_x} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ \label{alg:red:ind-ind:cx}
+		\State $\textsf{sk} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ \label{alg:red:ind-ind:cx}
 
-		\For{$i = 1$ to $t$}
-			
-			\State ${\mathbf{b}^\prime}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
-
-			\State $\mathbf{y}^{(0)} \gets (-2{b_1^\prime}^{(0)}, \cdots, -2{b_k^\prime}^{(0)}, \| {\mathbf{b}^\prime}^{(0)} \|^2, 1) $
-
-			\Repeat 
-				
-				\State ${\mathbf{b}^\prime}^{(1)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$
-
-				\State $\mathbf{y}^{(1)} \gets (-2{b_1^\prime}^{(1)}, \cdots, -2{b_k^\prime}^{(1)}, \| {\mathbf{b}^\prime}^{(1)} \|^2, 1)$
-
-			\Until{ $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ } \label{alg:red:ind-ind:while}
-
-			\State $\mathbf{c_y}^{(i)} \gets \mathcal{O}_{\textsf{Enc}}(\mathbf{y}^{(0)}, \mathbf{y}^{(1)})$ \label{alg:red:ind-ind:cy}
-
-		\EndFor
-
-		\State $\tilde{b} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}} } (\textsf{pp}, \mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t )$ \label{alg:red:ind-ind:A}
+		\State $\tilde{b} \gets {\mathcal{A}}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}, \mathcal{O}_{\mathbf{c_y}} } (\textsf{pp}, \textsf{sk})$ \label{alg:red:ind-ind:A}
 
 		\State \Return $\tilde{b}$
 
@@ -655,9 +637,9 @@ Given an adversary $\mathcal{A}$ in the $\textsf{IND}_{\textsf{option}}$ game, c
 	
 \end{figure}
 
-\noindent Note that $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^{(0)}, {\mathbf{y}^{(1)}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\mathbf{x}^{(0)}{\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)}{\mathbf{y}^{(1)}}^T$. Hence, $\mathcal{R}$ is an admissible adversary.
+\noindent Note that $(\mathbf{x}^{(0)}, \mathbf{x}^{(1)})$ is the only query of $\mathcal{R}$ to $\mathcal{O}_{\textsf{KeyGen}}$, and for any query $( \mathbf{y}^{(0)}, {\mathbf{y}^{(1)}} )$ to $\mathcal{O}_{\textsf{Enc}}$, it satisfies $\langle \mathbf{x}^{(0)}, {\mathbf{y}^{(0)}} \rangle = \langle \mathbf{x}^{(1)}, {\mathbf{y}^{(1)}} \rangle$. Hence, $\mathcal{R}$ is an admissible adversary.
 
-We first show that the simulation of oracle $\mathcal{O}_{\mathbf{c_y}}$ is efficient. The probability that $\mathbf{x}^{(0)} {\mathbf{y}^{(0)}}^T = \mathbf{x}^{(1)} {\mathbf{y}^{(1)}}^T$ is satisfied is
+We first show that the simulation of oracle $\mathcal{O}_{\mathbf{c_y}}$ is efficient. The probability that $\langle \mathbf{x}^{(0)}, {\mathbf{y}^{(0)}} \rangle = \langle \mathbf{x}^{(1)}, {\mathbf{y}^{(1)}} \rangle$ is satisfied is
 \begin{align*}
 	\Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = \mathcal{D}_{\mathcal{B}^{(1)}}(1)] 
 	&\geq \sum_{i=0}^\tau \Pr[\mathcal{D}_{\mathcal{B}^{(0)}}(1) = i]^2 \qquad \text{(Assumption \ref{assump:equal_distance})} \\
@@ -676,7 +658,7 @@ The expected number of repetitions is bounded above by $\frac{\tau + 1}{ \textsf
 \]
 We can reach a $1 - \negl.$ probability that the loop will end within $T$ times by setting a polynomial-size $T$.
 
-Now, we show that $\mathcal{R}$ perfectly simulate an $\textsf{IND}_{\textsf{option}}$ game for $\mathcal{A}$. Assume that $\mathcal{A}$ makes $t$ queries to $\mathcal{O}_{\mathbf{c_y}}$ and receives probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t$. If the challenge bit $b$ of the \textsf{fh-IND} game is $0$, $\mathbf{c_x}$ and $\mathbf{c_y}^{(i)}$ for all $i \in [t]$ are generated from $\mathcal{B}^{(0)}$ and have the same distributions as the inputs for an adversary in \textsf{IND} game.
+Now, we show that $\mathcal{R}$ perfectly simulate an $\textsf{IND}_{\textsf{option}}$ game for $\mathcal{A}$. Assume that $\mathcal{A}$ makes $t$ queries to $\mathcal{O}_{\mathbf{c_y}}$ and receives probe messages $\{ \mathbf{c_y}^{(i)} \}_{i=1}^t = \{ \textsf{ct}_{\mathbf{y}}^{(i)} \}_{i=1}^t$. If the challenge bit $b$ of the \textsf{fh-IND} game is $0$, $\mathbf{c_x} = \textsf{sk}$ and $\mathbf{c_y}^{(i)}$ for all $i \in [t]$ are generated from $\mathcal{B}^{(0)}$ and have the same distributions as the inputs for an adversary in \textsf{IND} game.
 If the challenge bit $b$ is $1$, we show that distributions of $\mathbf{c_x}, \{ \mathbf{c_y}^{(i)} \}_{i=1}^t$ also follow the same distribution given Assumption \ref{assump:equal_distance}.
 
 Let $b^\prime \in \{0, 1\}$, define distributions 
@@ -688,18 +670,18 @@ Let $b^\prime \in \{0, 1\}$, define distributions
 
 \noindent Note that for any $\{ d_i \}_{i=1}^t, d_i > 0$,
 \begin{align*}
-\Pr \left[ \bigwedge_{i=1}^t \mathbf{X}^{(0)} {\mathbf{Y}^{(0)}_i}^T = d_i^2 \right] 
+\Pr \left[ \bigwedge_{i=1}^t \left\langle \mathbf{X}^{(0)}, {\mathbf{Y}^{(0)}_i} \right\rangle = d_i^2 \right] 
 &= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(0)}}(t) = (d_1, \cdots, d_t) \right] \\
-&= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(1)}}(t) = (d_1, \cdots, d_t) \right] = \Pr \left[ \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right]
+&= \Pr \left[ \mathcal{D}_{\mathcal{B}^{(1)}}(t) = (d_1, \cdots, d_t) \right] = \Pr \left[ \bigwedge_{i=1}^t \left\langle \mathbf{X}^{(1)}, {\mathbf{Y}^{(1)}_i} \right\rangle = d_i^2 \right]
 \end{align*}
 
 Now, let $\mathbf{Y}^\prime_i$ be the distribution of $\mathbf{y}^{(1)}$ derived in the $i$-th query to $\mathcal{O}_{\mathbf{c_y}}$. For any $\mathbf{x}$ and $\{ \mathbf{y}_i \}_{i=1}^t$,
 \begin{align*}
 	& \Pr [\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^\prime_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^\prime_t = \mathbf{y}_t] \\
-	&= \sum_{d_1, \cdots, d_t} \left( \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right] \right. \\
-	&\qquad \qquad \left. \times \Pr \left[\bigwedge_{i=1}^t \mathbf{X}^{(0)} {\mathbf{Y}_i^{(0)}}^T = d_i^2 \right] \right) \\
-	&= \sum_{d_1, \cdots, d_t} \left( \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}^{(1)}_i}^T = d_i^2 \right] \right. \\
-	&\qquad \qquad \left. \times \Pr \left[\bigwedge_{i=1}^t \mathbf{X}^{(1)} {\mathbf{Y}_i^{(1)}}^T = d_i^2 \right] \right) \\
+	&= \sum_{d_1, \cdots, d_t} \left( \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \left\langle \mathbf{X}^{(1)}, {\mathbf{Y}^{(1)}_i} \right\rangle = d_i^2 \right] \right. \\
+	&\qquad \qquad \left. \times \Pr \left[\bigwedge_{i=1}^t \left\langle \mathbf{X}^{(0)}, {\mathbf{Y}_i^{(0)}} \right\rangle = d_i^2 \right] \right) \\
+	&= \sum_{d_1, \cdots, d_t} \left( \Pr \left[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t \mid \bigwedge_{i=1}^t \left\langle \mathbf{X}^{(1)}, {\mathbf{Y}^{(1)}_i} \right\rangle = d_i^2 \right] \right. \\
+	&\qquad \qquad \left. \times \Pr \left[\bigwedge_{i=1}^t \left\langle \mathbf{X}^{(1)}, {\mathbf{Y}_i^{(1)}} \right\rangle = d_i^2 \right] \right) \\
 	&= \Pr[\mathbf{X}^{(1)} = \mathbf{x}, \mathbf{Y}^{(1)}_1 = \mathbf{y}_1, \cdots, \mathbf{Y}^{(1)}_t = \mathbf{y}_t ]
 \end{align*}
 

@@ -97,7 +97,7 @@ A tuple $(\mathbb{G}_1, \mathbb{G}_2, \mathbb{G}_T, q, e)$ is a \emph{bilinear a
 
 For a vector $\mathbf{v} = (v_1, v_2, \cdots, v_n) \in \Z_q^n$ and a group element $g$ in group of order $q$, we write $g^\mathbf{v}$ to denote the vector of group elements $(g^{v_1}, g^{v_2}, \cdots, g^{v_n})$. Moreover, for $k \in \Z_q$ and $\mathbf{v}, \mathbf{w} \in \Z_q^n$, we write $(g^{\mathbf{v}})^k = g^{k \cdot \mathbf{v}}$ and $g^\mathbf{v} \cdot g^\mathbf{w} =  g^{\mathbf{v} + \mathbf{w}}$. Finally, the pairing operation is extended to vectors.
 \[
-	e(g_1^{\mathbf{v}}, g_2^{\mathbf{w}}) = \prod_{i \in [n]} e(g_1^{v_i}, g_2^{w_i}) = e(g_1, g_2)^{\mathbf{v}\mathbf{w}^T}.
+	e(g_1^{\mathbf{v}}, g_2^{\mathbf{w}}) = \prod_{i \in [n]} e(g_1^{v_i}, g_2^{w_i}) = e(g_1, g_2)^{\langle \mathbf{v}, \mathbf{w} \rangle}.
 \]
 
 We now recall the fh-IPFE construction $\textsf{FE}$ in \cite{cryptoeprint:2016/440}.
@@ -108,15 +108,15 @@ We now recall the fh-IPFE construction $\textsf{FE}$ in \cite{cryptoeprint:2016/
 	
 	\item $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$: Sample $\alpha \getsdollar \Z_q$ and output
 	\[
-		 f_\mathbf{x} = (K_1, K_2) = \left( g_1^{\alpha \cdot \det(\mathbf{B})}, g_1^{\alpha \cdot \mathbf{x} \cdot \mathbf{B}} \right)
+		 \textsf{sk}_{\mathbf{x}} = (K_1, K_2) = \left( g_1^{\alpha \cdot \det(\mathbf{B})}, g_1^{\alpha \cdot \mathbf{x} \cdot \mathbf{B}} \right)
 	\]
 	
 	\item $\textsf{FE.Enc}(\textsf{msk}, \textsf{pp}, \mathbf{y})$: Sample $\beta \getsdollar \Z_q$ and output
 	\[
-		 \mathbf{c_y} = (C_1, C_2) = \left( g_2^{\beta}, g_2^{\beta \cdot \mathbf{y} \cdot \mathbf{B}^*} \right)
+		 \textsf{ct}_{\mathbf{y}} = (C_1, C_2) = \left( g_2^{\beta}, g_2^{\beta \cdot \mathbf{y} \cdot \mathbf{B}^*} \right)
 	\]
 	
-	\item $\textsf{FE.Dec}(\textsf{pp}, f_\mathbf{x}, \mathbf{c_y}) \to z$: Parse $f_\mathbf{x} = (K_1, K_2)$ and $\mathbf{c_y} = (C_1, C_2)$ and compute 
+	\item $\textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{x}}, \textsf{ct}_{\mathbf{y}}) \to z$: Parse $\textsf{sk}_{\mathbf{x}} = (K_1, K_2)$ and $\textsf{ct}_{\mathbf{y}} = (C_1, C_2)$ and compute 
 	\[
 		D_1 = e(K_1, C_1) \quad \text{and} \quad D_2 = e(K_2, C_2)
 	\]
@@ -132,10 +132,10 @@ We have
 \[
 	D_2 = e(K_2, C_2) = e(g_1, g_2)^{\alpha \cdot \beta \cdot \mathbf{x} \cdot \mathbf{B} \cdot (\mathbf{B}^*)^T \cdot \mathbf{y}^T \cdot } = e(g_1, g_2)^{\alpha \cdot \beta \cdot \det(\mathbf{B}) \cdot \mathbf{x}\mathbf{y}^T }.
 \]
-Therefore, $(D_1)^{\mathbf{x}\mathbf{y}^T} = D_2$.
+Therefore, $(D_1)^{\langle \mathbf{x}, \mathbf{y} \rangle} = D_2$.
 
 \paragraph{Remark}
-In this construction, $q$ is exponential to $\lambda$ to achieve security, and decryption relies on some priori knowledge of possible ranges of the inner product $\mathbf{x} \mathbf{y}^T$. For example, for the instantiation in Section \ref{sec:fh-IPFE-instantiation}, one can enumerate $z \in \{0, 1, \cdots, \tau \}$ and return $\bot$ when no valid $z \leq \tau$ such that $D_1^z = D_2$ is found.
+In this construction, $q$ is exponential to $\lambda$ to achieve security, and decryption relies on some priori knowledge of possible ranges of the inner product $\langle \mathbf{x}, \mathbf{y} \rangle$. For example, for the instantiation in Section \ref{sec:fh-IPFE-instantiation}, one can enumerate $z \in \{0, 1, \cdots, \tau \}$ and return $\bot$ when no valid $z \leq \tau$ such that $D_1^z = D_2$ is found.
 
 %-------------------
 
@@ -159,9 +159,9 @@ Let $\mathbb{F} = \Z_q$. We can extend the definition of the RUF security in Sec
 
 		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
 
-		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+		\State $\textsf{sk}_{\mathbf{r}} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
 
-		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\mathcal{O}} ( \textsf{pp}, \mathbf{c} )$
+		\State $\mathbf{\tilde{z}} \gets \mathcal{A}^{\mathcal{O}} ( \textsf{pp}, \textsf{sk}_{\mathbf{r}} )$
 
 		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}^\prime_{\textsf{Enc}}$ }
 			
@@ -169,7 +169,7 @@ Let $\mathbb{F} = \Z_q$. We can extend the definition of the RUF security in Sec
 		
 		\EndIf
 
-		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \mathbf{\tilde{z}} )$
 
 		\State \Return $1_{s \leq \gamma}$
 	\end{algorithmic}
@@ -209,15 +209,15 @@ With the extension with $\gamma$, we can rewrite our results in Section \ref{sec
 
 \begin{assumption}
 \label{assump:only-return-valid-ct}
-Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns when $\mathbf{z}$ corresponds to a \emph{nonzero} vector $\mathbf{v} \in \mathbb{F}^k$. More precisely, assume that for any $\mathbf{z}$, there can only be two possibilities.
+Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns when $\mathbf{z}$ corresponds to a \emph{non-zero} vector $\mathbf{v} \in \mathbb{F}^k$. More precisely, assume that for any $\mathbf{z}$, there can only be two possibilities.
 
 \begin{itemize}
-	\item Either there exists a vector $\mathbf{v} \in \mathbb{F}^k \setminus \{\mathbf{0}\}$ such that for any $\mathbf{x} \in \mathbb{F}^k, \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, 
+	\item Either there exists a vector $\mathbf{v} \in \mathbb{F}^k \setminus \{\mathbf{0}\}$ such that for any $\mathbf{x} \in \mathbb{F}^k, \textsf{sk}_{\mathbf{x}} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, 
 	\[
 		%\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c_v}).
-		\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) = \mathbf{x}\mathbf{v}^T.
+		\textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{x}}, \mathbf{z}) = \langle \mathbf{x}, \mathbf{v} \rangle.
 	\]
-	\item Or for any $\mathbf{x} \in \mathbb{F}^k$ and $ \mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z}) \to \bot$.
+	\item Or for any $\mathbf{x} \in \mathbb{F}^k$ and $\textsf{sk}_{\mathbf{x}} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{x}}, \mathbf{z}) \to \bot$.
 
 \end{itemize}
 Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the input of $\textsf{FE.Enc}$.
@@ -231,7 +231,7 @@ Given Assumption \ref{assump:only-return-valid-ct}. If \textsf{FE} is fh-IND, th
 
 \begin{proof}
 Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}_{\textsf{FE}}$ game for a $\gamma \leq (1 - \frac{1}{P(\lambda)}) \cdot \|\mathbb{F}\|$, where $P(\lambda)$ is any polynomial. Let $t$ be an integer, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-OKeyGen-gamma-ruf} which plays the \textsf{fh-IND} game. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by $\mathcal{O}_\textsf{KeyGen}(\mathbf{x}^\prime, \mathbf{x}^\prime)$.
-If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-gamma-ruf:s}, by Assumption \ref{assump:only-return-valid-ct}, let $\mathbf{\tilde{z}}$ correspond to a nonzero vector $\mathbf{\tilde{v}}$.
+If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-gamma-ruf:s}, by Assumption \ref{assump:only-return-valid-ct}, let $\mathbf{\tilde{z}}$ correspond to a non-zero vector $\mathbf{\tilde{v}}$.
 
 \begin{figure}[h]
 \centering
@@ -244,17 +244,17 @@ If there exists an $s_i \neq \bot$ in Line \ref{alg:red:ind-OKeyGen-gamma-ruf:s}
 	\begin{algorithmic}[1]
 		\State $\mathbf{r}^{(0)}, \mathbf{r}^{(1)} \getsdollar \mathbb{F}^{k}$
 		
-		\State $\mathbf{c} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(1)})$ 
+		\State $\textsf{sk} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}^{(1)})$ 
 
-		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} (\textsf{pp}, \mathbf{c})$
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} (\textsf{pp}, \textsf{sk})$
 
 		\For{$i = 1$ to $t$}
 		
 			\State $\mathbf{r}_i \getsdollar \mathbb{F}^{k}$
 
-			\State $\mathbf{c}_i \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}_i)$
+			\State $\textsf{sk}_i \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)}, \mathbf{r}_i)$
 
-			\State $s_i \gets \textsf{FE.Dec}( \textsf{pp}, \mathbf{c}_i, \mathbf{\tilde{z}} )$ \label{alg:red:ind-OKeyGen-gamma-ruf:s}
+			\State $s_i \gets \textsf{FE.Dec}( \textsf{pp}, \textsf{sk}_i, \mathbf{\tilde{z}} )$ \label{alg:red:ind-OKeyGen-gamma-ruf:s}
 	
 		\EndFor	
 		
@@ -275,8 +275,8 @@ If the challenge bit $b = 0$, then by Assumption \ref{assump:only-return-valid-c
 \begin{align*}
 	\Pr\left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 0 \right]
 	&= \Pr\left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ s_1 \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
-	&= \Pr \left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \mathbf{r}^{(0)} \mathbf{\tilde{v}}^T \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
-	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}}) \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
+	&= \Pr \left[ s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \langle \mathbf{r}^{(0)}, \mathbf{\tilde{v}} \rangle \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
+	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}, \mathbf{\tilde{z}}) \leq \gamma \mid b = 0 \wedge s_1 \neq \bot \right] \\
 	&= \Pr \left[s_1 \neq \bot \mid b = 0 \right] \cdot \Pr \left[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1 \mid b = 0 \wedge s_1 \neq \bot \right] \\ 
 	&= \Pr \left[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1 \right] 
 \end{align*}
@@ -285,9 +285,9 @@ If the challenge bit $b = 1$, for any $i \in [t]$,
 \begin{align*}
 	\Pr[ s_i \leq \gamma \mid b = 1 ]
 	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ s_i \leq \gamma \mid b = 1 \wedge s_i \neq \bot] \\
-	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ \mathbf{r}_i \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s \neq \bot]
+	&= \Pr[s_i \neq \bot \mid b = 1] \cdot \Pr[ \langle \mathbf{r}_i, \mathbf{\tilde{v}} \rangle \leq \gamma \mid b = 1 \wedge s \neq \bot]
 \end{align*}
-Note that $\mathbf{r}_i$ is independent of $\mathbf{\tilde{z}}$ and thus independent of $\mathbf{\tilde{v}}$. Hence, $\Pr[\mathbf{r}_i \mathbf{\tilde{v}}^T \leq \gamma \mid b = 1 \wedge s_i \neq \bot] = \frac{\gamma}{\| \mathbb{F} \|}$ and
+Note that $\mathbf{r}_i$ is independent of $\mathbf{\tilde{z}}$ and thus independent of $\mathbf{\tilde{v}}$. Hence, $\Pr[ \langle \mathbf{r}_i, \mathbf{\tilde{v}} \rangle \leq \gamma \mid b = 1 \wedge s_i \neq \bot] = \frac{\gamma}{\| \mathbb{F} \|}$ and
 \[
 	\Pr \left[ \bigwedge_{i=1}^t s_i \leq \gamma \mid b = 1 \right] = \Pr \left[ \bigwedge_{i=1}^t s_i \neq \bot \mid b = 1 \right] \cdot \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t \leq \left( \frac{\gamma}{\| \mathbb{F} \|} \right)^t
 \]
@@ -325,17 +325,17 @@ In Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}, we simulate the oracle $\mathcal{
 
 \item Sample $k+2$ independent vectors $\mathbf{e}^{(1)}, \cdots, \mathbf{e}^{(k+2)}$.
 
-\item For $i \in [k+2]$, $\mathbf{c}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
+\item For $i \in [k+2]$, $\textsf{ct}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
 
-\item For $i \in [k+2]$,  $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$, where $\mathbf{c}$ is $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$.
+\item For $i \in [k+2]$,  $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \mathbf{c}^{(i)})$, where $\textsf{sk}_{\mathbf{r}}$ is $\textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$.
 
-\item Find the vector $\mathbf{r}$ by solving the linear system $\{ \mathbf{r} {\mathbf{e}^{(i)}}^T = d_i \}_{i=1}^{k+2}$.
+\item Find the vector $\mathbf{r}$ by solving the linear system $\{ \langle \mathbf{r}, {\mathbf{e}^{(i)}} \rangle = d_i \}_{i=1}^{k+2}$.
 
-\item On query $\mathcal{O}_{\textsf{Probe}}(\mathbf{b}^\prime)$, first encode $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ and find $d \gets \mathbf{x}^{*}{\mathbf{y}^\prime}^T$. Then find a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r} {\mathbf{y}^{\prime\prime}}^T = d$. Return $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{y}^{\prime\prime})$.
+\item On query $\mathcal{O}_{\textsf{Probe}}(\mathbf{b}^\prime)$, first encode $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ and find $d \gets \langle \mathbf{x}^{*}, {\mathbf{y}^\prime} \rangle$. Then find a vector $\mathbf{y}^{\prime\prime}$ such that $ \langle \mathbf{r}, {\mathbf{y}^{\prime\prime}} \rangle = d$. Return $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{y}^{\prime\prime})$.
 
 \end{enumerate}
 
-However, $\textsf{FE.Dec}$ of constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} rely on some \emph{prior knowledge} of the inner product. Their basic idea is to find $d$ given $g$ and $g^d$, where $g$ is in a group of exponential size. Therefore, $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$ will probably return $\bot$, representing that $d$ is too large to find.
+However, $\textsf{FE.Dec}$ of constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} rely on some \emph{prior knowledge} of the inner product. Their basic idea is to find $d$ given $g$ and $g^d$, where $g$ is in a group of exponential size. Therefore, $\textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \mathbf{c}^{(i)})$ will probably return $\bot$, representing that $d$ is too large to find.
 
 For this problem, I have three proposals:
 \begin{enumerate}
@@ -363,9 +363,9 @@ Consider the \textsf{SUF} game.
 
 		\State $\textsf{msk}, \textsf{pp} \gets \textsf{FE.Setup}(1^\lambda)$
 
-		\State $\mathbf{c} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
+		\State $\textsf{sk}_{\mathbf{r}} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{r})$
 
-		\State $\mathbf{\tilde{z}} \gets \mathcal{A}_2^{\mathcal{O}} ( \textsf{st}, \textsf{pp}, \mathbf{c} )$
+		\State $\mathbf{\tilde{z}} \gets \mathcal{A}_2^{\mathcal{O}} ( \textsf{st}, \textsf{pp}, \textsf{sk}_{\mathbf{r}} )$
 
 		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}^\prime_{\textsf{Enc}}$ }
 			
@@ -373,7 +373,7 @@ Consider the \textsf{SUF} game.
 		
 		\EndIf
 
-		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{\tilde{z}} )$
+		\State $s \gets \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \mathbf{\tilde{z}} )$
 
 		\State \Return $1_{s \neq \bot}$
 	\end{algorithmic}
@@ -382,11 +382,11 @@ Consider the \textsf{SUF} game.
 
 \end{figure}
 
-$\mathbf{r} \neq 0$ is because for constructions \cite{10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440}, there exists an algorithm $\textsf{RandEnc}(\textsf{pp})$ that can generate ciphertexts of random unknown vectors $\textsf{FE.Enc}(\textsf{msk}, r)$.
+$\mathbf{r} \neq 0$ is because for constructions \cite{10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440}, there exists an algorithm $\textsf{RandEnc}(\textsf{pp})$ that can generate ciphertexts $\textsf{FE.Enc}(\textsf{msk}, \mathbf{r}^\prime)$ of a random unknown vector $\mathbf{r}^\prime$.
 
-I call this security property \emph{selective unforgeability (SUF)}. An SUF \textsf{FE} is RUF since the adversary $\mathcal{A}_1$ can choose $\mathbf{r} \getsdollar \mathbb{F}^k$. We can also add a signature scheme to an \textsf{FE} to make it SUF. Moreover, if we use SUF security, we do not need fh-IND security in our main results in \ref{sec:security_analysis:fh-IPFE:uf}. One can reduce \textsf{option}-\textsf{UF} of $\Pi$ to \textsf{SUF} of $\textsf{FE}$ in a simple and intuitive way.
+I call this security property \emph{selective unforgeability (SUF)}. An SUF \textsf{FE} is RUF since the adversary $\mathcal{A}_1$ can choose $\mathbf{r} \getsdollar \mathbb{F}^k$. We can also add a signature scheme to an \textsf{FE} to make it SUF. Moreover, if we use SUF security, we do not need fh-IND security in our main results in \ref{sec:security_analysis:fh-IPFE:uf}. One can reduce \textsf{option}-UF security of $\Pi$ to SUF security of $\textsf{FE}$ in a simple and intuitive way.
 
-\begin{theorem}
+\begin{theorem}[Revision of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}]
 	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if either one of the following is satisfied:
 	\begin{itemize}
 		\item \textsf{FE} is both fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF (Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll})
@@ -395,11 +395,11 @@ I call this security property \emph{selective unforgeability (SUF)}. An SUF \tex
 then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
-\begin{theorem}
+\begin{theorem}[Revision of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}]
 	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is $\mathcal{O}^\prime_{\textsf{Enc}}$-SUF, then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
-We can also leave both \textsf{RUF} and \textsf{SUF} security.
+We can also leave both RUF and SUF security.
 
 \subsection{Solution II}
 
@@ -408,13 +408,13 @@ Instead of sampling $\mathbf{r} \getsdollar \mathbb{F}^{k}$, one samples $\mathb
 
 	\item Pick $k+2$ random one-hot vectors $\mathbf{e}^{(i)} \gets (0, \cdots, \overset{i\text{th}}{u_i}, \cdots, 0)$, where $u \getsdollar \mathbb{F}$.
 
-	\item For $i \in [k+2]$, $\mathbf{c}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
+	\item For $i \in [k+2]$, $\textsf{ct}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
 
-	\item For $i \in [k+2]$, $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{c}^{(i)})$. Note that $d_i$ can only be $u_i$ or $0$.
+	\item For $i \in [k+2]$, $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \textsf{ct}^{(i)})$. Note that $d_i$ can only be $u_i$ or $0$.
 
 	\item Find the vector $\mathbf{r} \in \{0, 1\}^{k+2}$.
 
-	\item On query $\mathcal{O}_{\textsf{Probe}}(\mathbf{b}^\prime)$, first encode $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ and find $d \gets \mathbf{x}^{*}{\mathbf{y}^\prime}^T$. Then find a vector $\mathbf{y}^{\prime\prime}$ such that $\mathbf{r} {\mathbf{y}^{\prime\prime}}^T = d$. Return $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{y}^{\prime\prime})$.
+	\item On query $\mathcal{O}_{\textsf{Probe}}(\mathbf{b}^\prime)$, first encode $\mathbf{b}^\prime$ into $\mathbf{y}^\prime$ and find $d \gets \langle \mathbf{x}^{*}, {\mathbf{y}^\prime} \rangle$. Then find a vector $\mathbf{y}^{\prime\prime}$ such that $\langle \mathbf{r}, {\mathbf{y}^{\prime\prime}} \rangle = d$. Return $\mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{y}^{\prime\prime})$.
 
 \end{enumerate}
 
@@ -518,9 +518,9 @@ We forbid the adversary to query $\mathcal{O}_{\textsf{Reg}}^\prime$ on the same
 
 	\end{itemize}
 
-	\item Fuzzy extractor \cite{10.1145/1030083.1030096, 7980010}: This requires either the enrollment phase passes a public string $Q$ to the authentication phases, or the server sends $Q$ to the user on authentication.
+	\item Fuzzy extractor \cite{10.1145/1030083.1030096, 7980010}: This requires either the enrollment phase passes a public string $Q$ to the authentication phase, or the server sends $Q$ to the user on authentication.
 
-	\item Oblivious transfer \cite{cryptoeprint:2012/586}: The server knows $\mathbf{b}$. Run $k$ OT protocols, where $k$ is the length of $\mathbf{b}$ and $\mathbf{b}^\prime$. Finally after the protocol, the user will have $R$. The server will have $T = \textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$. The user sends $R$ to the server, and the server recovers $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$.
+	\item Oblivious transfer \cite{cryptoeprint:2012/586}: The server knows $\mathbf{b}$. Run $k$ OT protocols, where $k$ is the length of $\mathbf{b}$ and $\mathbf{b}^\prime$. At the end, the user will have some random value $R$. The server will have $T = \textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$. The user sends $R$ to the server, and the server recovers $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) = T - R$.
 
 \end{itemize}
 
