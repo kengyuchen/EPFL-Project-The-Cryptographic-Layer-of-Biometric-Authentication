@@ -102,6 +102,7 @@ A relational hash scheme \textsf{RH} is called \emph{unforgeable} for the distri
 		\right ] = \negl.
 \]
 
+\noindent In this work, since we assume the existence of a family $\mathbb{B}$ of biometric distributions and interfaces to interact with it, we extend the notion to \emph{unforgeable for any adversary who has access to $\mathbb{B}$}.
 \end{definition}
 
 \begin{theorem}
@@ -109,13 +110,13 @@ A relational hash scheme \textsf{RH} is called \emph{unforgeable} for the distri
 
 Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} \}$. If \textsf{RH} is unforgeable for the distribution
 \[
-	\mathcal{X} = \{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \gets {\sf getEnroll}^{\mathcal{O}_\mathcal{B}}() \mid \mathbb{B} \},
+	\mathcal{X} = \{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \gets {\sf getEnroll}^{\mathcal{O}_\mathcal{B}}() \},
 \]
-then $\Pi$ is $\textsf{option}$-UF. 
+for any adversary who has access to $\mathbb{B}$, then $\Pi$ is $\textsf{option}$-UF. 
 
 \end{theorem}
 
-In \cite{cryptoeprint:2014/394}, the authors construct an $\textsf{RH}$ that is unforgeable for the uniform distribution over $\{0, 1\}^k$, under the hardness of some computational problems. Note that we need to provide knowledge of $\mathbb{B}$ in the distribution $\mathcal{X}$.
+In \cite{cryptoeprint:2014/394}, the authors construct an $\textsf{RH}$ that is unforgeable for the uniform distribution over $\{0, 1\}^k$, under the hardness of some computational problems.
 
 \begin{proof}
 
@@ -136,7 +137,7 @@ The \textsf{option}-UF security is thus guaranteed by the unforgeability of \tex
 \end{proof}
 
 \paragraph{Remark}
-As we mentioned in Section \ref{sec:uf_game}, an adversary with \textsf{psk} can enjoy a winning rate of the false positive rate \textsf{FP} of $\mathbb{B}$. Theorem \ref{thm:rh:uf-uf-cx} thus implies that if $\textsf{FP}$ is not negligible, there does not exist an \textsf{RH} that is unforgeable for the distribution $\{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \gets {\sf getEnroll}^{\mathcal{O}_\mathcal{B}}() \mid \mathbb{B} \}$.
+As we mentioned in Section \ref{sec:uf_game}, an adversary with \textsf{psk} can enjoy a winning rate of the false positive rate \textsf{FP} of $\mathbb{B}$. Theorem \ref{thm:rh:uf-uf-cx} thus implies that if $\textsf{FP}$ is not negligible, there does not exist an \textsf{RH} that is unforgeable for the distribution $\{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \gets {\sf getEnroll}^{\mathcal{O}_\mathcal{B}}() \}$ for any adversary who has access to $\mathbb{B}$.
 
 
 Note that since $\textsf{esk}, \textsf{psk}$, and $ \textsf{csk}$ are all public in this instantiation, it is meaningless to discuss $\mathcal{O}_\textsf{Enroll}, \mathcal{O}_\textsf{Probe}$, or $\mathcal{O}_\textsf{log}$. In addition, for $\textsf{option}$ that includes $\mathcal{O}_\mathcal{B}$ or $\mathcal{O}_\textsf{Probe}^\prime$, as discussed in Section \ref{sec:uf_game}, we cannot achieve \textsf{option}-UF security since $\textsf{psk}$ is public in this instantiation.

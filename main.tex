@@ -315,7 +315,173 @@ In conclusion,
 %-------------------
 
 
-%\iffalse
+\section{Summary of UF and IND Security}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c c c} 
+	
+	\toprule
+
+	& \textbf{UF} & \textbf{IND} \\
+	
+	\midrule
+
+	\textsf{fh-IND} & \xmark \; (Thm \ref{thm:fh-IPFE-not-uf}) & $\{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:fh-IPFE:ind-ind}) \\
+	
+	\midrule
+	
+	\textsf{fh-IND}, $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF & $\{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$ (Thm \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}) & $\{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:fh-IPFE:ind-ind}) \\
+	
+	\midrule
+	
+	\textsf{fh-IND}, $\mathcal{O}^\prime_{\textsf{Probe}}$-RUF & $\{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$ (Thm \ref{thm:fh-IPFE:ind-ruf-OB-Probe}) & $\{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:fh-IPFE:ind-ind}) \\
+	
+	\midrule
+	
+	\textsf{fh-IND} + sEUF-CMA \textsf{Sig} & $\{ \textsf{esk}, \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$ (Thm \ref{thm:sEUF-CMA-esk-csk}) & $\{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:fh-IPFE:ind-ind}) \\
+	
+	\midrule
+	
+	\textsf{fh-IND} + MC-IND-CPA \textsf{PKE} & \xmark \; (Thm \ref{thm:fh-IPFE-not-uf})  & \makecell{$\{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:fh-IPFE:ind-ind}) \\ $\{ \textsf{esk}, \textsf{psk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:mc-ind-cpa:ind-esk-psk})} \\
+	
+	\midrule
+	
+	\makecell{\textsf{fh-IND} + sEUF-CMA \textsf{Sig} \\ + MC-IND-CPA \textsf{PKE}} & $\{ \textsf{esk}, \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$ (Thm \ref{thm:sEUF-CMA-esk-csk}) & \makecell{$\{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:fh-IPFE:ind-ind}) \\ $\{ \textsf{esk}, \textsf{psk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:mc-ind-cpa:ind-esk-psk})} \\
+	
+	\bottomrule
+
+\medskip
+\end{tabular}
+\caption{fh-IPFE. We can try to provide \textsf{option}-UF with \textsf{psk}.}
+\label{table:fh-IPFE}
+\end{table}
+
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c c c} 
+	
+	\toprule
+
+	& \textbf{UF} & \textbf{IND} \\
+	
+	\midrule
+
+	Unforgeable for $\mathcal{X}$ & $\{ \textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} \}$ (Thm \ref{thm:rh:uf-uf-cx}) & \xmark \; (Thm \ref{thm:ind-tp-fp}) \\
+	
+	\midrule
+	
+	\makecell{Unforgeable for $\mathcal{X}$ \\ + sEUF-CMA \textsf{Sig}} & \makecell{ $\{ \textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} \}$ (Thm \ref{thm:rh:uf-uf-cx}) \\ $\{ \textsf{esk}, \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$ (Thm \ref{thm:sEUF-CMA-esk-csk}) } & \xmark \; (Thm \ref{thm:ind-tp-fp}) \\
+	
+	\midrule
+	
+	\makecell{ Unforgeable for $\mathcal{X}$ \\+ MC-IND-CPA \textsf{PKE}} & $\{ \textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} \}$ (Thm \ref{thm:rh:uf-uf-cx}) & \makecell{$\{ \textsf{esk}, \textsf{psk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:mc-ind-cpa:ind-esk-psk})} \\
+	
+	\midrule
+	
+	\makecell{Unforgeable for $\mathcal{X}$ \\ + sEUF-CMA \textsf{Sig} \\ + MC-IND-CPA \textsf{PKE}} & \makecell{ $\{ \textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} \}$ (Thm \ref{thm:rh:uf-uf-cx}) \\ $\{ \textsf{esk}, \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$ (Thm \ref{thm:sEUF-CMA-esk-csk}) }  & \makecell{$\{ \textsf{esk}, \textsf{psk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}} \}$ (Thm \ref{thm:mc-ind-cpa:ind-esk-psk})} \\
+	
+	\bottomrule
+
+\medskip
+\end{tabular}
+\caption{RH. We can try to provide \textsf{option}-IND with \textsf{csk}.}
+\label{table:rh}
+\end{table}
+
+%-------------------
+
+\newpage
+
+%-------------------
+
+
+\section{One-Way Game}
+
+\begin{figure}[h]
+\centering
+
+	\begin{minipage}[t]{0.55\textwidth}
+	\begin{algorithm}[H]
+	\caption{$\textsf{OW}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A})$}
+	\label{alg:ow_game}
+	\begin{algorithmic}[1]
+
+		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+
+		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+
+		\State $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+
+		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
+
+		\State $\mathbf{\tilde{b}} \gets \mathcal{A}( \textsf{option} )$
+
+		\State $s \gets \textsf{BioCompare}( \mathbf{\tilde{b}}, \mathbf{b})$
+		\State \Return $ \textsf{Verify}(s) $
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+
+\label{fig:ow_game}
+\end{figure}
+
+The auxiliary information \textsf{option} can be nothing or include $\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}$ or the oracles $\mathcal{O}_{\textsf{Enroll}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}^\prime_{\textsf{Enroll}}, \mathcal{O}^\prime_{\textsf{Probe}}$. We can also consider providing $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ for different honest $\textsf{esk}_i$. Note that the \textsf{OW} game is trivial if \textsf{FP} is not negligible.
+
+We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{OW}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions as
+\[
+	\Adv^{\textsf{OW}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} := \Pr[\textsf{OW}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1]
+\]
+
+An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions is called \emph{\textsf{option}-one-way} (\textsf{option}-OW) if for any PPT adversary $\mathcal{A}$,
+\[
+	\Adv^{\textsf{OW}}_{\Pi, \mathbb{B}, \mathcal{A}, \textsf{option}} = \negl.
+\]
+
+Its relation with UF security is as follows.
+
+\begin{theorem}
+	Let $\textsf{option}$ include $\textsf{psk}$. If $\Pi$ is $\textsf{option}$-UF, then $\Pi$ is $\textsf{option}$-OW secure.
+\end{theorem}
+
+\begin{proof}
+	Suppose $\Pi$ is not $\textsf{option}$-OW secure, the adversary can derive $\tilde{\mathbf{b}}$ such that 
+	\[
+		\textsf{Verify}(\textsf{BioCompare}(\tilde{\mathbf{b}}, \mathbf{b})) = 1
+	\]
+	With $\textsf{psk}$, the adversary can further generate $\tilde{\mathbf{c_x}} \gets \textsf{Probe}(\textsf{psk}, \tilde{\mathbf{b}})$ to win the \textsf{option-UF} game.
+\end{proof}
+
+We have seen some examples that authentication schemes using current constructions of fh-IPFE and RH may not be OW-secure.
+
+\paragraph{fh-IPFE}
+
+Suppose $\Pi$ is instantiated by the construction in \cite{cryptoeprint:2016/440} in the way described in Section \ref{sec:fh-IPFE-instantiation}. The scheme is not $\mathcal{O}_{\textsf{Enroll}}^\prime$-OW. The adversary can set the fake $\textsf{esk}^\prime$ to include the matrix $\mathbf{B} = \mathbf{I}$, the size-$(k+2)$ identity matrix, and query $\mathcal{O}_{\textsf{Enroll}}^\prime$ to get
+\[
+	g_1^{\alpha \cdot \det(\mathbf{B})}, g_1^{\alpha \cdot \mathbf{x} \cdot \mathbf{B}} = g_1^{\alpha}, (g_1^{\alpha \cdot {x_1}}, g_1^{\alpha \cdot {x_2}}, g_1^{\alpha \cdot {x_{k+2}}}) 
+\]
+where $\alpha$ is an unknown element in $\Z_q$, and $\mathbf{x} = (x_1, \cdots, x_{k+2}) = (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. Since $b_i$ is bounded in $\{0, 1, \cdots, m\}$ for some fixed integer $m$ for each $i$, the adversary can raise the power of $g_1^{\alpha}$ to retrive all the coefficients of $\mathbf{b}$. Similarly, the scheme is not $\mathcal{O}_{\textsf{Probe}}^\prime$-OW.
+
+In addition, any fh-IPFE scheme instantiated in the way described in Section \ref{sec:fh-IPFE-instantiation} is neither $\{ \mathbf{c_x}, \textsf{esk} \}$-OW nor $\{ \mathbf{c_x}, \textsf{psk} \}$-OW. Note that $\textsf{esk} = \textsf{psk} = \textsf{msk}$, the master secret key of the fh-IPFE. With $\textsf{msk}$, the adversary can generate encryptions of any vector and find $\mathbf{x}$ by solving linear equations of inner products.
+
+\paragraph{RH}
+
+Suppose $\Pi$ is instantiated by the construction in \cite{cryptoeprint:2014/394} in the way described in Section \ref{sec:rh-instantiation}. The scheme is neither $\mathcal{O}_{\textsf{Enroll}}^\prime$-OW nor $\mathcal{O}_{\textsf{Probe}}^\prime$-OW. Recall that the enrollment key $\textsf{esk}$ is the public key $\textsf{pk}$ of the relational hash scheme. In the construction of \cite{cryptoeprint:2014/394},
+\begin{itemize}
+	\item $\textsf{pk}$ includes an encoding algorithm $\textsf{Encode}$ of an error correcting code.
+	\item $\mathbf{h_x}$ includes $\mathbf{x} + \textsf{Encode}(\mathbf{r})$ for some random $\mathbf{r} \getsdollar \{0,1\}^k$.
+\end{itemize}
+Now, the adversary can set the fake $\textsf{esk}^\prime$ to include an invalid $\textsf{Encode}$ such that $\mathbf{x} + \textsf{Encode}(\mathbf{r})$ reveals $\mathbf{x} = \mathbf{b}$. 
+
+The scheme is $\{ \textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} \}$-OW, which is given in \cite[Theorem 4]{cryptoeprint:2014/394}.
+
+%-------------------
+
+\newpage
+
+%-------------------
 
 \section{Fixing the Proof of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}}
 
@@ -428,7 +594,7 @@ We can say these fh-IPFE constructions \cite{cryptoeprint:2015/1255, 10.1007/978
 
 %-------------------
 
-\section{Reusability}
+\section{Trace users with different identities}
 
 The work \cite{simoens2012framework} discusses a security concept related to reusability. It is called \emph{Trace users with different identities}. It is about when a user registers multiple records of its biometrics on the database. The server or compromised database should not be able to find that two records correspond to the same person.
 
@@ -499,36 +665,6 @@ We forbid the adversary to query $\mathcal{O}_{\textsf{Reg}}^\prime$ on the same
 
 %-------------------
 
-\section{Instantiation using Other Primitives}
-
-\begin{itemize}
-	\item Homomorphic encryption (HE) \cite{10.1007/978-3-642-01957-9_7, 10.1007/978-3-642-40588-4_5, pradel2021privacypreservingbiometricmatchingusing}:
-	\begin{itemize}
-		\item \cite{10.1007/978-3-642-40588-4_5}: The server owns the secret key for the HE. $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y})$ is split into two phases:
-			\begin{itemize}
-				\item With $\mathbf{c_x}$ and $\mathbf{c_y}$, homomorphically compute the encryption of $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$.
-				\item Use $\textsf{csk}$, which is the secret key of the HE, to recover $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$.
-			\end{itemize}
-			If we want to hide the biometrics $\mathbf{b}, \mathbf{b}^\prime$ from the server, two phases of $\textsf{Compare}$ have to be run by two parties.
-			\begin{itemize}
-				\item The first one only has $\mathbf{c_x}$ without $\textsf{csk}$.
-				\item The other one only has $\textsf{csk}$ without $\mathbf{c_x}$.
-			\end{itemize}
-		\item \cite{10.1007/978-3-642-01957-9_7, pradel2021privacypreservingbiometricmatchingusing}: The user owns the secret key for the HE. The server homomorphically computes the encryption of $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$, where $R$ is a random value, and sends it to the user. The user decrypts the value $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$, sends it back to the server. The server recovers $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$ by subtracting from $R$.
-
-	\end{itemize}
-
-	\item Fuzzy extractor \cite{10.1145/1030083.1030096, 7980010}: This requires either the enrollment phase passes a public string $Q$ to the authentication phase, or the server sends $Q$ to the user on authentication.
-
-	\item Oblivious transfer \cite{cryptoeprint:2012/586}: The server knows $\mathbf{b}$. Run $k$ OT protocols, where $k$ is the length of $\mathbf{b}$ and $\mathbf{b}^\prime$. At the end, the user will have some random value $R$. The server will have $T = \textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$. The user sends $R$ to the server, and the server recovers $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) = T - R$.
-
-\end{itemize}
-
-%-------------------
-
-\newpage
-
-%-------------------
 
 \iffalse
 
@@ -628,41 +764,36 @@ Given Assumption \ref{assump:only-return-valid-ct} and \ref{assump:random_key_ct
 \end{corollary}
 
 
-\section{One-Way Game}
+%-------------------
 
-\begin{figure}[h]
-\centering
+\newpage
 
-	\begin{minipage}[t]{0.55\textwidth}
-	\begin{algorithm}[H]
-	\caption{$\textsf{OW}_{\Pi, \mathbb{B}}(\mathcal{A})$}
-	\label{alg:ow_game}
-	\begin{algorithmic}[1]
+%-------------------
 
-		\State $\mathcal{B} \getsdollar \mathbb{B}, \quad \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
+\section{Instantiation using Other Primitives}
 
-		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+\begin{itemize}
+	\item Homomorphic encryption (HE) \cite{10.1007/978-3-642-01957-9_7, 10.1007/978-3-642-40588-4_5, pradel2021privacypreservingbiometricmatchingusing}:
+	\begin{itemize}
+		\item \cite{10.1007/978-3-642-40588-4_5}: The server owns the secret key for the HE. $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y})$ is split into two phases:
+			\begin{itemize}
+				\item With $\mathbf{c_x}$ and $\mathbf{c_y}$, homomorphically compute the encryption of $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$.
+				\item Use $\textsf{csk}$, which is the secret key of the HE, to recover $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$.
+			\end{itemize}
+			If we want to hide the biometrics $\mathbf{b}, \mathbf{b}^\prime$ from the server, two phases of $\textsf{Compare}$ have to be run by two parties.
+			\begin{itemize}
+				\item The first one only has $\mathbf{c_x}$ without $\textsf{csk}$.
+				\item The other one only has $\textsf{csk}$ without $\mathbf{c_x}$.
+			\end{itemize}
+		\item \cite{10.1007/978-3-642-01957-9_7, pradel2021privacypreservingbiometricmatchingusing}: The user owns the secret key for the HE. The server homomorphically computes the encryption of $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$, where $R$ is a random value, and sends it to the user. The user decrypts the value $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$, sends it back to the server. The server recovers $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime)$ by subtracting from $R$.
 
-		\State $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+	\end{itemize}
 
-		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
+	\item Fuzzy extractor \cite{10.1145/1030083.1030096, 7980010}: This requires either the enrollment phase passes a public string $Q$ to the authentication phase, or the server sends $Q$ to the user on authentication.
 
-		\State $\mathbf{\tilde{b}} \gets \mathcal{A}( \textsf{option} )$
+	\item Oblivious transfer \cite{cryptoeprint:2012/586}: The server knows $\mathbf{b}$. Run $k$ OT protocols, where $k$ is the length of $\mathbf{b}$ and $\mathbf{b}^\prime$. At the end, the user will have some random value $R$. The server will have $T = \textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) + R$. The user sends $R$ to the server, and the server recovers $\textsf{HW}(\mathbf{b} \oplus \mathbf{b}^\prime) = T - R$.
 
-		\State $s \gets \textsf{BioCompare}( \mathbf{\tilde{b}}, \mathbf{b})$
-		\State \Return $ \textsf{Verify}(s) $
-	\end{algorithmic}
-	\end{algorithm}
-	\end{minipage}
-
-\label{fig:ow_game}
-\end{figure}
-
-\noindent $\textsf{option}$ can be $\mathbf{c_x}, \textsf{esk}, \textsf{psk}, \textsf{csk}$ or oracles $\mathcal{O}_{\textsf{Enroll}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}^\prime_{\textsf{Enroll}}, \mathcal{O}^\prime_{\textsf{Probe}}$.
-
-In the reusable fuzzy extractor paper \cite{10.1145/1030083.1030096}, if public strings related to personal information are generated many times, the sensitive information might leak. In our setting, it is a little similar to having multiple $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$.
-
-To model reusability, I think we can consider either providing $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ for different $\textsf{esk}_i$, or just providng $\mathcal{O}^\prime_{\textsf{Enroll}}$.
+\end{itemize}
 
 \fi
 
