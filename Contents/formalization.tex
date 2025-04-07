@@ -15,11 +15,11 @@ Assume the existence of a family $\mathbb{B}$ of biometric distributions that ar
 
 \begin{itemize}
 
-	\item $\textsf{BioSamp}()$: Generate a random distribution $\mathcal{B}$ of $\mathbb{B}$. By this we mean providing either parameters of an efficiently samplable distribution or a PPT algorithm as the sampler. For simplicity, we write $\mathcal{B} \gets \textsf{BioSamp}()$ as $\mathcal{B} \getsdollar \mathbb{B}$.
+	\item $\mathsf{BioSamp}()$: Generate a random distribution $\mathcal{B}$ of $\mathbb{B}$. By this we mean providing either parameters of an efficiently samplable distribution or a PPT algorithm as the sampler. For simplicity, we write $\mathcal{B} \gets \mathsf{BioSamp}()$ as $\mathcal{B} \getsdollar \mathbb{B}$.
 	
-	\item $\textsf{BioDelete}(\mathcal{B})$: Delete $\mathcal{B}$ from $\mathbb{B}$. Consequently, no further access to $\textsf{BioSamp}$ can derive $\mathcal{B}$. For simplicity, we write $\textsf{BioDelete}(\mathcal{B})$ as $\mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$.
+	\item $\mathsf{BioDelete}(\mathcal{B})$: Delete $\mathcal{B}$ from $\mathbb{B}$. Consequently, no further access to $\mathsf{BioSamp}$ can derive $\mathcal{B}$. For simplicity, we write $\mathsf{BioDelete}(\mathcal{B})$ as $\mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$.
 
-	\item $\textsf{TempSamp}(\mathcal{B})$: Let $\mathcal{B}$ be a biometric distribution in $\mathbb{B}$. This algorithm samples a biometric template from $\mathcal{B}$. For simplicity, we write $\mathbf{b} \gets \textsf{TempSamp}(\mathcal{B})$ as $\mathbf{b} \getsdollar \mathcal{B}$.
+	\item $\mathsf{TempSamp}(\mathcal{B})$: Let $\mathcal{B}$ be a biometric distribution in $\mathbb{B}$. This algorithm samples a biometric template from $\mathcal{B}$. For simplicity, we write $\mathbf{b} \gets \mathsf{TempSamp}(\mathcal{B})$ as $\mathbf{b} \getsdollar \mathcal{B}$.
 
 \end{itemize}
 
@@ -29,13 +29,13 @@ A \emph{biometric authentication scheme} $\Pi$ associated with a family $\mathbb
 
 \begin{itemize}
 
-	\item $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from a distribution $\mathcal{B} \in \mathbb{B}$, it outputs a biometric template $\mathbf{b}$ for enrollment. In practice, $\textsf{getEnroll}$ can collect several biometric samples from a user's biometric distribution $\mathcal{B}$ to create a more accurate template.
+	\item $\mathsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from a distribution $\mathcal{B} \in \mathbb{B}$, it outputs a biometric template $\mathbf{b}$ for enrollment. In practice, $\mathsf{getEnroll}$ can collect several biometric samples from a user's biometric distribution $\mathcal{B}$ to create a more accurate template.
 
-	\item $\textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^\prime$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from a distribution $\mathcal{B} \in \mathbb{B}$, it outputs a biometric template $\mathbf{b}^\prime$ for probe. In practice, $\textsf{getProbe}$ often directly outputs the answer from $\mathcal{O}_{\mathcal{B}}$.
+	\item $\mathsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^\prime$: Given an oracle $\mathcal{O}_{\mathcal{B}}$, which samples biometric data from a distribution $\mathcal{B} \in \mathbb{B}$, it outputs a biometric template $\mathbf{b}^\prime$ for probe. In practice, $\mathsf{getProbe}$ often directly outputs the answer from $\mathcal{O}_{\mathcal{B}}$.
 
-	\item $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to s$: Given a biometric template $\mathbf{b}$ from $\textsf{getEnroll}$ and another template $\mathbf{b}^\prime$ from $\textsf{getProbe}$, it outputs a score $s$.
+	\item $\mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to s$: Given a biometric template $\mathbf{b}$ from $\mathsf{getEnroll}$ and another template $\mathbf{b}^\prime$ from $\mathsf{getProbe}$, it outputs a score $s$.
 
-	\item $\textsf{Verify}(s) \to r \in \{0,1\}$: It is a deterministic algorithm that reads the comparison score $s$ and determines whether this is a successful authentication ($r = 1$) or not ($r = 0$).
+	\item $\mathsf{Verify}(s) \to r \in \{0,1\}$: It is a deterministic algorithm that reads the comparison score $s$ and determines whether this is a successful authentication ($r = 1$) or not ($r = 0$).
 
 \end{itemize}
 We also call these algorithms the \emph{biometric layer} of $\Pi$. We will add a \emph{cryptographic layer} on top of it in Section \ref{sec:formalization:cryptographic_layer}
@@ -46,72 +46,72 @@ We also call these algorithms the \emph{biometric layer} of $\Pi$. We will add a
 Given an authentication scheme $\Pi$, we can consider its true positive rate and false positive rate.
 
 \begin{definition}[True Positive Rate]
-For a biometric distribution $\mathcal{B} \in \mathbb{B}$ and $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, define the \emph{true positive rate} \textsf{TP}.
+For a biometric distribution $\mathcal{B} \in \mathbb{B}$ and $\mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, define the \emph{true positive rate} \textsf{TP}.
 
 \begin{alignat*}{2}
-	\textsf{TP}(\mathcal{B}, \mathbf{b}) 
-	:=&\; \Pr[ \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B}}()
-	&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 ] \\
+	\mathsf{TP}(\mathcal{B}, \mathbf{b}) 
+	:=&\; \Pr[ \mathbf{b}^\prime \gets \mathsf{getProbe}^{\mathcal{O}_\mathcal{B}}()
+	&&: \mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 ] \\
 	\\
-	\textsf{TP}(\mathcal{B}) 
+	\mathsf{TP}(\mathcal{B}) 
 	:=&\; \Pr \Bigg[ 
 		\begin{aligned}	
-			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() \\
-			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B}}()
+			& \mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() \\
+			& \mathbf{b}^\prime \gets \mathsf{getProbe}^{\mathcal{O}_\mathcal{B}}()
 		\end{aligned}
-		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \Bigg] \\
-	=&\; \mathbb{E}_{ \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() }[\textsf{TP}(\mathcal{B}, \mathbf{b})] \\
+		&&: \mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \Bigg] \\
+	=&\; \mathbb{E}_{ \mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() }[\mathsf{TP}(\mathcal{B}, \mathbf{b})] \\
 	\\
-	\textsf{TP} 
+	\mathsf{TP} 
 	:=&\; \Pr \vast[
 		\begin{aligned}
 			& \mathcal{B} \getsdollar \mathbb{B} \\
-			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
-			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_\mathcal{B} }()
+			& \mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
+			& \mathbf{b}^\prime \gets \mathsf{getProbe}^{\mathcal{O}_\mathcal{B} }()
 		\end{aligned}
-		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \vast] \\
-	=&\; \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{TP}(\mathcal{B})] 
+		&&: \mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime )) = 1 \vast] \\
+	=&\; \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\mathsf{TP}(\mathcal{B})] 
 \end{alignat*}
 
 \end{definition}
 
 
 \begin{definition}[False Positive Rate]
-For a biometric distribution $\mathcal{B} \in \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ and $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, define the \emph{false positive rate} \textsf{FP}.
+For a biometric distribution $\mathcal{B} \in \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$ and $\mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, define the \emph{false positive rate} \textsf{FP}.
 
 \begin{alignat*}{2}
-	\textsf{FP}(\mathbf{b}) 
+	\mathsf{FP}(\mathbf{b}) 
 	:=&\; \Pr \Bigg[ 
 		\begin{aligned}
 			& \mathcal{B}^\prime \getsdollar \mathbb{B} \\
-			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()
+			& \mathbf{b}^\prime \gets \mathsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()
 		\end{aligned}
-		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \Bigg] \\
+		&&: \mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \Bigg] \\
 	\\
-	\textsf{FP}(\mathcal{B}) 
+	\mathsf{FP}(\mathcal{B}) 
 	:=&\; \Pr \vast[ 
 		\begin{aligned}
 			& \mathcal{B}^\prime \getsdollar \mathbb{B} \\
-			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
-			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
+			& \mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
+			& \mathbf{b}^\prime \gets \mathsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
 		\end{aligned}
-		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \vast] \\
-	=&\; \mathbb{E}_{ \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() }[\textsf{FP}(\mathbf{b})] \\
+		&&: \mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \vast] \\
+	=&\; \mathbb{E}_{ \mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B}}() }[\mathsf{FP}(\mathbf{b})] \\
 	\\
-	\textsf{FP} 
+	\mathsf{FP} 
 	:=&\; \Pr \vast[
 		\begin{aligned}
 			& \mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}, \mathcal{B}^\prime \getsdollar \mathbb{B} \\
-			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
-			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
+			& \mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B} }() \\
+			& \mathbf{b}^\prime \gets \mathsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
 		\end{aligned}
-		&&: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \vast] \\
-	=&\; \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\textsf{FP}(\mathcal{B})]
+		&&: \mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \vast] \\
+	=&\; \mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}[\mathsf{FP}(\mathcal{B})]
 \end{alignat*}
 
 \end{definition}
 
-Ideally, we hope $\textsf{TP}$ to be $1$ and $\textsf{FP}$ to be negligible. However, due to the inherent nature of biometrics, there might be a non-zero false negative rate $ 1 - \textsf{TP} > 0$ and a $\textsf{FP}$ that is not negligible. Our security model and analysis also take these possibilities into consideration.
+Ideally, we hope $\mathsf{TP}$ to be $1$ and $\mathsf{FP}$ to be negligible. However, due to the inherent nature of biometrics, there might be a non-zero false negative rate $ 1 - \mathsf{TP} > 0$ and a $\mathsf{FP}$ that is not negligible. Our security model and analysis also take these possibilities into consideration.
 
 
 %-------------------
@@ -127,20 +127,20 @@ The \emph{cryptographic layer} of a biometric authentication scheme associated w
 
 \begin{itemize}
 
-	\item $\textsf{Setup}(1^\lambda) \to \textsf{esk}, \textsf{psk}, \textsf{csk}$: It outputs the enrollment secret key $\textsf{esk}$, probe secret key $\textsf{psk}$, and compare secret key $\sf csk$.
+	\item $\mathsf{Setup}(1^\lambda) \to \mathsf{esk}, \mathsf{psk}, \mathsf{csk}$: It outputs the enrollment secret key $\mathsf{esk}$, probe secret key $\mathsf{psk}$, and compare secret key $\sf csk$.
 
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b}) \to \mathbf{c_x}$: On input a biometric template $\mathbf{b}$, it encodes it into a vector $\mathbf{x}$ and outputs the enrollment message $\mathbf{c_x}$.
+	\item $\mathsf{Enroll}(\mathsf{esk}, \mathbf{b}) \to \mathbf{c_x}$: On input a biometric template $\mathbf{b}$, it encodes it into a vector $\mathbf{x}$ and outputs the enrollment message $\mathbf{c_x}$.
 	
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime) \to \mathbf{c_y}$: On input a biometric template $\mathbf{b}^\prime$, it encodes it into a vector $\mathbf{y}$ and outputs the probe message $\mathbf{c_y}$ .
+	\item $\mathsf{Probe}(\mathsf{psk}, \mathbf{b}^\prime) \to \mathbf{c_y}$: On input a biometric template $\mathbf{b}^\prime$, it encodes it into a vector $\mathbf{y}$ and outputs the probe message $\mathbf{c_y}$ .
 
-	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
+	\item $\mathsf{Compare}(\mathsf{csk}, \mathbf{c_x}, \mathbf{c_y)} \to s$: It compares the enrollment message $\mathbf{c_x}$ and probe message $\mathbf{c_y}$ and outputs a score $s$.
 
 \end{itemize}
 
-\noindent \textbf{Correctness}: A cryptographic layer is \emph{correct} if for any biometric distributions $\mathcal{B}$ and $\mathcal{B}^\prime$, let $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$, $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$, $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. Then
+\noindent \textbf{Correctness}: A cryptographic layer is \emph{correct} if for any biometric distributions $\mathcal{B}$ and $\mathcal{B}^\prime$, let $\mathsf{esk}, \mathsf{psk}, \mathsf{csk} \gets \mathsf{Setup}(1^\lambda)$, $\mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_\mathcal{B}}()$, $\mathbf{b}^\prime \gets \mathsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}()$, $\mathbf{c_x} \gets \mathsf{Enroll}(\mathsf{esk}, \mathbf{b})$, $\mathbf{c_y} \gets \mathsf{Probe}(\mathsf{psk}, \mathbf{b}^\prime)$. Then
 	\[
 		\Pr \left [
-			\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}) = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)
+			\mathsf{Compare}(\mathsf{csk}, \mathbf{c_x}, \mathbf{c_y}) = \mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)
 		\right ] = 1 - \negl.
 	\]
 
@@ -170,11 +170,11 @@ A key distribution service distributes keys for them. In practice, this model ap
 
 	\item \textsf{Scanner}: A machine to extract the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
 	
-	\item \textsf{Device}: A device belonging to the user. In practice, it can be a desktop or a mobile phone. It processes the \textsf{Enroll} and \textsf{Probe} functions for $\textsf{User}$ with keys \textsf{esk} and \textsf{psk}. It queries $\mathcal{O}_{\mathcal{B}}$ for biometric data through the \textsf{Scanner}.
+	\item \textsf{Device}: A device belonging to the user. In practice, it can be a desktop or a mobile phone. It processes the  for biometric data through the \textsf{Scanner}.
 	
-	\item \textsf{KDS}: A key distribution service. It runs $\textsf{Setup}$ to generate keys and distribute them to $\textsf{Device}$ and $\textsf{Server}$.
+	\item \textsf{KDS}: A key distribution service. It runs $\mathsf{Setup}$ to generate keys and distribute them to \textsf{Device} and \textsf{Server}.
 		
-	\item \textsf{Server}: The server responsible for authenticating the user. It stores the comparison key \textsf{csk} and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
+	\item \textsf{Server}: The server responsible for authenticating the user. It stores the comparison key $\mathsf{csk}$ and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
 
 \end{itemize}
 
@@ -200,7 +200,7 @@ A key distribution service distributes enrollment keys to the enrollment station
 
 	\item \textsf{User}: The user who enrolls its biometric data at an enrollment station and authenticates itself to the server. We assume the user's biometric distribution is $\mathcal{B} \in \mathbb{B}$.
 	
-	\item \textsf{Domain}: A domain that owns several devices, all of which share one enrollment key $\textsf{esk}$, one probe key $\textsf{psk}$ and one comparison key $\textsf{csk}$. Only the probe key is stored at each device of a domain. The enrollment key is stored at the enrollment station, and the comparison key is stored at the server. In practice, a domain can be a department, and users enroll and authenticate themselves before accessing a restricted service of this department.
+	\item \textsf{Domain}: A domain that owns several devices, all of which share one enrollment key . Only the probe key is stored at each device of a domain. The enrollment key is stored at the enrollment station, and the comparison key is stored at the server. In practice, a domain can be a department, and users enroll and authenticate themselves before accessing a restricted service of this department.
 
 	\item \textsf{Scanner}: A machine to extract the user's biometric data by querying the oracle $\mathcal{O}_{\mathcal{B}}$.
 	
@@ -208,9 +208,9 @@ A key distribution service distributes enrollment keys to the enrollment station
 
 	\item \textsf{Device}: A device belonging to a domain. In practice, it can be a device checking identities for a restricted area or an instrument. It owns a probe key $\sf psk$ and processes the $\sf Probe$ function for enrolled users of this domain.
 	
-	\item \textsf{KDS}: A key distribution service. It runs $\textsf{Setup}$ to generate keys and distribute them to \textsf{Station}, \textsf{Domain}, and \textsf{Server}.
+	\item \textsf{KDS}: A key distribution service. It runs $\mathsf{Setup}$ to generate keys and distribute them to \textsf{Station}, \textsf{Domain}, and \textsf{Server}.
 		
-	\item \textsf{Server}: The server responsible for authenticating the user. It stores the comparison key \textsf{csk} for each domain and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
+	\item \textsf{Server}: The server responsible for authenticating the user. It stores the comparison key $\mathsf{csk}$ for each domain and the user's enrollment message $\mathbf{c_x}$. On authentication, it compares the probe message with the registered enrollment message and returns the result.  
 
 \end{itemize}
 
@@ -230,71 +230,71 @@ A key distribution service distributes enrollment keys to the enrollment station
 \subsection{Instantiation with a 2i-IPFE Scheme}
 \label{sec:2i-IPFE-instantiation}
 
-Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be a 2i-IPFE scheme we defined in Definition \ref{def:2i-IPFE}. Following the scheme in Section \ref{sec:fh-IPFE-instantiation}, we can instantiate a biometric authentication scheme using $\textsf{FE}$.
+Let .
 
 \begin{itemize}
 
-	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{sk}, \textsf{ek}_1, \textsf{ek}_2$, $ \textsf{FE.KeyGen}(sk, \mathbf{I}_{k+2}) \to \textsf{dk}_{\mathbf{I}} $, where $\mathbf{I}_{k+2}$ is an identity matrix of size $(k+2) \times (k+2)$. It outputs $\textsf{esk} \gets \textsf{ek}_1$, $\textsf{psk} \gets \textsf{ek}_2$, and $\textsf{csk} \gets \textsf{dk}_{\mathbf{I}}$
+	\item 
 
-	\item $\textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}(), \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: The same as the scheme in \ref{sec:fh-IPFE-instantiation}. 
+	\item : The same as the scheme in \ref{sec:fh-IPFE-instantiation}. 
 
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{x})$: It calls $\textsf{FE.Enc}(\textsf{ek}_1, \mathbf{x}) \to \mathbf{c_x}$ and outputs $\mathbf{c_x}$.
+	\item .
 
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{y})$: It calls $\textsf{FE.Enc}(\textsf{ek}_2, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+	\item .
 
-	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{FE.Dec}(\textsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+	\item .
 
-	\item $\textsf{Verify}(s)$: If $\sqrt{s} \leq \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
+	\item .
 
 \end{itemize}
 
 By the correctness of the functional encryption scheme $\sf FE$, we have
 \[
-	s = \textsf{FE.Dec}(\textsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \mathbf{x} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
+	s = \mathsf{FE.Dec}(\mathsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \mathbf{x} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
 \]
 just as the scheme in Section \ref{sec:fh-IPFE-instantiation}
 
 
-Unlike the previous scheme, instantiated with a 2i-IPFE scheme in this way, the comparison secret key $\textsf{csk}$ is now secret, and the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are distinct. Without $\textsf{csk}$, one cannot compare an enrollment message $\mathbf{c_x}$ and a probe message $\mathbf{c_y}$. We can also transmit $\mathbf{c_x}$ in a public channel and store it in a public storage, under necessary security requirements of the 2i-IPFE scheme, such as indistinguishability of $\mathbf{c_x}$.
+Unlike the previous scheme, instantiated with a 2i-IPFE scheme in this way, the comparison secret key .
 
-In the Device-of-Domain model, the indistinguishability of $\mathbf{c_x}$ is against an adversary who has a probe oracle $\textsf{Probe}(\textsf{psk}, \cdot)$. If \textsf{Server} is malicious, then it can use $\textsf{csk}$ to distinguish $\mathbf{c_x}$ enrolled by different samples. Therefore, we must limit the adversary's ability. For example, we can require the adversary to distinguish biometric vectors sampled from distributions in a pre-defined pool, and the adversary can only probe vectors randomly sampled from a distribution in the pool. We can also limit the rate of the probe oracle.
+In the Device-of-Domain model, the indistinguishability of  enrolled by different samples. Therefore, we must limit the adversary's ability. For example, we can require the adversary to distinguish biometric vectors sampled from distributions in a pre-defined pool, and the adversary can only probe vectors randomly sampled from a distribution in the pool. We can also limit the rate of the probe oracle.
 
 %-------------------
 
 \subsection{Instantiation with a 2c-IPFE Scheme}
 \label{sec:2c-IPFE-instantiation}
 
-Note that if labels remain constant, a 2c-IPFE scheme is reduced to a 2i-IPFE scheme. Therefore, we can consider utilizing the label to represent each domain in the Device-of-Domain model. Let $\textsf{FE} = (\textsf{FE.Setup}, \textsf{FE.KeyGen}, \textsf{FE.Enc}, \textsf{FE.Dec})$ be a 2c-IPFE scheme we defined in Definition \ref{def:2c-IPFE}. Following the scheme in Section \ref{sec:2i-IPFE-instantiation}, we can instantiate a biometric authentication scheme using $\textsf{FE}$.
+Note that if labels remain constant, a 2c-IPFE scheme is reduced to a 2i-IPFE scheme. Therefore, we can consider utilizing the label to represent each domain in the Device-of-Domain model. Let .
 
 \begin{itemize}
 
-	\item $\textsf{Setup}(1^\lambda)$: It calls $\textsf{FE.Setup}(1^\lambda) \to \textsf{sk}, \textsf{ek}_1, \textsf{ek}_2$, $\textsf{FE.KeyGen}(sk, \mathbf{I}_{k+2}) \to \textsf{dk}_{\mathbf{I}} $, where $\mathbf{I}_{k+2}$ is an identity matrix of size $(k+2) \times (k+2)$. For keys used for \textsf{Domain} $\ell$, it outputs $\textsf{esk} \gets (\ell, \textsf{ek}_1)$, $\textsf{psk} \gets (\ell, \textsf{ek}_2)$, and $\textsf{csk} \gets \textsf{dk}_{\mathbf{I}}$.
+	\item .
 
-	Note that when the previous 2i-IPFE-based scheme in Section \ref{sec:2i-IPFE-instantiation} is applied to a Device-of-Domain model, we assume that $\textsf{Setup}$ is run once for each domain to generate different $\textsf{esk}, \textsf{psk}, \textsf{csk}$. In the scheme in this section, however, $\textsf{Setup}$ is run only once for all the domains, and each domain shares the same $\textsf{csk}$ and the same $\textsf{esk}, \textsf{psk}$ except different labels.
+	Note that when the previous 2i-IPFE-based scheme in Section \ref{sec:2i-IPFE-instantiation} is applied to a Device-of-Domain model, we assume that  except different labels.
 
-	\item $\textsf{encodeEnroll}^{\mathcal{O}_{\mathcal{B}}}(), \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}}}()$: The same as the scheme in \ref{sec:2i-IPFE-instantiation}. 
+	\item : The same as the scheme in \ref{sec:2i-IPFE-instantiation}. 
 
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{x})$: It calls $\textsf{FE.Enc}(\ell, \textsf{ek}_1, \mathbf{x}) \to \mathbf{c_x}$ and outputs $\mathbf{c_x}$.
+	\item .
 
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{y})$: It calls $\textsf{FE.Enc}(\ell, \textsf{ek}_2, \mathbf{y}) \to \mathbf{c_y}$ and outputs $\mathbf{c_y}$.
+	\item .
 
-	\item $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)}$: It calls $\textsf{FE.Dec}(\textsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) \to s$ and outputs the value $s$.
+	\item .
 
-	\item $\textsf{Verify}(s)$: If $\sqrt{s} \leq \tau$, a pre-defined threshold for comparing the closeness of two templates, then it outputs $r = 1$; otherwise, it outputs $r = 0$.
+	\item .
 
-	\item $\textsf{BioCompare}$
+	\item 
 
 \end{itemize}
 
 By the correctness of the functional encryption scheme $\sf FE$, if the labels of $\mathbf{c_x}$ and $\mathbf{c_y}$ are the same (they are of the same domain), we have
 \[
-	s = \textsf{FE.Dec}(\textsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
+	s = \mathsf{FE.Dec}(\mathsf{dk}_{\mathbf{I}}, \mathbf{c_x}, \mathbf{c_y}) =  \mathbf{x} \mathbf{I}_{k+2} \mathbf{y}^T = \| \mathbf{b} - \mathbf{b}^\prime \|^2.
 \]
 just as the scheme in Section \ref{sec:2i-IPFE-instantiation}
 
-When the Device-of-Domain model is instantiated with a 2c-IPFE scheme in this way, the enrollment secret key $\textsf{esk}$ and probe secret key $\textsf{psk}$ are now shared among all the devices, regardless of their domains. Therefore, to let a malicious or broken \textsf{Domain} not threaten other honest ones, one needs to make sure given $\textsf{esk}$ or $\textsf{psk}$, $\mathbf{c_x}$ still does not leak information about $\mathbf{x}$. This is different from the scheme in Section \ref{sec:2i-IPFE-instantiation}, where we only need seurity against an adversary who has a probe oracle $\textsf{Probe}(\textsf{psk}, \cdot)$.
+When the Device-of-Domain model is instantiated with a 2c-IPFE scheme in this way, the enrollment secret key .
 
-If \textsf{Server} and \textsf{Domain} are both malicious, then the adversary can use $\textsf{csk}$ to distinguish $\mathbf{c_x}$ and even recover $\mathbf{x}$. Therefore, we assume at most one party of them can be malicious at the same time. Note that this is the same as the 2i-IPFE-based scheme, where only one of \textsf{Server} and \textsf{Domain} can be malicious.
+If \textsf{Server} and \textsf{Domain} are both malicious, then the adversary can use . Therefore, we assume at most one party of them can be malicious at the same time. Note that this is the same as the 2i-IPFE-based scheme, where only one of \textsf{Server} and \textsf{Domain} can be malicious.
 
 \fi
 

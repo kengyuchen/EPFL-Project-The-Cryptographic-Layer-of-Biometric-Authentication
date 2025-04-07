@@ -23,23 +23,23 @@ To describe the unforgeability of an authentication scheme, we model the ability
 	\begin{algorithmic}[1]
 		\State $\mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B}$
 
-		\State $\textsf{esk}, \textsf{psk}, \textsf{csk} \gets \textsf{Setup}(1^\lambda)$
+		\State $\mathsf{esk}, \mathsf{psk}, \mathsf{csk} \gets \mathsf{Setup}(1^\lambda)$
 		
-		\State $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
+		\State $\mathbf{b} \gets \mathsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$
 
-		\State $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$
+		\State $\mathbf{c_x} \gets \mathsf{Enroll}(\mathsf{esk}, \mathbf{b})$
 		
 		\State ${\mathbf{\tilde{z}}} \gets \mathcal{A} ( \textsf{option} )$
  
-		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_{\textsf{Probe}}$ }
+		\If{$\mathbf{\tilde{z}}$ is equal to any output of $\mathcal{O}_{\mathsf{Probe}}$ }
 			
 			\State \Return $0$
 		
 		\EndIf
 
-		\State $s \gets \textsf{Compare}( \textsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
+		\State $s \gets \mathsf{Compare}( \mathsf{csk}, \mathbf{c_x}, \mathbf{\tilde{z}} )$
 
-		\State \Return $\textsf{Verify}(s)$
+		\State \Return $\mathsf{Verify}(s)$
 	\end{algorithmic}
 	\end{algorithm}
 	\end{minipage}
@@ -47,17 +47,17 @@ To describe the unforgeability of an authentication scheme, we model the ability
 \label{fig:uf_game}
 \end{figure}
 
-The auxiliary information \textsf{option} can be nothing or include $\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}$ or the following oracles:
+The auxiliary information \textsf{option} can be nothing or include $\mathsf{esk}, \mathsf{psk}, \mathsf{csk}, \mathbf{c_x}$ or the following oracles:
 
 \begin{itemize}
 
-	\item $\mathcal{O}_{\mathcal{B}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}$. This oracle and $\textsf{psk}$ should not be given at the same time; otherwise, there exists a trivial attack with a winning rate $\textsf{TP}$ by returning $\textsf{Probe}(\textsf{psk}, \textsf{getProbe}^{ \mathcal{O}_\mathcal{B} }() )$.
+	\item $\mathcal{O}_{\mathcal{B}}$: It outputs a biometric sample $\mathbf{b} \getsdollar \mathcal{B}$. This oracle and $\mathsf{psk}$ should not be given at the same time; otherwise, there exists a trivial attack with a winning rate $\mathsf{TP}$ by returning $\mathsf{Probe}(\mathsf{psk}, \mathsf{getProbe}^{ \mathcal{O}_\mathcal{B} }() )$.
 	
-	\item $\mathcal{O}_\textsf{Enroll}(\textsf{esk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the enrollment message $\textsf{Enroll}(\textsf{esk}, \mathbf{b}^\prime)$.
+	\item $\mathcal{O}_{\mathsf{Enroll}}(\mathsf{esk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the enrollment message $\mathsf{Enroll}(\mathsf{esk}, \mathbf{b}^\prime)$.
 
-	\item $\mathcal{O}_\textsf{Probe}(\textsf{psk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the probe message $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$. If this oracle is given, we require the adversary to return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$.
+	\item $\mathcal{O}_{\mathsf{Probe}}(\mathsf{psk}, \cdot)$: On input $\mathbf{b}^\prime$, it outputs the probe message $\mathsf{Probe}(\mathsf{psk}, \mathbf{b}^\prime)$. If this oracle is given, we require the adversary to return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\mathsf{Probe}$.
 	
-	\item $\mathcal{O}_\textsf{log}(\textsf{csk}, \mathbf{c_x}, \cdot)$: On input $\mathbf{b}^\prime$, it first computes $\mathbf{c_z} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$ and outputs $\textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_z} ) )$.
+	\item $\mathcal{O}_\mathsf{log}(\mathsf{csk}, \mathbf{c_x}, \cdot)$: On input $\mathbf{b}^\prime$, it first computes $\mathbf{c_z} \gets \mathsf{Probe}(\mathsf{psk}, \mathbf{b}^\prime)$ and outputs $\mathsf{Verify}(\mathsf{Compare}(\mathsf{csk}, \mathbf{c_x}, \mathbf{c_z} ) )$.
 	
 	\item $\mathcal{O}_\textsf{Enroll}^\prime (\cdot)$: On input $\textsf{esk}^\prime$, it first samples $\mathbf{b}^\prime \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}()$ and outputs $\textsf{Enroll}(\textsf{esk}^\prime, \mathbf{b}^\prime)$. This oracle is only useful when $\textsf{option}$ does not include $\mathcal{O}_{\mathcal{B}}$.
 
@@ -307,13 +307,13 @@ Let $\textsf{option}$ be the first case that includes $\mathbf{c_x}$. The second
 
 	\begin{minipage}[t]{0.85\textwidth}
 	\begin{algorithm}[H]
-	\caption{$\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} (\textsf{psk}, \textsf{csk}, \mathbf{c_x})$ or $\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}_{\textsf{CompVrfy}} } (\mathbf{c_x})$}
+	\caption{$\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}} (\mathsf{psk}, \mathsf{csk}, \mathbf{c_x})$ or $\mathcal{A}^{\mathcal{O}_{\mathcal{B}^{(0)}}, \mathcal{O}_{\mathcal{B}^{(1)}}, \mathcal{O}_{\mathsf{Probe}}, \mathcal{O}_{\mathsf{CompVrfy}} } (\mathbf{c_x})$}
 	\label{alg:ind-tp-fp}
 	\begin{algorithmic}[1]
 
-		\State $\mathbf{b}^{(0)} \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
+		\State $\mathbf{b}^{(0)} \gets \mathsf{getProbe}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$
 		
-		\State $\mathbf{c_y}^{(0)} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^{(0)})$ \Comment{or $\mathbf{c_y}^{(0)} \gets \mathcal{O}_{\textsf{Probe}}(\mathbf{b}^{(0)})$ }
+		\State $\mathbf{c_y}^{(0)} \gets \mathsf{Probe}(\mathsf{psk}, \mathbf{b}^{(0)})$ \Comment{or $\mathbf{c_y}^{(0)} \gets \mathcal{O}_{\mathsf{Probe}}(\mathbf{b}^{(0)})$ }
 		
 		\State $r \gets \textsf{Verify}( \textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y}^{(0)}) ) $ \Comment{or $r \gets \mathcal{O}_{\textsf{CompVrfy}}( \mathbf{c_x}, \mathbf{c_y}^{(0)}) $}
 		
@@ -329,16 +329,16 @@ Let $\textsf{option}$ be the first case that includes $\mathbf{c_x}$. The second
 
 \paragraph{Necessity of IND Security}
 
-Recall the trivial authentication scheme for any biometric layer we introduced in Section \ref{sec:uf_game}. By Theorem \ref{thm:sEUF-CMA-esk-csk}, we can obtain an authentication scheme $\Pi^\prime$ that is $\textsf{option}$-UF for any $\textsf{option}$ that does not include $\textsf{psk}$.
-However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$ and compromise privacy. Obviously, this scheme is not \textsf{option}-IND for an \textsf{option} that includes either $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$ when $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$.
+Recall the trivial authentication scheme for any biometric layer we introduced in Section \ref{sec:uf_game}. By Theorem \ref{thm:sEUF-CMA-esk-csk}, we can obtain an authentication scheme $\Pi^\prime$ that is $\mathsf{option}$-UF for any $\mathsf{option}$ that does not include $\textsf{psk}$.
+However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$ and compromise privacy. Obviously, this scheme is not \textsf{option}-IND for an \textsf{option} that includes either $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$ when $\mathsf{TP} - \mathsf{FP} > \frac{1}{\poly}$.
 
 \paragraph{IND Security for a Particular Biometric Layer}
 
-Let $\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}(), \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ be such that
+Let $\mathsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}(), \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}()$ be such that
 \[
 	\textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^*_{\mathcal{B}} \oplus \mathcal{E}_{\textsf{Enroll}}  \quad \text{and} \quad \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}}}() \to \mathbf{b}^*_{\mathcal{B}} \oplus \mathcal{E}_{\textsf{Probe}}
 \]
-where $\mathbf{b}^*_{\mathcal{B}} \in \{0, 1\}^k$ is a fixed vector only dependent on $\mathcal{B}$, and $\mathcal{E}_{\textsf{Enroll}}, \mathcal{E}_{\textsf{Probe}} \subseteq \{0, 1\}^k$ are some \emph{error distributions} independent of $\mathcal{B}$. Let $\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to 1_{\textsf{HD}(\mathbf{b}, \mathbf{b}^\prime) \leq \tau}$. Then
+where $\mathbf{b}^*_{\mathcal{B}} \in \{0, 1\}^k$ is a fixed vector only dependent on $\mathcal{B}$, and $\mathcal{E}_{\mathsf{Enroll}}, \mathcal{E}_{\mathsf{Probe}} \subseteq \{0, 1\}^k$ are some \emph{error distributions} independent of $\mathcal{B}$. Let $\mathsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime) \to 1_{\mathsf{HD}(\mathbf{b}, \mathbf{b}^\prime) \leq \tau}$. Then
 \[
 	\textsf{TP} = \Pr[ \textsf{HW}(\mathbf{b}^*_{\mathcal{B}} \oplus \mathcal{E}_{\textsf{Enroll}} \oplus \mathbf{b}^*_{\mathcal{B}} \oplus \mathcal{E}_{\textsf{Probe}}) \leq \tau ] = \Pr[ \textsf{HW}(\mathcal{E}_{\textsf{Enroll}} \oplus \mathcal{E}_{\textsf{Probe}}) \leq \tau ]
 \]
@@ -349,13 +349,13 @@ Now, for this biometric layer, we can construct a simple but IND secure authenti
 
 \begin{itemize}
 
-	\item $\textsf{Setup} (1^\lambda)$: Sample $\mathbf{r} \getsdollar \{0, 1\}^k$. Output $\textsf{esk} = \textsf{psk} \gets \mathbf{r}$, $\textsf{csk} \gets \epsilon$.
+	\item $\mathsf{Setup} (1^\lambda)$: Sample $\mathbf{r} \getsdollar \{0, 1\}^k$. Output $\mathsf{esk} = \mathsf{psk} \gets \mathbf{r}$, $\mathsf{csk} \gets \epsilon$.
 
-	\item $\textsf{Enroll}(\textsf{esk}, \mathbf{b})$: Output $\mathbf{b} \oplus \mathbf{r}$.
+	\item $\mathsf{Enroll}(\mathsf{esk}, \mathbf{b})$: Output $\mathbf{b} \oplus \mathbf{r}$.
 	
-	\item $\textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$: Output $\mathbf{b}^\prime \oplus \mathbf{r}$.
+	\item $\mathsf{Probe}(\mathsf{psk}, \mathbf{b}^\prime)$: Output $\mathbf{b}^\prime \oplus \mathbf{r}$.
 
-	\item $\textsf{Compare} (\textsf{csk}, \mathbf{c_x}, \mathbf{c_y})$: If $\textsf{HD}(\mathbf{c_x}, \mathbf{c_y}) \leq \tau$, return $1$; otherwise, return $0$. 
+	\item $\mathsf{Compare} (\mathsf{csk}, \mathbf{c_x}, \mathbf{c_y})$: If $\mathsf{HD}(\mathbf{c_x}, \mathbf{c_y}) \leq \tau$, return $1$; otherwise, return $0$. 
 
 \end{itemize}
 The correctness of $\Pi$ holds by
@@ -365,7 +365,7 @@ The correctness of $\Pi$ holds by
 
 \begin{theorem}
 \label{thm:rh:ind:particular-biometri-layer}
-Let $\textsf{option} = \{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}}\}$. The authentication scheme $\Pi$ is \textsf{option}-IND.
+Let $\mathsf{option} = \{\mathsf{csk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}}\}$. The authentication scheme $\Pi$ is \textsf{option}-IND.
 
 \end{theorem}
 
@@ -390,10 +390,10 @@ We note that we can achieve IND security with a public-key encryption scheme. We
 
 \begin{definition}[Multi-challenge IND-CPA]
 
-A public-key encryption scheme $\textsf{PKE} = (\textsf{PKE.KeyGen}, \textsf{PKE.Enc}, \textsf{PKE.Dec})$ is multi-challenge IND-CPA if for any adversary $\mathcal{A}$ , the advantage of $\mathcal{A}$ in the game $\textsf{MC-IND-CPA}_{\textsf{PKE}}$ is
+A public-key encryption scheme $\mathsf{PKE} = (\mathsf{PKE.KeyGen}, \mathsf{PKE.Enc}, \mathsf{PKE.Dec})$ is multi-challenge IND-CPA if for any adversary $\mathcal{A}$ , the advantage of $\mathcal{A}$ in the game $\mathsf{MC-IND-CPA}_{\mathsf{PKE}}$ is
 
 \[
-	\Adv^{\textsf{MC-IND-CPA}}_{\textsf{PKE}, \mathcal{A}} := \left| \Pr[ \textsf{MC-IND-CPA}_{\textsf{PKE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
+	\Adv^{\mathsf{MC-IND-CPA}}_{\mathsf{PKE}, \mathcal{A}} := \left| \Pr[ \mathsf{MC-IND-CPA}_{\mathsf{PKE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
 \]
 
 \begin{figure}[h]
@@ -401,14 +401,14 @@ A public-key encryption scheme $\textsf{PKE} = (\textsf{PKE.KeyGen}, \textsf{PKE
 
 	\begin{minipage}[t]{0.6\textwidth}
 	\begin{algorithm}[H]
-	\caption{$\textsf{MC-IND-CPA}_{\textsf{PKE}} (\mathcal{A})$ }
+	\caption{$\textsf{MC-IND-CPA}_{\mathsf{PKE}} (\mathcal{A})$ }
 	\label{alg:MC-IND-CPA}
 	\begin{algorithmic}[1]
 		\State $b \getsdollar \{0, 1\}$
 
-		\State $(\textsf{sk}_{\textsf{PKE}}, \textsf{pk}_{\textsf{PKE}}) \gets \textsf{PKE.KeyGen}(1^\lambda)$
+		\State $(\mathsf{sk}_{\mathsf{PKE}}, \mathsf{pk}_{\mathsf{PKE}}) \gets \mathsf{PKE.KeyGen}(1^\lambda)$
 		
-		\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\textsf{MC-Enc}}}(\textsf{pk}_{\textsf{PKE}})$ 
+		\State $\tilde{b} \gets \mathcal{A}^{\mathcal{O}_{\textsf{MC-Enc}}}(\mathsf{pk}_{\mathsf{PKE}})$ 
 		
 		\State \Return $1_{\tilde{b} = b}$
 	\end{algorithmic}
@@ -419,18 +419,18 @@ A public-key encryption scheme $\textsf{PKE} = (\textsf{PKE.KeyGen}, \textsf{PKE
 \end{definition}
 
 \begin{itemize}
-	\item $\mathcal{O}_{\textsf{MC-Enc}}(\cdot, \cdot)$: On input $(\textsf{m}_0, \textsf{m}_1)$, it outputs $\textsf{PKE.Enc}(\textsf{pk}_{\textsf{PKE}}, \textsf{m}_b)$
+	\item $\mathcal{O}_{\textsf{MC-Enc}}(\cdot, \cdot)$: On input $(\mathsf{m}_0, \mathsf{m}_1)$, it outputs $\mathsf{PKE.Enc}(\mathsf{pk}_{\mathsf{PKE}}, \mathsf{m}_b)$
 \end{itemize}
 
-Given any authentication scheme $\Pi$ and a multi-challenge IND-CPA public-key encryption scheme $\textsf{PKE} = (\textsf{PKE.KeyGen}, \allowbreak \textsf{PKE.Enc}, \textsf{PKE.Dec})$, consider the following scheme $\Pi^\prime$. 
+Given any authentication scheme $\Pi$ and a multi-challenge IND-CPA public-key encryption scheme $\mathsf{PKE} = (\mathsf{PKE.KeyGen}, \allowbreak \mathsf{PKE.Enc}, \mathsf{PKE.Dec})$, consider the following scheme $\Pi^\prime$. 
 
 \begin{itemize}
 
-	\item $\textsf{Setup}^\prime (1^\lambda)$: Run $(\textsf{esk}, \textsf{psk}, \textsf{csk}) \gets \textsf{Setup}(1^\lambda)$ and $(\textsf{sk}_{\textsf{PKE}}, \textsf{pk}_{\textsf{PKE}}) \gets \textsf{PKE.KeyGen}(1^\lambda)$. Output $\textsf{esk}^\prime \gets ( \textsf{esk}, \textsf{pk}_{\textsf{PKE}} ) $, $\textsf{psk}^\prime \gets (\textsf{psk}, \textsf{pk}_{\textsf{PKE}})$, $\textsf{csk}^\prime \gets (\textsf{csk}, \textsf{sk}_{\textsf{PKE}} )$.
+	\item $\mathsf{Setup}^\prime (1^\lambda)$: Run $(\mathsf{esk}, \mathsf{psk}, \mathsf{csk}) \gets \mathsf{Setup}(1^\lambda)$ and $(\mathsf{sk}_{\mathsf{PKE}}, \mathsf{pk}_{\mathsf{PKE}}) \gets \mathsf{PKE.KeyGen}(1^\lambda)$. Output $\mathsf{esk}^\prime \gets ( \mathsf{esk}, \mathsf{pk}_{\mathsf{PKE}} ) $, $\mathsf{psk}^\prime \gets (\mathsf{psk}, \mathsf{pk}_{\mathsf{PKE}})$, $\mathsf{csk}^\prime \gets (\mathsf{csk}, \mathsf{sk}_{\mathsf{PKE}} )$.
 
-	\item $\textsf{Enroll}^\prime (\textsf{esk}^\prime, \mathbf{b})$: Run $\mathbf{c_x} \gets \textsf{Enroll}(\textsf{esk}, \mathbf{b})$ and $\textsf{ct}_{\mathbf{x}} \gets \textsf{PKE.Enc}(\textsf{pk}_{\textsf{PKE}}, \mathbf{c_x})$. Output $\mathbf{c_x}^\prime \gets \textsf{ct}_{\mathbf{x}}$.
+	\item $\mathsf{Enroll}^\prime (\mathsf{esk}^\prime, \mathbf{b})$: Run $\mathbf{c_x} \gets \mathsf{Enroll}(\mathsf{esk}, \mathbf{b})$ and $\mathsf{ct}_{\mathbf{x}} \gets \mathsf{PKE.Enc}(\mathsf{pk}_{\mathsf{PKE}}, \mathbf{c_x})$. Output $\mathbf{c_x}^\prime \gets \mathsf{ct}_{\mathbf{x}}$.
 
-	\item $\textsf{Probe}^\prime (\textsf{psk}^\prime, \mathbf{b}^\prime)$: Run $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$ and $\textsf{ct}_{\mathbf{y}} \gets \textsf{PKE.Enc}(\textsf{pk}_{\textsf{PKE}}, \mathbf{c_y})$. Output $\mathbf{c_y}^\prime \gets \textsf{ct}_{\mathbf{y}}$.
+	\item $\mathsf{Probe}^\prime (\textsf{psk}^\prime, \mathbf{b}^\prime)$: Run $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{b}^\prime)$ and $\textsf{ct}_{\mathbf{y}} \gets \textsf{PKE.Enc}(\textsf{pk}_{\textsf{PKE}}, \mathbf{c_y})$. Output $\mathbf{c_y}^\prime \gets \textsf{ct}_{\mathbf{y}}$.
 
 	\item $\textsf{Compare}^\prime (\textsf{csk}^\prime, \mathbf{c_x}^\prime, \mathbf{c_y}^\prime)$: First decrypt $\mathbf{c_x} \gets \textsf{PKE.Dec}(\textsf{sk}_{\textsf{PKE}}, \mathbf{c_x}^\prime)$ and  $\mathbf{c_y} \gets \textsf{PKE.Dec}(\textsf{sk}_{\textsf{PKE}}, \mathbf{c_y}^\prime)$. Output $\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y})$.
 \end{itemize}

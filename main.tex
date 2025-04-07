@@ -220,7 +220,7 @@ Assume that $\textsf{FE.Dec}(\textsf{pp}, \mathbf{c}, \mathbf{z})$ only returns 
 	\item Or for any $\mathbf{x} \in \mathbb{F}^k$ and $\textsf{sk}_{\mathbf{x}} \gets \textsf{FE.KeyGen}(\textsf{msk}, \textsf{pp}, \mathbf{x})$, $\textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{x}}, \mathbf{z}) \to \bot$.
 
 \end{itemize}
-Note that this implies $\textsf{FE}$ rejects zero vector $\mathbf{0}$ as the input of $\textsf{FE.Enc}$.
+Note that this implies $\textsf{FE}$ rejects the zero vector $\mathbf{0}$ as the input of $\textsf{FE.Enc}$.
 \end{assumption}
 
 \begin{theorem}
@@ -419,7 +419,7 @@ In conclusion,
 
 		\State $\mathbf{\tilde{b}} \gets \mathcal{A}( \textsf{option} )$
 
-		\State $s \gets \textsf{BioCompare}( \mathbf{\tilde{b}}, \mathbf{b})$
+		\State $s \gets \textsf{BioCompare}(\mathbf{b}, \mathbf{\tilde{b}})$
 		\State \Return $ \textsf{Verify}(s) $
 	\end{algorithmic}
 	\end{algorithm}
@@ -428,7 +428,7 @@ In conclusion,
 \label{fig:ow_game}
 \end{figure}
 
-The auxiliary information \textsf{option} can be nothing or include $\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}$ or the oracles $\mathcal{O}_{\textsf{Enroll}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}^\prime_{\textsf{Enroll}}, \mathcal{O}^\prime_{\textsf{Probe}}$. We can also consider providing $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ for different honest $\textsf{esk}_i$. Note that the \textsf{OW} game is trivial if \textsf{FP} is not negligible.
+The auxiliary information \textsf{option} can be nothing or include $\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}$ or the oracles $\mathcal{O}_{\mathbf{c_y}}, \mathcal{O}_{\textsf{Enroll}}, \mathcal{O}_{\textsf{Probe}}, \mathcal{O}^\prime_{\textsf{Enroll}}, \mathcal{O}^\prime_{\textsf{Probe}}$. We can also consider providing $\mathbf{c_x}^{(i)} \gets \textsf{Enroll}(\textsf{esk}_i, \mathbf{b})$ for different honest $\textsf{esk}_i$. Note that the \textsf{OW} game is trivial if \textsf{FP} is not negligible.
 
 We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{OW}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions as
 \[
@@ -443,17 +443,41 @@ An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distribu
 Its relation with UF security is as follows.
 
 \begin{theorem}
-	Let $\textsf{option}$ include $\textsf{psk}$. If $\Pi$ is $\textsf{option}$-UF, then $\Pi$ is $\textsf{option}$-OW secure.
+	Let $\textsf{option}$ include $\textsf{psk}$. If $\Pi$ is $\textsf{option}$-UF, then $\Pi$ is $\textsf{option}$-OW.
 \end{theorem}
 
 \begin{proof}
-	Suppose $\Pi$ is not $\textsf{option}$-OW secure, the adversary can derive $\tilde{\mathbf{b}}$ such that 
+	Suppose $\Pi$ is not $\textsf{option}$-OW, the adversary can derive $\tilde{\mathbf{b}}$ such that 
 	\[
-		\textsf{Verify}(\textsf{BioCompare}(\tilde{\mathbf{b}}, \mathbf{b})) = 1
+		\textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \tilde{\mathbf{b}})) = 1
 	\]
 	With $\textsf{psk}$, the adversary can further generate $\tilde{\mathbf{c_x}} \gets \textsf{Probe}(\textsf{psk}, \tilde{\mathbf{b}})$ to win the \textsf{option-UF} game.
 \end{proof}
 
+\begin{assumption}
+\label{assump:consistent}
+	Assume that for any $\mathcal{B}^{(0)}, \mathcal{B}^{(1)} \in \mathbb{B}$, $\mathcal{B}^{(0)} \neq \mathcal{B}^{(1)}$, and $\tilde{\mathbf{b}}$ in the domain of $\mathsf{BioCompare}$, let $\mathbf{b}^{(0)}, \mathbf{b}^{(0) \prime} \gets \mathsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$ and $\mathbf{b}^{(1) \prime} \gets \mathsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$, then
+	\begin{align*}
+		& \Pr[\mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}^{(0)\prime}, \tilde{\mathbf{b}})) = 1 \mid \mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}^{(0)}, \tilde{\mathbf{b}})) = 1] \\
+		& - \Pr[\mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}^{(1)}, \tilde{\mathbf{b}})) = 1 \mid \mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}^{(0)}, \tilde{\mathbf{b}})) = 1] \geq \frac{1}{\poly}.
+	\end{align*}
+\end{assumption}
+
+\begin{theorem}
+	Given Assumption \ref{assump:consistent}. If $\Pi$ is $\textsf{option}$-IND, then $\Pi$ is $\textsf{option}$-OW.
+\end{theorem}
+
+\begin{proof}
+	Suppose $\Pi$ is not \textsf{option}-OW, we can construct an adversary in the \textsf{option}-{IND} game that can derive $\tilde{\mathbf{b}}$ such that 
+	\[
+		\textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \tilde{\mathbf{b}})) = 1
+	\]
+	where $\mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(b)}}}()$ and $b$ is the challenge bit. By assumption \ref{assump:consistent}, this implies that if the adversary runs $\mathbf{b}^{(0)\prime} \gets \mathsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(0)}}}()$ and $\mathbf{b}^{(1) \prime} \gets \mathsf{getEnroll}^{\mathcal{O}_{\mathcal{B}^{(1)}}}()$, then
+	\begin{gather*}
+		\Pr[\mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}^{(b)\prime}, \tilde{\mathbf{b}})) = 1]  - \Pr[\mathsf{Verify}(\mathsf{BioCompare}(\mathbf{b}^{(1-b)\prime}, \tilde{\mathbf{b}})) = 1] \geq \frac{1}{\poly}.
+	\end{gather*}
+	By comparing the results of the two cases, the adversary can find $b$ with a probability greater than $\frac{1}{\poly}$.
+\end{proof}
 We have seen some examples that authentication schemes using current constructions of fh-IPFE and RH may not be OW-secure.
 
 \paragraph{fh-IPFE}
