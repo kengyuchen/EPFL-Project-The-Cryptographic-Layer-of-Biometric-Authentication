@@ -132,11 +132,11 @@ Given an fh-IPFE scheme \textsf{FE}, we define the \textsf{fh-IND} game \cite{cr
 
 \end{definition}
 
-We note that fh-IND security is a standard notion for an fh-IPFE, and constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are proven fh-IND. However, fh-IND security may not be sufficient for the UF security of the instantiation in Section \ref{sec:fh-IPFE-instantiation}. 
+We note that fh-IND security is a standard notion for an fh-IPFE, and constructions in \cite{cryptoeprint:2015/1255, 10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440} are proven fh-IND secure. However, fh-IND security may not be sufficient for the UF security of the instantiation in Section \ref{sec:fh-IPFE-instantiation}. 
 
 \begin{theorem}
 \label{thm:fh-IPFE-not-uf}
-An instantiation $\Pi$ using the construction in \cite{cryptoeprint:2016/440} is not \textsf{option}-UF for any \textsf{option}.
+An instantiation $\Pi$ using the construction in \cite{cryptoeprint:2016/440} is not \textsf{option}-UF secure for any \textsf{option}.
 
 \end{theorem}
 
@@ -229,7 +229,7 @@ We note that RUF security is a new security notion of fh-IPFE but can be achieve
 
 \begin{theorem}
 
-For any fh-IPFE $\textsf{FE}$, $\textsf{FE}^\prime$ is an RUF fh-IPFE.
+For any fh-IPFE $\textsf{FE}$, $\textsf{FE}^\prime$ is an RUF secure fh-IPFE.
 
 \end{theorem}
 
@@ -272,7 +272,7 @@ Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}_{\textsf{KeyG
 	
 \end{figure}
 
-$\mathcal{R}$ perfectly simulates a $\textsf{RUF}$ game for $\mathcal{A}$, and if $\mathcal{A}$ wins the $\textsf{RUF}$ game, $(\textsf{ct}_{\mathbf{z}}, \sigma^\prime)$ is not equal to any previous answer of $\mathcal{O}_{\textsf{Enc}}^\prime$, and therefoere not equal to any previous message-signature pair $(\textsf{ct}_{\mathbf{y}}, \sigma)$ given by the signing oracle $\mathcal{O}_{\textsf{Sign}}$. Now, since $\textsf{Sig}$ is sEUF-CMA,
+$\mathcal{R}$ perfectly simulates a $\textsf{RUF}$ game for $\mathcal{A}$, and if $\mathcal{A}$ wins the $\textsf{RUF}$ game, $(\textsf{ct}_{\mathbf{z}}, \sigma^\prime)$ is not equal to any previous answer of $\mathcal{O}_{\textsf{Enc}}^\prime$, and therefoere not equal to any previous message-signature pair $(\textsf{ct}_{\mathbf{y}}, \sigma)$ given by the signing oracle $\mathcal{O}_{\textsf{Sign}}$. Now, since $\textsf{Sig}$ is sEUF-CMA secure,
 \[
 	\Pr[\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{KeyGen}}}(\mathcal{A}) \to 1] \leq \Pr[ \textsf{Sig.Verify}(\textsf{pk}_{\textsf{Sig}}, \textsf{ct}_{\mathbf{z}}, \sigma^\prime) = 1 ] = \negl.
 \]
@@ -290,7 +290,7 @@ We first consider \textsf{option}-UF security when $\textsf{option}$ includes $\
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-ruf-OB-Enroll}
-	Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF secure, then $\Pi$ is $\textsf{option}$-UF secure. 
 \end{theorem}
 
 
@@ -380,11 +380,13 @@ For $\textsf{option}$ that includes $\mathcal{O}_{\textsf{Probe}}$, we first not
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-ruf-OB-Probe}
-	Let $\textsf{option} = \{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure and $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF secure, then $\Pi$ is $\textsf{option}$-UF secure. 
 \end{theorem}
 
 
 \begin{proof}
+
+[There exists a flaw in this proof. Line \ref{alg:adv:ind-uf-OB-Probe:Dec} in Algorithm \ref{alg:adv:ind-uf-OB-Probe} is not feasible for current fh-IPFE constructions. I am now trying to solve this problem. Details are in Appendix \ref{sec:fixing-proof-thm-OB-Probe}]
 
 Given an adversary $\mathcal{A}$ in the $\textsf{UF}_\textsf{option}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:ind-uf-OB-Probe} which plays the \textsf{fh-IND} game. $\mathcal{R}$ runs $\mathcal{A}$ and simulates $\mathcal{O}_{\textsf{Probe}}$ in the following way.
 
@@ -467,10 +469,10 @@ For the case when the challenge bit $b = 1$, consider an adversary $\mathcal{A}^
 		\For{$i=1$ to $k+2$}
 			\State $\textsf{ct}^{(i)} \gets \mathcal{O}^\prime_{\textsf{Enc}}(\mathbf{e}^{(i)})$.
 
-			\State $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \textsf{ct}^{(i)})$.
+			\State $d_i \gets \textsf{FE.Dec}(\textsf{pp}, \textsf{sk}_{\mathbf{r}}, \textsf{ct}^{(i)})$. \label{alg:adv:ind-uf-OB-Probe:Dec}
 		\EndFor
 
-		\State Find the vector $\mathbf{r}$ by solving the linear system $\{ \langle \mathbf{r}, {\mathbf{e}^{(i)}} \rangle = d_i \}_{i=1}^{k+2}$.
+		\State Find the vector $\mathbf{r}$ by solving the linear system $\{ \langle \mathbf{r}, {\mathbf{e}^{(i)}} \rangle = d_i \}_{i=1}^{k+2}$.\label{alg:adv:ind-uf-OB-Probe:r}
 
 		\If{$\mathbf{r} = \mathbf{0}$}
 
@@ -551,9 +553,153 @@ Unfortunately, for the instantiation in Section \ref{sec:fh-IPFE-instantiation},
 
 \begin{theorem}
 
-Let $\textsf{option}$ include $\textsf{esk}$ or $\textsf{psk}$. For any distribution family $\mathbb{B}$ and functional encryption $\textsf{FE}$, $\Pi$ is not \textsf{option}-UF.
+Let $\textsf{option}$ include $\textsf{esk}$ or $\textsf{psk}$. For any distribution family $\mathbb{B}$ and functional encryption $\textsf{FE}$, $\Pi$ is not \textsf{option}-UF secure.
 
 \end{theorem}
+
+
+
+\subsection{UF security with \cite{cryptoeprint:2016/440}}
+
+In this section, we show that we can achieve a concrete UF secure scheme by the fh-IPFE scheme given in \cite{cryptoeprint:2016/440}. In a high-level overview, two main reasons make the scheme not UF secure:
+\begin{itemize}
+	\item The construction \cite{cryptoeprint:2016/440} allows anyone to generate a ciphertext that corresponds to a zero vector, which is described in Theorem \ref{thm:fh-IPFE-not-uf}. This makes the fh-IPFE scheme not even $\emptyset$-RUF secure.
+
+	\item With the master secret key $\mathsf{msk}$, one can reconstruct the vector $\mathbf{x}$ that a secret key $\mathsf{sk}_{\mathbf{x}}$ corresponds to or even submit an encryption $\mathsf{ct}_{\mathbf{y}}$ of a small vector $\mathbf{y}$. This is a drawback of all the schemes instantiated by fh-IPFE in the way described in Section \ref{sec:fh-IPFE-instantiation}. Therefore, we need to instantiate the authentication scheme using a different way.
+
+	[I haven't found a solution for this problem yet, but I am now trying a few possible ways.]
+\end{itemize}
+
+We first upgrade the scheme in \cite{cryptoeprint:2016/440}, which is not $\emptyset$-RUF secure due to Theorem \ref{thm:fh-IPFE-not-uf}, to $\mathcal{O}_{\mathsf{KeyGen}}^\prime$-RUF secure. Firstly, for an fh-IPFE scheme $\mathsf{FE}$ over the field $\Z_q$, consider the following transformation $\mathsf{FE}^\prime$:
+
+\begin{itemize}
+	\item $\mathsf{FE}^\prime.\mathsf{Setup}$: The same as $\mathsf{FE.Setup}$.
+
+	\item $\mathsf{FE}^\prime.\mathsf{KeyGen}(\mathsf{pp}, \mathsf{msk}, \mathbf{x})$: Sample $\sigma \getsdollar \Z_q$. Return $\mathsf{sk}_{\mathbf{x} \| \sigma} \gets \mathsf{FE.KeyGen}(\mathsf{msk}, \mathsf{pp}, (\mathbf{x} \| \sigma))$ and $\sigma$, where $\mathbf{x} \| \sigma$ is appending $\sigma$ to $\mathbf{x}$.
+	
+	\item $\mathsf{FE}^\prime.\mathsf{Enc}(\mathsf{pp}, \mathsf{msk}, \mathbf{y})$: Return $\mathsf{ct}_{\mathbf{y} \| 1} \gets \mathsf{FE.Enc}(\mathsf{msk}, \mathsf{pp}, (\mathbf{y} \| 1))$, where $\mathbf{y} \| 1$ is appending the constant $1$ to $\mathbf{y}$.
+
+	\item $\mathsf{FE}^\prime.\mathsf{Dec}(\mathsf{pp}, \mathsf{sk}_{\mathbf{x} \| \sigma}, \sigma, \mathbf{ct}_{\mathbf{y}\| 1})$: Return $\mathsf{FE.Dec}(\mathsf{pp}, \mathsf{sk}_{\mathbf{x}\|\sigma}, \mathbf{c}_{\mathbf{y} \| 1}) - \sigma \bmod q$.
+
+\end{itemize}
+
+\noindent One can show that if $\mathsf{FE}$ is fh-IND secure, $\mathsf{FE}^\prime$ is also fh-IND secure. Moreover, for the concrete construction \cite{cryptoeprint:2016/440}, we prove that $\mathsf{FE}^\prime$ is also $\mathcal{O}_{\mathsf{KeyGen}}^\prime$-RUF secure.
+
+\begin{theorem}
+\label{thm:fh-IPFE:2016440-OKeyGen-RUF}
+Let $\mathsf{FE}$ be the scheme described in \cite{cryptoeprint:2016/440}. If $\textsf{FE}$ is fh-IND secure, then $\mathsf{FE}^\prime$ is $\mathcal{O}_{\mathsf{KeyGen}}^\prime$-RUF secure.
+\end{theorem}
+
+Recall that $\mathsf{FE}$ is proven fh-IND secure in the generic group model. In addition, the decryption of $\mathsf{FE}$ requires speciflying a polynomially-bounded set $S$. It searches $s \in S$ such that $D_1^s = D_2$, where $D_1$ and $D_2$ are elements in a group $\mathbb{G}_T$ of order $q$ that is in exponential of $\lambda$. If no such $s$ is found, the decryption returns $\bot$.
+
+\begin{proof}
+
+Given an adversary $\mathcal{A}$ in the $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}}_{\mathsf{FE}^\prime}$ game, consider the reduction adversary $\mathcal{R}$ in Algorithm \ref{alg:red:2016440-OKeyGen-RUF} which plays the \textsf{fh-IND} game of the scheme $\mathsf{FE}$. $\mathcal{R}$ simulates $\mathcal{O}_\textsf{KeyGen}^\prime(\mathbf{x}^\prime)$ by sampling $\sigma \getsdollar \Z_q$ and querying $\mathcal{O}_{\textsf{KeyGen}}(\mathbf{x}^\prime \| \sigma, \mathbf{x}^\prime \| \sigma)$.
+
+\begin{figure}[htp]
+\centering
+	
+	\begin{minipage}[t]{0.5\linewidth}
+	\centering
+	\begin{algorithm}[H]
+	\caption{$\mathcal{R}^{\mathcal{O}_{\textsf{KeyGen}}, \mathcal{O}_{\textsf{Enc}}}(\textsf{pp})$}
+	\label{alg:red:2016440-OKeyGen-RUF}
+	\begin{algorithmic}[1]
+		\State $\mathbf{r}^{(0)}, \mathbf{r}^{(1)} \getsdollar \Z_q^k$
+
+		\State $\sigma \getsdollar \Z_q$
+		
+		\State $\textsf{sk} \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)} \| \sigma, \mathbf{r}^{(1)} \sigma)$ 
+
+		\State ${\mathbf{\tilde{z}}} \gets {\mathcal{A}}^{\mathcal{O}^\prime_{\textsf{KeyGen}}} (\textsf{pp}, \textsf{sk}, \sigma)$
+
+		\State $\mathbf{r}^\prime \getsdollar \Z_q^{k+1}$
+
+		\State $\textsf{sk}^\prime \gets \mathcal{O}_{\textsf{KeyGen}}(\mathbf{r}^{(0)} \| \sigma, \mathbf{r}^\prime)$
+
+		\State $s^\prime \gets \textsf{FE.Dec}( \textsf{pp}, \textsf{sk}^\prime, \mathbf{\tilde{z}} ) - \sigma \bmod q$ \label{alg:red:2016440-OKeyGen-RUF:s}
+
+		\State \Return $1_{s^\prime = \bot}$ \label{alg:red:2016440-OKeyGen-RUF:verify}
+	
+	\end{algorithmic}
+	\end{algorithm}
+	\end{minipage}
+	
+\end{figure}
+
+In Algorithm \ref{alg:red:2016440-OKeyGen-RUF}, let
+\begin{itemize}
+	\item $\mathsf{sk} = (g_1^{\alpha_0}, g_1^{\alpha_1}, \cdots, g_1^{\alpha_{k+1}})$.
+
+	\item $\mathsf{sk}^\prime = (g_1^{\alpha_0^\prime}, g_1^{\alpha_1^\prime}, \cdots, g_1^{\alpha_{k+1}^\prime})$.
+
+	\item $s = \mathsf{FE}^\prime.\mathsf{Dec}(\mathsf{pp}, \mathsf{sk}, \mathbf{\tilde{z}}) = \mathsf{FE.Dec}(\mathsf{pp}, \mathsf{sk}, \mathbf{\tilde{z}}) - \sigma \bmod q$.
+
+\end{itemize}
+
+Since $\mathcal{R}$ simulates a $\textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}}_{\mathsf{FE}^\prime}$ game for $\mathcal{A}$, regardless of the challenge bit, we have 
+\[
+	\Pr[s \neq S] = \Pr[s \in S] = \Pr[ \mathsf{RUF}^{\mathcal{O}^\prime_{\mathsf{KeyGen}}}_{\mathsf{FE}^\prime}(\mathcal{A}) \to 1]
+\]
+Moreover, if $s \neq \bot$, let $\mathbf{\tilde{z}} = (g_2^{\beta_0}, g_2^{\beta_1}, \cdots g_2^{\beta_{k+1}})$, we have
+\[
+	\prod_{i=1}^{k+1} e(g_1^{\alpha_i}, g_2^{\beta_i}) = g_T^{\sum_{i=1}^{k+1} \alpha_i \beta_i}
+	\implies \mathsf{FE.Dec}(\mathsf{pp}, \mathsf{sk}, \mathbf{\tilde{z}}) = \begin{cases} 
+		\frac{\sum_{i=1}^{k+1} \alpha_i \beta_i}{\alpha_0 \beta_0} & \text{if } \beta_0 \neq 0 \\
+		0 & \text{if } \beta_0 = 0 \\
+	\end{cases}
+\]
+Similarly, $\mathsf{FE.Dec}(\mathsf{pp}, \mathsf{sk}^\prime, \mathbf{\tilde{z}}) = \frac{\sum_{i=1}^{k+1} \alpha_i^\prime \beta_i}{\alpha_0^\prime \beta_0}$ or $0$. If the challenge bit $b = 0$, since $\mathsf{sk}$ and $\mathsf{sk}^\prime$ correspond to the same vector $\mathbf{r}^{(0)} \| \sigma$, we have 
+\[
+	\frac{\alpha_0^\prime}{\alpha_0} = \frac{\alpha_1^\prime}{\alpha_1} = \cdots = \frac{\alpha_{k+1}^\prime}{\alpha_{k+1}},
+\]
+which implies $\mathsf{FE.Dec}(\mathsf{pp}, \mathsf{sk}, \mathbf{\tilde{z}}) = \mathsf{FE.Dec}(\mathsf{pp}, \mathsf{sk}^\prime, \mathbf{\tilde{z}})$ and $s = s^\prime$.
+
+Now, we analyze the advantage of $\mathcal{R}$. If the challenge bit $b = 0$, the probability that $s \neq \bot$ is
+\begin{align*}
+	\Pr[s^\prime \neq \bot \mid b = 0] 
+	&\geq \Pr[s^\prime \in S \mid s \in S, b = 0] \cdot \Pr[s \in S \mid b = 0] \\
+	&= 1 \cdot \Pr[ \mathsf{RUF}^{\mathcal{O}^\prime_{\mathsf{KeyGen}}}_{\mathsf{FE}^\prime}(\mathcal{A}) \to 1] 
+\end{align*}
+If the challenge bit $b = 1$,
+\begin{align*}
+	\Pr[s^\prime \neq \bot \mid b = 1] 
+	&\leq \Pr[s^\prime \in S \mid s \in S, b = 1] + \Pr[s \notin S \mid b = 1] \\
+	&\leq \Pr[\mathsf{FE.Dec}(\mathsf{pp}, \mathsf{sk}^\prime, \mathbf{\tilde{z}}) - \sigma \bmod q \in S \mid s \in S, b = 1] \\
+	&\quad +  1 - \Pr[\mathsf{RUF}^{\mathcal{O}^\prime_{\mathsf{KeyGen}}}_{\mathsf{FE}^\prime}(\mathcal{A}) \to 1] \\
+\end{align*}
+Note that $\mathbf{r}^\prime, \mathsf{sk}^\prime$ and thus all $\alpha^\prime_i$ are independent of $\mathbf{\tilde{z}}$ and all $\beta_i$. Hence,
+\begin{align*}
+	& \Pr[\mathsf{FE.Dec}(\mathsf{pp}, \mathsf{sk}^\prime, \mathbf{\tilde{z}}) - \sigma \bmod q \in S \mid s \in S, b = 1] \\
+	& \leq \Pr \left[ \frac{\sum_{i=1}^{k+1} \alpha_i^\prime \beta_i}{\alpha_0^\prime \beta_0} - \sigma \bmod q \in S \mid s \in S, b = 1, \beta_0 \neq 0 \right] + \Pr \left[0 - \sigma \bmod q \in S \right] \\
+	& \leq \Pr \left[ \frac{\sum_{i=1}^{k+1} \alpha_i^\prime \beta_i}{\alpha_0^\prime \beta_0} - \sigma \bmod q \in S \mid s \in S, b = 1, \beta_0 \neq 0 \right] + \Pr \left[0 - \sigma \bmod q \in S \right] \\
+	& \leq  \frac{|S|}{q} + \frac{|S|}{q} \\
+\end{align*}
+
+In conclusion,
+\begin{align*}
+	\Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] 
+	&= \frac{1}{2} \cdot \Pr[s^\prime \neq \bot \mid b = 0] + \frac{1}{2} \cdot \Pr[s^\prime = \bot \mid b = 1] \\
+	&\geq \frac{1}{2} \cdot \Pr[ \mathsf{RUF}^{\mathcal{O}^\prime_{\mathsf{KeyGen}}}_{\mathsf{FE}^\prime}(\mathcal{A}) \to 1] + \frac{1}{2} \cdot \left( 1 - \frac{2|S|}{q} - (1 - \Pr[\mathsf{RUF}^{\mathcal{O}^\prime_{\mathsf{KeyGen}}}_{\mathsf{FE}^\prime}(\mathcal{A}) \to 1]) \right) \\
+	&= \frac{1}{2} \cdot \Pr[ \mathsf{RUF}^{\mathcal{O}^\prime_{\mathsf{KeyGen}}}_{\mathsf{FE}^\prime}(\mathcal{A}) \to 1] - \frac{|S|}{q} + \frac{1}{2} \cdot \Pr[\mathsf{RUF}^{\mathcal{O}^\prime_{\mathsf{KeyGen}}}_{\mathsf{FE}^\prime}(\mathcal{A}) \to 1]) \\
+	&= \Pr[ \mathsf{RUF}^{\mathcal{O}^\prime_{\mathsf{KeyGen}}}_{\mathsf{FE}^\prime}(\mathcal{A}) \to 1] - \frac{|S|}{q}
+\end{align*}
+
+\noindent Since $\Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \left| \Pr[\textsf{fh-IND}(\mathcal{R}) \to 1] - \frac{1}{2} \right|$ and $\frac{|S|}{q}$ are negligible,
+\[
+	\Pr[ \textsf{RUF}^{\mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma}(\mathcal{A}) \to 1]  \leq \frac{|S|}{q} + \Adv_{\textsf{FE}, \mathcal{R}}^\textsf{fh-IND} = \negl.
+\]
+
+\end{proof}
+
+To instantiate the authentication scheme $\Pi$ using the way described in Section \ref{sec:fh-IPFE-instantiation} with $\mathsf{FE}^\prime$, we assume that $s \in S$ for all integer $s \leq \tau^2$, the pre-defined threshold in the biometric layer. Along with Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}, we have the following result.
+
+\begin{corollary}
+\label{cor:fh-IPFE:2016440-OB-Enroll}
+
+Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$, and let $\mathsf{FE}$ be the scheme described in \cite{cryptoeprint:2016/440}. If $\mathsf{FE}$ is fh-IND secyre, then for any distribution family $\mathbb{B}$, the authentication scheme instantiated by $\mathsf{FE}^\prime$ is $\textsf{option}$-UF secure.
+
+\end{corollary}
 
 
 %-------------------
@@ -588,7 +734,7 @@ where $b$ is the challenge bit.
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-ind}
-Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}.$ For a distribution family $\mathbb{B}$ satisfying Assumption \ref{assump:equal_distance} and having a true positive rate $\textsf{TP} > \frac{1}{\poly}$, if \textsf{FE} is fh-IND, then $\Pi$ is \textsf{option}-IND.
+Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x},  \mathcal{O}_{\mathbf{c_y}} \}.$ For a distribution family $\mathbb{B}$ satisfying Assumption \ref{assump:equal_distance} and having a true positive rate $\textsf{TP} > \frac{1}{\poly}$, if \textsf{FE} is fh-IND secure, then $\Pi$ is \textsf{option}-IND secure.
 
 \end{theorem}
 

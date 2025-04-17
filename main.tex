@@ -197,12 +197,12 @@ With the extension with $\gamma$, we can rewrite our results in Section \ref{sec
 
 \begin{theorem}[Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}]
 \label{thm:fh-IPFE:ind-gamma-ruf-OB-Enroll}
-	Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{ \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure and $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF secure for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF secure. 
 \end{theorem}
 
 \begin{theorem}[Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}]
 \label{thm:fh-IPFE:ind-gamma-ruf-OB-Probe}
-	Let $\textsf{option} = \{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_\textsf{Probe}\}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is fh-IND secure and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF secure for a $\gamma \geq \tau^2$, then $\Pi$ is $\textsf{option}$-UF secure. 
 \end{theorem}
 
 \subsection{Achievability of $\gamma$-RUF Security}
@@ -225,7 +225,7 @@ Note that this implies $\textsf{FE}$ rejects the zero vector $\mathbf{0}$ as the
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-OKeyGen-gamma-ruf}
-Given Assumption \ref{assump:only-return-valid-ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
+Given Assumption \ref{assump:only-return-valid-ct}. If \textsf{FE} is fh-IND secure, then $\textsf{FE}$ is $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF secure for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
 
 \end{theorem}
 
@@ -353,7 +353,7 @@ In conclusion,
 
 \medskip
 \end{tabular}
-\caption{fh-IPFE. We can try to provide \textsf{option}-UF with \textsf{psk}.}
+\caption{fh-IPFE. We can try to provide \textsf{option}-UF security with \textsf{psk}.}
 \label{table:fh-IPFE}
 \end{table}
 
@@ -387,7 +387,7 @@ In conclusion,
 
 \medskip
 \end{tabular}
-\caption{RH. We can try to provide \textsf{option}-IND with \textsf{csk}.}
+\caption{RH. We can try to provide \textsf{option}-IND security with \textsf{csk}.}
 \label{table:rh}
 \end{table}
 
@@ -443,7 +443,7 @@ An authentication scheme $\Pi$ associated with a family $\mathbb{B}$ of distribu
 Its relation with UF security is as follows.
 
 \begin{theorem}
-	Let $\textsf{option}$ include $\textsf{psk}$. If $\Pi$ is $\textsf{option}$-UF, then $\Pi$ is $\textsf{option}$-OW.
+	Let $\textsf{option}$ include $\textsf{psk}$. If $\Pi$ is $\textsf{option}$-UF secure, then $\Pi$ is $\textsf{option}$-OW.
 \end{theorem}
 
 \begin{proof}
@@ -464,11 +464,11 @@ Its relation with UF security is as follows.
 \end{assumption}
 
 \begin{theorem}
-	Given Assumption \ref{assump:consistent}. If $\Pi$ is $\textsf{option}$-IND, then $\Pi$ is $\textsf{option}$-OW.
+	Given Assumption \ref{assump:consistent}. If $\Pi$ is $\textsf{option}$-IND secure, then $\Pi$ is $\textsf{option}$-OW.
 \end{theorem}
 
 \begin{proof}
-	Suppose $\Pi$ is not \textsf{option}-OW, we can construct an adversary in the \textsf{option}-{IND} game that can derive $\tilde{\mathbf{b}}$ such that 
+	Suppose $\Pi$ is not \textsf{option}-OW, we can construct an adversary in the \textsf{option}-IND game that can derive $\tilde{\mathbf{b}}$ such that 
 	\[
 		\textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \tilde{\mathbf{b}})) = 1
 	\]
@@ -484,7 +484,7 @@ We have seen some examples that authentication schemes using current constructio
 
 Suppose $\Pi$ is instantiated by the construction in \cite{cryptoeprint:2016/440} in the way described in Section \ref{sec:fh-IPFE-instantiation}. The scheme is not $\mathcal{O}_{\textsf{Enroll}}^\prime$-OW. The adversary can set the fake $\textsf{esk}^\prime$ to include the matrix $\mathbf{B} = \mathbf{I}$, the size-$(k+2)$ identity matrix, and query $\mathcal{O}_{\textsf{Enroll}}^\prime$ to get
 \[
-	g_1^{\alpha \cdot \det(\mathbf{B})}, g_1^{\alpha \cdot \mathbf{x} \cdot \mathbf{B}} = g_1^{\alpha}, (g_1^{\alpha \cdot {x_1}}, g_1^{\alpha \cdot {x_2}}, g_1^{\alpha \cdot {x_{k+2}}}) 
+	g_1^{\alpha \cdot \det(\mathbf{B})}, g_1^{\alpha \cdot \mathbf{x} \cdot \mathbf{B}} = g_1^{\alpha}, (g_1^{\alpha \cdot {x_1}}, g_1^{\alpha \cdot {x_2}}, \cdots, g_1^{\alpha \cdot {x_{k+2}}}) 
 \]
 where $\alpha$ is an unknown element in $\Z_q$, and $\mathbf{x} = (x_1, \cdots, x_{k+2}) = (b_1, \cdots, b_k, 1, \|\mathbf{b}\|^2)$. Since $b_i$ is bounded in $\{0, 1, \cdots, m\}$ for some fixed integer $m$ for each $i$, the adversary can raise the power of $g_1^{\alpha}$ to retrive all the coefficients of $\mathbf{b}$. Similarly, the scheme is not $\mathcal{O}_{\textsf{Probe}}^\prime$-OW.
 
@@ -508,6 +508,7 @@ The scheme is $\{ \textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} \}$-OW,
 %-------------------
 
 \section{Fixing the Proof of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}}
+\label{sec:fixing-proof-thm-OB-Probe}
 
 In Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}, we simulate the oracle $\mathcal{O}_{\textsf{Probe}}$ in the adversary $\mathcal{A}^\prime$ in Algorithm \ref{alg:adv:ind-uf-OB-Probe} in the $\textsf{RUF}^{ \mathcal{O}^\prime_{\textsf{Enc}} }$ game by the following steps:
 
@@ -574,19 +575,19 @@ Consider the \textsf{SUF} game.
 
 $\mathbf{r} \neq 0$ is because for constructions \cite{10.1007/978-3-319-45871-7_24, cryptoeprint:2016/440}, there exists an algorithm $\textsf{RandEnc}(\textsf{pp})$ that can generate ciphertexts $\textsf{FE.Enc}(\textsf{msk}, \mathbf{r}^\prime)$ of a random unknown vector $\mathbf{r}^\prime$.
 
-I call this security property \emph{selective unforgeability (SUF)}. An SUF \textsf{FE} is RUF since the adversary $\mathcal{A}_1$ can choose $\mathbf{r} \getsdollar \mathbb{F}^k$. We can also add a signature scheme to an \textsf{FE} to make it SUF. Moreover, if we use SUF security, we do not need fh-IND security in our main results in \ref{sec:security_analysis:fh-IPFE:uf}. One can reduce \textsf{option}-UF security of $\Pi$ to SUF security of $\textsf{FE}$ in a simple and intuitive way.
+I call this security property \emph{selective unforgeability (SUF)}. An SUF secure \textsf{FE} is RUF secure since the adversary $\mathcal{A}_1$ can choose $\mathbf{r} \getsdollar \mathbb{F}^k$. We can also add a signature scheme to an \textsf{FE} to make it SUF secure. Moreover, if we use SUF security, we do not need fh-IND security in our main results in \ref{sec:security_analysis:fh-IPFE:uf}. One can reduce \textsf{option}-UF security of $\Pi$ to SUF security of $\textsf{FE}$ in a simple and intuitive way.
 
 \begin{theorem}[Revision of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll}]
 	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Enroll}} \}$. For any distribution family $\mathbb{B}$, if either one of the following is satisfied:
 	\begin{itemize}
-		\item \textsf{FE} is both fh-IND and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF (Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll})
-		\item \textsf{FE} is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-SUF
+		\item \textsf{FE} is both fh-IND security and $\mathcal{O}^\prime_{\textsf{KeyGen}}$-RUF secure (Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Enroll})
+		\item \textsf{FE} is $\mathcal{O}^\prime_{\textsf{KeyGen}}$-SUF secure
 	\end{itemize}
 then $\Pi$ is $\textsf{option}$-UF. 
 \end{theorem}
 
 \begin{theorem}[Revision of Theorem \ref{thm:fh-IPFE:ind-ruf-OB-Probe}]
-	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is $\mathcal{O}^\prime_{\textsf{Enc}}$-SUF, then $\Pi$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{ \mathbf{c_x}, \textsf{csk}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$. For any distribution family $\mathbb{B}$, if \textsf{FE} is $\mathcal{O}^\prime_{\textsf{Enc}}$-SUF secure, then $\Pi$ is $\textsf{option}$-UF secure. 
 \end{theorem}
 
 We can also leave both RUF and SUF security.
@@ -705,7 +706,7 @@ Note that constructions in \cite{10.1007/978-3-319-45871-7_24, cryptoeprint:2016
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-OEnc-ruf}
-Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND and $\emptyset$-RUF, then $\textsf{FE}$ is also $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF.
+Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND security and $\emptyset$-RUF secure, then $\textsf{FE}$ is also $\mathcal{O}^\prime_{\textsf{Enc}}$-RUF secure.
 
 \end{theorem}
 
@@ -776,15 +777,15 @@ With a similar proof, one can also show that
 
 \begin{theorem}
 \label{thm:fh-IPFE:ind-OEnc-gamma-ruf}
-Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND and $\{ \emptyset, \gamma \}$-RUF, then $\textsf{FE}$ is also $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF.
+Given Assumption \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND security and $\{ \emptyset, \gamma \}$-RUF secure, then $\textsf{FE}$ is also $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF secure.
 
 \end{theorem}
 
-Since $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF implies $\{ \emptyset, \gamma \}$-RUF, with Theorem \ref{thm:fh-IPFE:ind-OKeyGen-gamma-ruf}, we have the following corollary.
+Since $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF security implies $\{ \emptyset, \gamma \}$-RUF security, with Theorem \ref{thm:fh-IPFE:ind-OKeyGen-gamma-ruf}, we have the following corollary.
 
 \begin{corollary}
 \label{cor:fh-IPFE:ind-OKeyGen-OEnc-ruf}
-Given Assumption \ref{assump:only-return-valid-ct} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND, then $\textsf{FE}$ is both $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
+Given Assumption \ref{assump:only-return-valid-ct} and \ref{assump:random_key_ct}. If \textsf{FE} is fh-IND secure, then $\textsf{FE}$ is both $\{ \mathcal{O}^\prime_{\textsf{KeyGen}}, \gamma \}$-RUF secure and $\{ \mathcal{O}^\prime_{\textsf{Enc}}, \gamma \}$-RUF secure for any $\gamma \leq (1 - \frac{1}{\poly}) \cdot \|\mathbb{F}\|$.
 \end{corollary}
 
 

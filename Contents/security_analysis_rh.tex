@@ -112,7 +112,7 @@ Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x} 
 \[
 	\mathcal{X} = \{ \mathcal{B} \getsdollar \mathbb{B}: \mathbf{b} \gets {\sf getEnroll}^{\mathcal{O}_\mathcal{B}}() \},
 \]
-for any adversary who has access to $\mathbb{B}$, then $\Pi$ is $\textsf{option}$-UF. 
+for any adversary who has access to $\mathbb{B}$, then $\Pi$ is $\textsf{option}$-UF secure. 
 
 \end{theorem}
 
@@ -150,11 +150,11 @@ For \textsf{option} that includes $\mathcal{O}_\textsf{Enroll}^\prime$, we notic
 \subsection{IND Security of $\Pi$}
 \label{sec:security_analysis:rh:IND}
 
-For the IND security, since $\textsf{esk}, \textsf{psk}$ and $\textsf{csk}$ are assumed to be public in this instantiation and should given in $\textsf{option}$, by applying Theorem \ref{thm:ind-tp-fp}, $\Pi$ is not $\textsf{option}$-IND for any \textsf{option} that includes $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$.
+For the IND security, since $\textsf{esk}, \textsf{psk}$ and $\textsf{csk}$ are assumed to be public in this instantiation and should given in $\textsf{option}$, by applying Theorem \ref{thm:ind-tp-fp}, $\Pi$ is not $\textsf{option}$-IND secure for any \textsf{option} that includes $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$.
 
 \begin{theorem}
 
-Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}\}$ or $\{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathcal{O}_{\mathbf{c_y}} \}$. For any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, and for any relational hash scheme \textsf{RH}, $\Pi$ is not $\textsf{option}$-IND.
+Let $\textsf{option} = \{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathbf{c_x}\}$ or $\{\textsf{esk}, \textsf{psk}, \textsf{csk}, \mathcal{O}_{\mathbf{c_y}} \}$. For any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, and for any relational hash scheme \textsf{RH}, $\Pi$ is not $\textsf{option}$-IND secure.
 
 \end{theorem}
 
@@ -183,4 +183,4 @@ Correctness holds because
 	\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y)} = 1 \Leftrightarrow \textsf{HD}(\mathbf{x} + \mathbf{r}, \mathbf{y} + \mathbf{r}) \leq \tau \Leftrightarrow \textsf{HD}(\mathbf{x}, \mathbf{y}) \leq \tau = \textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime).
 \]
 
-With the same argument in Theorem \ref{thm:rh:ind:particular-biometri-layer}, one can prove that this new scheme is now $\{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}}\}$-IND, albeit at the cost of requiring $\textsf{esk}$ and $\textsf{psk}$ to remain secret.
+With the same argument in Theorem \ref{thm:rh:ind:particular-biometri-layer}, one can prove that this new scheme is now $\{\textsf{csk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}}\}$-IND secure, albeit at the cost of requiring $\textsf{esk}$ and $\textsf{psk}$ to remain secret.

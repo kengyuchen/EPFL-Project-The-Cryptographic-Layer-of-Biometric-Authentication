@@ -65,9 +65,6 @@ The auxiliary information \textsf{option} can be nothing or include $\mathsf{esk
 	
 \end{itemize}
 
-%The requirement that the adversary should return a $\mathbf{\tilde{z}}$ that is not equal to any previous answer of $\mathcal{O}_\textsf{Probe}$ is to prevent a trivial attack that leverages \textsf{TP} or \textsf{FP} when it is not negligible.
-%If \textsf{option} includes $\mathcal{O}_\mathcal{B}$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the adversary can enjoy a winning rate \textsf{TP}. Therefore, we rule out the case that $\textsf{option}$ includes both $\textsf{psk}$ and $\mathcal{O}_\mathcal{B}$, and we forbid the adversary to return what $\mathcal{O}_\textsf{Probe}$ returns.
-%If \textsf{option} has only $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, the $\textsf{UF}$ adversary $\mathcal{A}$ in Algorithm \ref{alg:adv:FP} can still enjoy a winning rate $\textsf{FP}$, if we place no restriction on the adversary's answer. Therefore, we only consider $\textsf{psk}$ in \textsf{option} when \textsf{FP} is negligible, and we restrict the adversary's answer when $\mathcal{O}_\textsf{Probe}$ is given.
 
 We define the advantage of an adversary $\mathcal{A}$ in the $\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}$ game of a scheme $\Pi$ associated with a family $\mathbb{B}$ of distributions as
 \[
@@ -86,15 +83,15 @@ For the rest of this work, if the scheme $\Pi$, the family $\mathbb{B}$ of distr
 \begin{align*}
 	& \Pr[\textsf{UF}_{\Pi, \mathbb{B}, \textsf{option}}(\mathcal{A}) \to 1] \\ 
 	=\; & \Pr [ \textsf{Verify}(\textsf{Compare}(\textsf{csk}, \mathbf{c_x}, \mathbf{c_y})) = 1 ] \\
-	\leq\; & \Pr \left [
+	=\; & \Pr \left [
 		\begin{aligned}
 			& \mathcal{B} \getsdollar \mathbb{B}, \mathbb{B} \gets \mathbb{B} \setminus \mathcal{B} \\
 			& \mathbf{b} \gets \textsf{getEnroll}^{\mathcal{O}_{\mathcal{B}} }() \\
 			& \mathcal{B}^\prime \getsdollar \mathbb{B} \\
 			& \mathbf{b}^\prime \gets \textsf{getProbe}^{\mathcal{O}_{\mathcal{B}^\prime} }()
 		\end{aligned}
-		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right ] + \negl. \\
-	=\; & \textsf{FP} + \negl.
+		: \textsf{Verify}(\textsf{BioCompare}(\mathbf{b}, \mathbf{b}^\prime)) = 1 \right ]. \\
+	=\; & \textsf{FP}.
 \end{align*}
 
 \noindent If $\textsf{psk}$ and $\mathcal{O}_{\mathcal{B}}$ are given at the same time, the adversary can even win with a probability \textsf{TP} by returning a probe from the distribution $\mathcal{B}$. To prevent such trivial attacks, we add the following requirements:
@@ -107,45 +104,6 @@ For the rest of this work, if the scheme $\Pi$, the family $\mathbb{B}$ of distr
 	\item \textsf{option} cannot include both $\textsf{psk}$ and $\mathcal{O}_{\mathcal{B}}$.
 \end{itemize}
 
-%If $\textsf{option}$ includes $\mathcal{O}_{\textsf{Enroll}}^\prime$ and either $\textsf{psk}$ or $\mathcal{O}_\textsf{Probe}$, and if we place no restriction on an \textsf{UF} game adversary's answer, the adversary in Algorithm \ref{alg:adv:FP2} can win with a probability
-%\[
-	%\Pr[ \textsf{Verify}( \textsf{BioCompare}(\mathbf{x}^{(0)}, \mathbf{y}) ) = 1 \mid \textsf{Verify}( \textsf{BioCompare}(\mathbf{x}^{(1)}, \mathbf{y}) ) = 1]
-%\]
-%where $\mathbf{x}^{(0)}, \mathbf{x}^{(1)}$ are generated from $\textsf{encodeEnroll}^{\mathcal{O}_\mathcal{B}}()$ and $\mathbf{y} \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime}}() $.
-%This value is in general not negligible.
-%The expected number of repetitions is $\mathbb{E}_{\mathcal{B} \getsdollar \mathbb{B}}\left[\frac{1}{\textsf{FP}(\mathcal{B})} \right]$. If $\textsf{FP}(\mathcal{B})$ is non-negligible, the adversary can return the answer in an expected polynomial time. A similar adversary also exists when $\textsf{option}$ includes $\mathcal{O}_{\textsf{Probe}}^\prime$ and $\mathcal{O}_\textsf{Probe}$.
-
- 
-%\begin{figure}[h]
-%\centering
-	%\begin{minipage}[t]{0.6\linewidth}
-	%\centering
-	%\begin{algorithm}[H]
-	%\caption{$\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime}(\textsf{psk})$ (or  $\mathcal{A}^{\mathcal{O}_\textsf{Enroll}^\prime, \mathcal{O}_\textsf{Probe}}$ ) }
-	%\label{alg:adv:FP2}
-	%\begin{algorithmic}[1]
-		%\State $\textsf{esk}^\prime, \textsf{psk}^\prime, \textsf{csk}^\prime \gets \textsf{Setup}(1^\lambda)$
-
-		%\Repeat
-		
-			%\State $\mathcal{B}^\prime \getsdollar \mathbb{B}$
-		
-			%\State $\mathbf{y}^\prime \gets \textsf{encodeProbe}^{\mathcal{O}_{\mathcal{B}^\prime }}()$ 
-
-			%\State $\mathbf{c_y}^\prime \gets \textsf{Probe}(\textsf{psk}^\prime, \mathbf{y}^\prime)$
-
-			%\State $\mathbf{c_x}^\prime \gets \mathcal{O}_\textsf{Enroll}^\prime (\textsf{esk}^\prime)$
-
-		%\Until{ $\textsf{Verify}(\textsf{Compare}(\textsf{csk}^\prime, \mathbf{c_x}^\prime, \mathbf{c_y}^\prime )) = 1$ }
-
-		%\State $\mathbf{c_y} \gets \textsf{Probe}(\textsf{psk}, \mathbf{y}^\prime)$  \Comment{ or $\mathbf{c_y} \gets \mathcal{O}_\textsf{Probe}(\mathbf{y}^\prime)$ } 
-
-		%\State \Return $\mathbf{c_y}$
-	%\end{algorithmic}
-	%\end{algorithm}
-	%\end{minipage}
-	
-%\end{figure}
 
 \begin{figure}[h]
 \centering
@@ -171,7 +129,7 @@ For the rest of this work, if the scheme $\Pi$, the family $\mathbb{B}$ of distr
 
 \paragraph{UF Security with Digital Signature}
 
-We note that we can achieve UF security by a similar approach in \cite{cryptoeprint:2023/481} with a digital signature scheme. Given any authentication scheme $\Pi$ and an sEUF-CMA digital signature scheme $\textsf{Sig} = (\textsf{Sig.KeyGen}, \textsf{Sig.Sign}, \textsf{Sig.Verify})$, consider the following scheme $\Pi^\prime$.
+We note that we can achieve UF security by a similar approach in \cite{cryptoeprint:2023/481} with a digital signature scheme. Given any authentication scheme $\Pi$ and an sEUF-CMA secure digital signature scheme $\textsf{Sig} = (\textsf{Sig.KeyGen}, \textsf{Sig.Sign}, \textsf{Sig.Verify})$, consider the following scheme $\Pi^\prime$.
 
 \begin{itemize}
 
@@ -185,11 +143,11 @@ We note that we can achieve UF security by a similar approach in \cite{cryptoepr
 
 \end{itemize}
 
-An $\textsf{UF}_\textsf{option}$ adversary has to forge a signature $\sigma$ to win the game, so the scheme is $\textsf{option}$-UF for any $\textsf{option}$ that does not include $\textsf{psk}$. 
+An $\textsf{UF}_\textsf{option}$ adversary has to forge a signature $\sigma$ to win the game, so the scheme is $\textsf{option}$-UF secure for any $\textsf{option}$ that does not include $\textsf{psk}$. 
 
 \begin{theorem}
 \label{thm:sEUF-CMA-esk-csk}
-	Let $\textsf{option} = \{ \textsf{esk}, \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$. For any authentication scheme $\Pi$, $\Pi^\prime$ is $\textsf{option}$-UF. 
+	Let $\textsf{option} = \{ \textsf{esk}, \textsf{csk}, \mathbf{c_x}, \mathcal{O}_\mathcal{B}, \mathcal{O}_{\textsf{Probe}} \}$. For any authentication scheme $\Pi$, $\Pi^\prime$ is $\textsf{option}$-UF secure. 
 \end{theorem}
 
 Note that Theorem \ref{thm:sEUF-CMA-esk-csk} also holds for the following trivial authentication scheme for any biometric layer.
@@ -285,7 +243,7 @@ We note that if $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, there are trivial
 
 \begin{theorem}
 \label{thm:ind-tp-fp}
-Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, $\Pi$ is not $\textsf{option}$-IND for
+Given any distribution family $\mathbb{B}$ that $\textsf{TP} - \textsf{FP} > \frac{1}{\poly}$, $\Pi$ is not $\textsf{option}$-IND secure for
 \begin{itemize}
 	\item $\textsf{option} = \{\mathbf{c_x}, \text{ either } \textsf{csk} \text{ or } \mathcal{O}_{\textsf{CompVrfy}}, \text{ either } \textsf{psk} \text{ or } \mathcal{O}_{\textsf{Probe}} \}$
 
@@ -329,8 +287,8 @@ Let $\textsf{option}$ be the first case that includes $\mathbf{c_x}$. The second
 
 \paragraph{Necessity of IND Security}
 
-Recall the trivial authentication scheme for any biometric layer we introduced in Section \ref{sec:uf_game}. By Theorem \ref{thm:sEUF-CMA-esk-csk}, we can obtain an authentication scheme $\Pi^\prime$ that is $\mathsf{option}$-UF for any $\mathsf{option}$ that does not include $\textsf{psk}$.
-However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$ and compromise privacy. Obviously, this scheme is not \textsf{option}-IND for an \textsf{option} that includes either $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$ when $\mathsf{TP} - \mathsf{FP} > \frac{1}{\poly}$.
+Recall the trivial authentication scheme for any biometric layer we introduced in Section \ref{sec:uf_game}. By Theorem \ref{thm:sEUF-CMA-esk-csk}, we can obtain an authentication scheme $\Pi^\prime$ that is $\mathsf{option}$-UF secure for any $\mathsf{option}$ that does not include $\textsf{psk}$.
+However, the enrollment and probe messages leak biometric vectors $\mathbf{b}$ and $\mathbf{b}^\prime$ and compromise privacy. Obviously, this scheme is not \textsf{option}-IND secure for an \textsf{option} that includes either $\mathbf{c_x}$ or $\mathcal{O}_{\mathbf{c_y}}$ when $\mathsf{TP} - \mathsf{FP} > \frac{1}{\poly}$.
 
 \paragraph{IND Security for a Particular Biometric Layer}
 
@@ -365,7 +323,7 @@ The correctness of $\Pi$ holds by
 
 \begin{theorem}
 \label{thm:rh:ind:particular-biometri-layer}
-Let $\mathsf{option} = \{\mathsf{csk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}}\}$. The authentication scheme $\Pi$ is \textsf{option}-IND.
+Let $\mathsf{option} = \{\mathsf{csk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}}\}$. The authentication scheme $\Pi$ is \textsf{option}-IND secure.
 
 \end{theorem}
 
@@ -390,7 +348,7 @@ We note that we can achieve IND security with a public-key encryption scheme. We
 
 \begin{definition}[Multi-challenge IND-CPA]
 
-A public-key encryption scheme $\mathsf{PKE} = (\mathsf{PKE.KeyGen}, \mathsf{PKE.Enc}, \mathsf{PKE.Dec})$ is multi-challenge IND-CPA if for any adversary $\mathcal{A}$ , the advantage of $\mathcal{A}$ in the game $\mathsf{MC-IND-CPA}_{\mathsf{PKE}}$ is
+A public-key encryption scheme $\mathsf{PKE} = (\mathsf{PKE.KeyGen}, \mathsf{PKE.Enc}, \mathsf{PKE.Dec})$ is multi-challenge IND-CPA secure if for any adversary $\mathcal{A}$ , the advantage of $\mathcal{A}$ in the game $\mathsf{MC-IND-CPA}_{\mathsf{PKE}}$ is
 
 \[
 	\Adv^{\mathsf{MC-IND-CPA}}_{\mathsf{PKE}, \mathcal{A}} := \left| \Pr[ \mathsf{MC-IND-CPA}_{\mathsf{PKE}}(\mathcal{A}) \to 1 ] - \frac{1}{2} \right| = \negl.
@@ -422,7 +380,7 @@ A public-key encryption scheme $\mathsf{PKE} = (\mathsf{PKE.KeyGen}, \mathsf{PKE
 	\item $\mathcal{O}_{\textsf{MC-Enc}}(\cdot, \cdot)$: On input $(\mathsf{m}_0, \mathsf{m}_1)$, it outputs $\mathsf{PKE.Enc}(\mathsf{pk}_{\mathsf{PKE}}, \mathsf{m}_b)$
 \end{itemize}
 
-Given any authentication scheme $\Pi$ and a multi-challenge IND-CPA public-key encryption scheme $\mathsf{PKE} = (\mathsf{PKE.KeyGen}, \allowbreak \mathsf{PKE.Enc}, \mathsf{PKE.Dec})$, consider the following scheme $\Pi^\prime$. 
+Given any authentication scheme $\Pi$ and a multi-challenge IND-CPA secure public-key encryption scheme $\mathsf{PKE} = (\mathsf{PKE.KeyGen}, \allowbreak \mathsf{PKE.Enc}, \mathsf{PKE.Dec})$, consider the following scheme $\Pi^\prime$. 
 
 \begin{itemize}
 
@@ -437,7 +395,7 @@ Given any authentication scheme $\Pi$ and a multi-challenge IND-CPA public-key e
 
 \begin{theorem}
 \label{thm:mc-ind-cpa:ind-esk-psk}
-	Let $\textsf{option} = \{ \textsf{esk}, \textsf{psk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}} \}$. For any authentication scheme $\Pi$, $\Pi^\prime$ is $\textsf{option}$-IND. 
+	Let $\textsf{option} = \{ \textsf{esk}, \textsf{psk}, \mathbf{c_x}, \mathcal{O}_{\mathbf{c_y}} \}$. For any authentication scheme $\Pi$, $\Pi^\prime$ is $\textsf{option}$-IND secure. 
 \end{theorem}
 
 \begin{proof}
